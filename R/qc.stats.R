@@ -61,8 +61,8 @@ setMethod("qcProbes","QCStats",function(object) object@qc.probes)
 
    colnames(res1) <- paste(unique.names,".3'/5'",sep="")
 
-   res2 <- rbind(c(),(vals[,pM] - vals[,p5]))
-   colnames(res2) <- paste(unique.names,".M /5'",sep="")
+   res2 <- rbind(c(),(vals[,p3] - vals[,pM]))
+   colnames(res2) <- paste(unique.names,".3'/M",sep="")
    r <- cbind(res1,res2)
    return(r)
 
@@ -297,7 +297,7 @@ for(no in 1:length(unnormalised)){
   for(i in 1:n) {
     for(j in 1:n) { 
       d1 <- max(abs(sfs[i] - sfs[j]),d1);
-      d2 <- max(abs(dpv[i] - dpv[j]),d1);
+      d2 <- max(abs(dpv[i] - dpv[j]),d2);
       d3 <- max(abs(abg[i] - abg[j]),d3);
     }
   }
@@ -405,7 +405,7 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
   for(i in 1:n) {
     for(j in 1:n) { 
       d1 <- max(abs(sfs[i] - sfs[j]),d1);
-      d2 <- max(abs(dpv[i] - dpv[j]),d1);
+      d2 <- max(abs(dpv[i] - dpv[j]),d2);
       d3 <- max(abs(abg[i] - abg[j]),d3);
     }
   }
@@ -429,9 +429,9 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
 
   plot(0,0,xlim=spread,ylim=c(-1,n),type="n",xaxs="i",yaxs="i",xaxt="n",yaxt="n",bty="n")
 
-  x1 <- (1.5 +  meansf)
+  x1 <- (sf.thresh/2.0 +  meansf)
   y1 <- 0
-  x2 <- (-1.5 +  meansf)
+  x2 <- (-sf.thresh/2.0 +  meansf)
   y2 <- n
 
   polygon(c(x1,x2,x2,x1),c(y1,y1,y2,y2),col=sf.ok.region,border=sf.ok.region);
@@ -494,8 +494,6 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
      y2 <- i-0.75
      text(x2,y2,label=abg[i],col=col,pos=4);
      if(bb[i]!="P") {
-       x2 <- (12 * cos(i * arc));
-       y2 <- (12 * sin(i * arc));
        text(0,i-1,label="bioB",col="red");
      }
 
