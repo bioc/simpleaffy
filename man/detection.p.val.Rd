@@ -7,7 +7,7 @@
   Liu, Mei et al. (2002) 'Analysis of high density expression microarrays with signed-rank call algorimths', Bioinformatics 18(12) pp1593-1599.
 }
 \usage{
-  detection.p.val(x, tau = 0.015,calls=TRUE,alpha1=0.04,alpha2=0.06, ignore.saturated=TRUE)
+detection.p.val(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfname(cdfName(x))),alpha2=getAlpha2(cleancdfname(cdfName(x))),ignore.saturated=TRUE) {
 }
 
 %- maybe also 'usage' for other objects documented here.

@@ -1,12 +1,12 @@
 
-detection.p.val <- function(x, tau = 0.015,calls=TRUE,alpha1=0.04,alpha2=0.06,ignore.saturated=TRUE) {
+detection.p.val <- function(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfname(cdfName(x))),alpha2=getAlpha2(cleancdfname(cdfName(x))),ignore.saturated=TRUE) {
   if(alpha1 < 0)      {stop("alpha1 must be  > 0 "); }
   if(alpha1 > alpha2) {stop("alpha2 must be  > alpha1 "); }
   if(alpha2 > 1)      {stop("alpha2 must be  <1 "); }
 
   cat("Getting probe level data...\n");
-  pms <-pm(x);
-  mms <-mm(x);
+  pms <-as.matrix(pm(x));
+  mms <-as.matrix(mm(x));
 
   # Saturation:
   # shouldn't be a problem with new scanners or those that have had an engineer visit

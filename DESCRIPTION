@@ -8,7 +8,7 @@ Description: Provides high level functions for reading Affy .CEL
   library. Also has some basic scatter plot functions and mechanisms for 
   generating high resolution journal figures...
 Maintainer: Crispin Miller <cmiller@picr.man.ac.uk>
-Depends: affy
+Depends: R (>= 1.9.0), affy
 License: GPL version 2 or later
 URL: http://www.bioconductor.org, http://www.bioinf.picr.man.ac.uk/simpleaffy/
-Packaged: Fri May 14 18:12:35 2004; cmiller
+Packaged: Mon Jun 14 13:12:27 2004; cmiller

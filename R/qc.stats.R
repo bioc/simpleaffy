@@ -69,7 +69,7 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 "drosgenome1cdf",	
 "hcg110cdf",		
 "hgu133acdf",		
-"hgu133a_2cdf",	
+"hgu133a2cdf",	
 "hgu133atagcdf",	
 "hgu133bcdf",		
 "hgu133plus2cdf",	
@@ -85,10 +85,10 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 "mgu74bv2cdf",	
 "mgu74ccdf",		
 "mgu74cv2cdf",	
-"moe430_2cdf",	
-"moe430acdf",		
-"moe430a_2cdf",	
-"moe430bcdf",		
+"mouse4302cdf",	
+"mouse430acdf",		
+"mouse430a2cdf",	
+"mouse430b2cdf",		
 "mu11ksubacdf",	
 "mu11ksubbcdf",	
 "rae230acdf",		
@@ -99,7 +99,7 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 
 .alpha1 <- c(0.04,	
 	     0.05,	
-	     0.05,	
+	     0.04,	
 	     0.04,	
 	     0.05,	
 	     0.05,	
@@ -132,7 +132,7 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 
 .alpha2 <- c(0.06,	
 	     0.065,	
-	     0.065,	
+	     0.06,	
 	     0.06,	
 	     0.065,	
 	     0.065,	
@@ -431,7 +431,7 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 
 .biod <- c("AFFX-BioD-3_at",      
 	    "AFFX-r2-Ec-bioD-3_at",
-	    "AFFX-BioD-3_at",	    
+	    "AFFX-BioDn-3_at",	    
 	    "AFFX-BioD-3_at",	    
 	    "AFFX-r2-Ec-bioD-3_at",
 	    "AFFX-r2-Ec-bioD-3_at",
@@ -512,83 +512,85 @@ names(.biod) <- .nms
 names(.crex) <- .nms
 
 
-.getTao <- function(name) {
+getTao <- function(name) {
   0.015;
 }
 
-.getAlpha1 <- function(name) {
+getAlpha1 <- function(name) {
   .alpha1[name]
 }
 
-.getAlpha2 <- function(name) {
+getAlpha2 <- function(name) {
   .alpha2[name]
 }
 
-.getActin3 <- function(name) {
+getActin3 <- function(name) {
   .actin3[name]
 }
 
-.getActinM <- function(name) {
+getActinM <- function(name) {
   .actinM[name]
 }
 
-.getActin5 <- function(name) {
+getActin5 <- function(name) {
   .actin5[name]
 }
 
-.getGapdh3 <- function(name) {
+getGapdh3 <- function(name) {
   .gapdh3[name]
 }
 
-.getGapdhM <- function(name) {
+getGapdhM <- function(name) {
   .gapdhM[name]
 }
 
-.getGapdh5 <- function(name) {
+getGapdh5 <- function(name) {
   .gapdh5[name]
 }
 
-.getBioB <- function(name) {
+getBioB <- function(name) {
   .biob[name]
 }
 
 
-.getBioC <- function(name) {
+getBioC <- function(name) {
   .bioc[name]
 }
 
 
-.getBioD <- function(name) {
+getBioD <- function(name) {
   .biod[name]
 }
 
 
-.getCreX <- function(name) {
+getCreX <- function(name) {
   .crex[name]
 }
 
 
 
 
-qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE,tau=NULL,alpha1=NULL,alpha2=NULL,bioB=NULL,bioC=NULL,bioD=NULL,creX=NULL,gapdh3=NULL,gapdhM=NULL,gapdh5=NULL,actin3=NULL,actinM=NULL,actin5=NULL) {
+qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE,
+                   tau=getTao(cleancdfname(cdfName(unnormalised))),
+                   alpha1=getAlpha1(cleancdfname(cdfName(unnormalised))),
+                   alpha2=getAlpha2(cleancdfname(cdfName(unnormalised))),
+	           bioB=getBioB(cleancdfname(cdfName(unnormalised))),
+                   bioC=getBioC(cleancdfname(cdfName(unnormalised))),
+                   bioD=getBioD(cleancdfname(cdfName(unnormalised))),
+                   creX=getCreX(cleancdfname(cdfName(unnormalised))),
+                   gapdh3=getGapdh3(cleancdfname(cdfName(unnormalised))),
+                   gapdhM=getGapdhM(cleancdfname(cdfName(unnormalised))),
+                   gapdh5=getGapdh5(cleancdfname(cdfName(unnormalised))),
+                   actin3=getActin3(cleancdfname(cdfName(unnormalised))),
+                   actinM=getActinM(cleancdfname(cdfName(unnormalised))),
+                   actin5=getActin5(cleancdfname(cdfName(unnormalised)))) {
   if(is.null(normalised)) {
     normalised <- call.exprs(unnormalised,"mas5");
   }
-  nme    <- cleancdfname(cdfName(unnormalised))
-  if(is.null(tau)) {
-    tau    <- .getTao(nme)
-  }
-  if(is.null(alpha1)) {
-    alpha1 <- .getAlpha1(nme)
-  }
-  if(is.null(alpha2)) {
-    alpha2 <- .getAlpha2(nme)
-  }
-  if(is.na(alpha1)) { 
-    warning(paste("Couldn't get tau, alpha1 and alpha2 parameters for array type",nme,"Defaulting to alpha1=0.04 and alpha2=0.06"))
-    alpha1 <- 0.04;
-    alpha2 <- 0.06;
-    tao    <- 0.015;
+
+
+  if(!is.element(cleancdfname(cdfName(unnormalised)),.nms)) {
+	stop(paste("I'm sorry I do not know about chip type:",cleancdfname(cdfName(unnormalised))))
   }
 
   x <- exprs(normalised);
@@ -607,38 +609,6 @@ qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE,tau=NULL,alpha1=NULL
 
   if(!logged) { x <- log2(x); }
 
-  n <- cleancdfname(cdfName(unnormalised));
-  if(is.null(gapdh3)) {
-    g3 <- exprs(normalised)[.getGapdh3(n),]
-  }
-  if(is.null(gapdhM)) {
-    gM <- exprs(normalised)[.getGapdhM(n),]
-  }
-  if(is.null(gapdh5)) {
-    g5 <- exprs(normalised)[.getGapdh5(n),]
-  }
-  if(is.null(actin3)) {
-    a3 <- exprs(normalised)[.getActin3(n),] 
-  }  
-  if(is.null(actinM)) {
-    aM <- exprs(normalised)[.getActinM(n),] 
-  }
-  if(is.null(actin5)) {
-    a5 <- exprs(normalised)[.getActin5(n),]
-  }
-  if(is.null(bioB)) {
-    biob <- det$call[.getBioB(n),]
-  }
-  if(is.null(bioC)) {
-    bioc <- det$call[.getBioC(n),] 
-  }
-  if(is.null(bioD)) {
-    biod <- det$call[.getBioD(n),]
-  }
-  if(is.null(creX)) {
-    crex <- det$call[.getCreX(n),]
-  }
-
   bgsts<-.bg.stats(unnormalised)$zonebg
 
   meanbg <- apply(bgsts,1,mean);
@@ -649,7 +619,21 @@ qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE,tau=NULL,alpha1=NULL
 
   stdvbg <- sqrt(apply(bgsts,1,var));
 
-  return(new("QCStats",scale.factors=sfs,target=target,percent.present=dpv,average.background=meanbg,minimum.background=minbg,maximum.background=maxbg,gapdh3=g3,gapdhM=gM,gapdh5=g5,actin3=a3,actinM=aM,actin5=a5,bioB=biob,bioC=bioc,bioD=biod,creX=crex));
+  gapdh3 <- x[gapdh3,];
+  gapdhM <- x[gapdhM,];
+  gapdh5 <- x[gapdh5,];
+
+  actin3 <- x[actin3,];
+  actinM <- x[actinM,];
+  actin5 <- x[actin5,];
+
+  bioB <- det$call[bioB,];
+  bioC <- det$call[bioC,];
+  bioD <- det$call[bioD,];
+  creX <- det$call[creX,];
+
+  return(new("QCStats",scale.factors=sfs,target=target,percent.present=dpv,average.background=meanbg,minimum.background=minbg,maximum.background=maxbg,
+              gapdh3=gapdh3,gapdhM=gapdhM,gapdh5=gapdh5,actin3=actin3,actinM=actinM,actin5=actin5,bioB=bioB,bioC=bioC,bioD=bioD,creX=creX));
 }
 
 
@@ -661,7 +645,7 @@ setGeneric("getQCParams", function(x) standardGeneric("getQCParams") )
 setMethod("getQCParams","AffyBatch",function(x) {
   n <- cleancdfname(cdfName(x))
 
-  res <- list(.getGapdh3(n),.getGapdhM(n),.getGapdh5(n),.getActin3(n),.getActinM(n),.getActin5(n),.getBioB(n),.getBioC(n),.getBioD(n),.getCreX(n),.getAlpha1(n),.getAlpha2(n),.getTao(n))
+  res <- list(getGapdh3(n),getGapdhM(n),getGapdh5(n),getActin3(n),getActinM(n),getActin5(n),getBioB(n),getBioC(n),getBioD(n),getCreX(n),getAlpha1(n),getAlpha2(n),getTao(n))
   names(res) <- c("Gapdh3","GapdhM","Gapdh5","Actin3","ActinM","Actin5","BioB","BioC","BioD","CreX","Alpha1","Alpha2","Tao")
   return(res)
 })
