@@ -360,10 +360,16 @@ R> # and are significantly different
 R> # between groups with a t-test p.value
 R> # of 0.001 or better   
 R> significant <- pairwise.filter(
-     results,min.exp=log2(10), 
+     results,
+     x.rma,
+     min.exp=log2(10), 
      min.exp.no=6, fc=log2(1.5), 
      tt= 0.001)
 \end{Sinput}
+
+Note that pairwise.filter needs not only the results of the pairwise
+comparison, but also the normalised data used by pairwise comparison.
+This is because it needs it to filter on intensity values.
 
 \subsection{Paired replicates}
 

@@ -254,12 +254,20 @@ double get_pairwise_t_test( double* a, int na, double* b)  {
     double meana = mean( a, na ) ;
     double meanb = mean( b, na ) ;
     double sd  = standard_deviation(a, b, na, meana,meanb ) ;
-    if((meana == meanb) && sd == 0) return sqrt(-1);       /* Not a number! :-) */
-    double t = ( meana - meanb ) / sd;
-    double df = (double) (na - 1);
-    double prob = betai( 0.5 * df, 0.5, df / ( df + t*t ) ) ;
+    double t,df,prob;
+    if((meana == meanb) && sd == 0) {
+      return sqrt(-1);       /* Not a number! :-) */
+    }
+    t = ( meana - meanb ) / sd;
+    df = (double) (na - 1);
+    prob = betai( 0.5 * df, 0.5, df / ( df + t*t ) ) ;
     return prob ;
   }
+
+
+
+
+
 
 
 /**
@@ -270,13 +278,23 @@ double get_t_test( double* a, int na, double* b, int nb )  {
     double vara = variance( a, na, meana ) ;
     double meanb = mean( b, nb ) ;
     double varb = variance( b, nb, meanb ) ;
-    if((meana == meanb) && (vara == varb)) return sqrt(-1); /* Not a number! :-) */
-    double t = ( meana - meanb ) / sqrt( vara / na + varb / nb ) ;
-    double df = sqr( vara / na + varb / nb ) /
-                ( sqr( vara / na ) / ( na - 1 ) + sqr( varb / nb ) / ( nb - 1 ) ) ;
-    double prob = betai( 0.5 * df, 0.5, df / ( df + sqr( t ) ) ) ;
+    double t,df,prob;
+    if((meana == meanb) && (vara == varb)) {
+      return sqrt(-1); /* Not a number! :-) */
+    }
+    else {
+      t = ( meana - meanb ) / sqrt( vara / na + varb / nb ) ;
+      df = sqr( vara / na + varb / nb ) /
+           ( sqr( vara / na ) / ( na - 1 ) + sqr( varb / nb ) / ( nb - 1 ) ) ;
+      prob = betai( 0.5 * df, 0.5, df / ( df + sqr( t ) ) ) ;
+    }
     return prob ;
   }
+
+
+
+
+
 
 void FCMandTT(double *a, double *b, int *nacol, int *nbcol, int *ngene, Rboolean *isLogged, Rboolean *doPairwise, int *meth, double *ma, double *mb, double*fc, double *tt) {
   int idx = 0;
