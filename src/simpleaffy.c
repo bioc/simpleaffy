@@ -544,17 +544,23 @@ void bgmas(int *idx, int *nidx,
     zonebg[i] = 0;
     zonesd[i] = 0;
     ends[i]   = 0;
-    scratches[i] = (double *) R_alloc(ncol*nrow/ngrid,sizeof(double));
+    scratches[i] = (double *) R_alloc((int)((double)(ncol * nrow)/ngrid),sizeof(double));
   }
+
+
   // count the number of spots in each cell and store consecutively in scratch the values from each grid cell
   for(i = 0; i < n; i++) {
     lookup(idx, i, raw, ncol, &x, &y, &val);
+
     grid(x,y,nrow,ncol,gxn,gyn,&gx,&gy);
+
     gn = gx + gxn * gy;
 
     scratches[gn][ends[gn]] = val;
 
     ends[gn]++;  // store the number of spots in each cell, and also use this to find out where the stuff is in scratch
+    if(ends[gn] >= ncol * nrow/ngrid) fprintf(stderr,"ouch! %d %d %d %d\n",ncol * nrow/ngrid,gxn,gn,ends[gn]);
+    if(gn >= ngrid) fprintf(stderr,"Really ouch! %d %d\n",gn,ends[gn]);
   }
   for(i = 0; i < ngrid; i++) {
     pn = (2.0 * ends[i]) / 100;             // 2% of the probes in each square
@@ -569,11 +575,11 @@ void bgmas(int *idx, int *nidx,
     zonesd[i]   = sqrt(zonesd[i] / (double) (pn - 1));
   }
 
-
   for(i = 0; i < gxn;i++) {
     xc[i] = (int) (((double) i + 0.5) * (double) ncol / (double) gxn);
   }
-  for(i = 0; i < gxn;i++) {
+
+  for(i = 0; i < gyn;i++) {
     yc[i] = (int) (((double) i + 0.5) * (double) nrow / (double) gyn);
   }
 
@@ -600,7 +606,8 @@ void bgmas(int *idx, int *nidx,
     tmp = val - bg;
     if(tmp < nfrac * nz) tmp = nfrac * nz;
     corrected[idx[i]] = tmp;
-  }
+  }  
+
 }
 
 
@@ -679,6 +686,7 @@ void GetExpressionLevels(double *pm, double *mm, char **names, int *nprobes, dou
   int i = 0;
   int j = 0;
   for(i = 1; i < *nprobes; i++) {
+
     if(strcmp(names[i],names[start]) != 0) {
       expressions[j] = expcall(&(pm[start]),&(mm[start]),i-start,*ct,*st);
       start = i;

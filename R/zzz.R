@@ -10,7 +10,8 @@
   cat("      and funded by CANCER RESEARCH UK.                      \n");
   cat("      http://bioinformatics.picr.man.ac.uk                   \n");
   cat("      mailto: microarray@picr.man.ac.uk                      \n");
-
+  cat("      Please read the README file in the library install     \n");
+  cat("      directory.  \n");
 }
 
 .initClassesAndMethods <- function(where) {

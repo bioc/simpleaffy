@@ -570,17 +570,22 @@ names(.crex) <- .nms
 
 
 
-qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE) {
+qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE,tau=NULL,alpha1=NULL,alpha2=NULL,bioB=NULL,bioC=NULL,bioD=NULL,creX=NULL,gapdh3=NULL,gapdhM=NULL,gapdh5=NULL,actin3=NULL,actinM=NULL,actin5=NULL) {
   if(is.null(normalised)) {
     normalised <- call.exprs(unnormalised,"mas5");
   }
   nme    <- cleancdfname(cdfName(unnormalised))
-  tau    <- .getTao(nme)
-  alpha1 <- .getAlpha1(nme)
-  alpha2 <- .getAlpha2(nme)
-
+  if(is.null(tau)) {
+    tau    <- .getTao(nme)
+  }
+  if(is.null(alpha1)) {
+    alpha1 <- .getAlpha1(nme)
+  }
+  if(is.null(alpha2)) {
+    alpha2 <- .getAlpha2(nme)
+  }
   if(is.na(alpha1)) { 
-    warning(paste("Couldn't get tao, alpha1 and alpha2 parameters for array type",nme,"Defaulting to alpha1=0.04 and alpha2=0.06"))
+    warning(paste("Couldn't get tau, alpha1 and alpha2 parameters for array type",nme,"Defaulting to alpha1=0.04 and alpha2=0.06"))
     alpha1 <- 0.04;
     alpha2 <- 0.06;
     tao    <- 0.015;
@@ -603,19 +608,36 @@ qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE) {
   if(!logged) { x <- log2(x); }
 
   n <- cleancdfname(cdfName(unnormalised));
-
-  g3 <- exprs(normalised)[.getGapdh3(n),]
-  gM <- exprs(normalised)[.getGapdhM(n),]
-  g5 <- exprs(normalised)[.getGapdh5(n),]
-
-  a3 <- exprs(normalised)[.getActin3(n),]
-  aM <- exprs(normalised)[.getActinM(n),]
-  a5 <- exprs(normalised)[.getActin5(n),]
-
-  biob <- det$call[.getBioB(n),]
-  bioc <- det$call[.getBioC(n),]
-  biod <- det$call[.getBioD(n),]
-  crex <- det$call[.getCreX(n),]
+  if(is.null(gapdh3)) {
+    g3 <- exprs(normalised)[.getGapdh3(n),]
+  }
+  if(is.null(gapdhM)) {
+    gM <- exprs(normalised)[.getGapdhM(n),]
+  }
+  if(is.null(gapdh5)) {
+    g5 <- exprs(normalised)[.getGapdh5(n),]
+  }
+  if(is.null(actin3)) {
+    a3 <- exprs(normalised)[.getActin3(n),] 
+  }  
+  if(is.null(actinM)) {
+    aM <- exprs(normalised)[.getActinM(n),] 
+  }
+  if(is.null(actin5)) {
+    a5 <- exprs(normalised)[.getActin5(n),]
+  }
+  if(is.null(bioB)) {
+    biob <- det$call[.getBioB(n),]
+  }
+  if(is.null(bioC)) {
+    bioc <- det$call[.getBioC(n),] 
+  }
+  if(is.null(bioD)) {
+    biod <- det$call[.getBioD(n),]
+  }
+  if(is.null(creX)) {
+    crex <- det$call[.getCreX(n),]
+  }
 
   bgsts<-.bg.stats(unnormalised)$zonebg
 

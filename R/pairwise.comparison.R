@@ -119,7 +119,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   }
   if(!is.null(spots)) {
     pmac <- detection.p.val(spots);
-    results <- get.fold.change.and.t.test(x,group,members,logged=logged,return.exprs="samples",a.order=a.order,b.order=b.order,method=method);
+    results <- get.fold.change.and.t.test(x,group,members,logged=logged,a.order=a.order,b.order=b.order,method=method);
     calls(results) <- pmac;
   }
   else {
