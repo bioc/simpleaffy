@@ -90,11 +90,11 @@ getTao <- function(name) {
 }
 
 getAlpha1 <- function(name) {
-  as.character(get("alpha",envir=.qcEnv)[name,"alpha1"])
+  get("alpha",envir=.qcEnv)[name,"alpha1"]
 }
 
 getAlpha2 <- function(name) {
-  as.character(get("alpha",envir=.qcEnv)[name,"alpha2"])
+  get("alpha",envir=.qcEnv)[name,"alpha2"]
 }
 
 getActin3 <- function(name) {
