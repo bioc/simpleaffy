@@ -28,11 +28,16 @@ plot.qc.stats(x, fc.line.col = "black", sf.ok.region = "light blue", chip.label.
   \item{\dots}{ Other parameters to pass through to \code{plot} }
 }
 \details{
-  A lot of information is presented in this one figure. By default, each array is represented by a seperate line in the figure. The central vertical line corresponds to 0 fold change, the dotted lines on either side correspond to 3 fold up and down regulation. The blue bar represents the region in which all
-arrays have scale factors within, by default, three-fold of each other. Its
-position is found by calculating the mean scale factor for all chips
-and placing the center of the region such that the borders
-are -1.5 fold up or down from the mean value.
+
+A lot of information is presented in this one figure. By default,
+each array is represented by a seperate line in the figure. The
+central vertical line corresponds to 0 fold change, the dotted lines
+on either side correspond to 3 fold up and down regulation. The blue
+bar represents the region in which all arrays have scale factors
+within, by default, three-fold of each other. Its position is found by
+calculating the mean scale factor for all chips and placing the center
+of the region such that the borders are -1.5 fold up or down from the
+mean value.
 
 Each array is plotted as a line from the 0-fold line to the point
 that corresponds to its scale factor. If the ends of all of the lines

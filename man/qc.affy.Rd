@@ -3,7 +3,23 @@
 
 \title{ Generate Affymetrix Style QC Statistics }
 \description{
-  Generates Affymetrix style QC statistics as defined in Affymetrix' 'Data Analysis Fundamentals' handbook }
+Generate QC data for Affymetrix arrays
+}
+
+
+\details{
+Affymetrix recommend a series of QC metrics that should be used to
+check that arrays have hybridised correctly and that sample quality is
+acceptable. These are discussed in the document 'QC and Affymetrix
+data' accompanying this package, and on the web at
+http://bioinformatics.picr.man.ac.uk. They are described in detail in
+the 'Expression Analysis Fundamentals' manual available from
+Affymetrix.
+
+This function takes an (unnormalised) AffyBatch object, and (optionally) 
+an ExprSet, with MAS expression calls produced by \code{\link{call.exprs}} and
+generates QC metrics. If the MAS calls are not supplied these are claculated internally.
+
 }
 \usage{
 qc.affy(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,

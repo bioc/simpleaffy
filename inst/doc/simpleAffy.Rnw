@@ -169,6 +169,10 @@ detail in the Affymetrix {\it Data Analysis Fundamentals} manual,
 which can be found on their website at {\url
 http://www.affymetrix.com}.
 
+Also look at the document 'QC and simpleaffy', which accompanies this
+document. It discusses QC metrics in significantly more detail than
+this vignette. A brief introduction can be found below...
+
 The function \Rfunction{qc} generates the most commonly used metrics:
 
 \begin{enumerate}
