@@ -6,20 +6,11 @@
   Generates Affymetrix style QC statistics as defined in Affymetrix' 'Data Analysis Fundamentals' handbook }
 }
 \usage{
-qc.affy(unnormalised,normalised=NULL,logged=TRUE,
-        tau=getTao(cleancdfname(cdfName(unnormalised))),
-        alpha1=getAlpha1(cleancdfname(cdfName(unnormalised))),
-        alpha2=getAlpha2(cleancdfname(cdfName(unnormalised))),
-	bioB=getBioB(cleancdfname(cdfName(unnormalised))),
-        bioC=getBioC(cleancdfname(cdfName(unnormalised))),
-        bioD=getBioD(cleancdfname(cdfName(unnormalised))),
-        creX=getCreX(cleancdfname(cdfName(unnormalised))),
-        gapdh3=getGapdh3(cleancdfname(cdfName(unnormalised))),
-        gapdhM=getGapdhM(cleancdfname(cdfName(unnormalised))),
-        gapdh5=getGapdh5(cleancdfname(cdfName(unnormalised))),
-        actin3=getActin3(cleancdfname(cdfName(unnormalised))),
-        actinM=getActinM(cleancdfname(cdfName(unnormalised))),
-        actin5=getActin5(cleancdfname(cdfName(unnormalised))))
+  qc.affy(unnormalised, normalised = NULL, logged = TRUE, tau =
+                 NULL, alpha1 = NULL, alpha2 = NULL, bioB = NULL, bioC
+                 = NULL, bioD = NULL, creX = NULL, gapdh3 = NULL,
+                 gapdhM = NULL, gapdh5 = NULL, actin3 = NULL, actinM =
+                 NULL, actin5 = NULL)
 }
 
 \arguments{

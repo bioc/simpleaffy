@@ -49,7 +49,7 @@ function(x,group,members) {
 function(x,group,members) {
   pd <- pData(x);
   grp <- pd[,colnames(pd) == group];
-  return(x[,is.element(grp,members)]);
+  return(x[is.element(grp,members),]);
 }
 
 setGeneric("get.array.subset", function(x,group,members) standardGeneric("get.array.subset"))
@@ -57,18 +57,18 @@ setMethod("get.array.subset","AffyBatch",get.array.subset.affybatch);
 setMethod("get.array.subset","exprSet",get.array.subset.exprset);
 
 "get.fold.change.and.t.test" <- function(x,group,members,logged = TRUE, a.order=NULL,b.order=NULL,method=c("unlogged","logged","median")) {
-
+  
   a.samples <- exprs(get.array.subset(x,group,members[1]));
   b.samples <- exprs(get.array.subset(x,group,members[2]));
-
+ 
   pw <- FALSE;
 
-  if(!is.null(a.order)) {
+  if(!is.null(a.order)) { 
     a.samples <- a.samples[,a.order];
-    if(!is.null(b.order)) {
-      b.samples <- b.samples[,b.order];
+    if(!is.null(b.order)) { 
+      b.samples <- b.samples[,b.order]; 
       pw <- TRUE;
-
+ 
     }
     else {
      stop("Both a.order and b.order must be specified for a paired t-test");
@@ -87,7 +87,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   ngene <- as.integer(length(a.samples[,1]));
   nbcol <- as.integer(length(b.samples[1,]));
 
-  if(! is(logged, "logical")) stop("Parameter 'logged' should be TRUE or FALSE")
+  if(class(logged) != "logical") stop("Parameter 'logged' should be TRUE or FALSE")
   if((nacol == 1) | (nbcol == 1))  warning("There was only one sample in one (or both) of your sample groups. Not computing t-tests - instead, returning 0.0 for p-scores...");
 
   c.res <- .C("FCMandTT",a.samples.array,b.samples.array,nacol,nbcol,ngene,as.logical(logged),pw,as.integer(m),ma = double(ngene),mb = double(ngene),fc = double(ngene),tt = double(ngene),PACKAGE="simpleaffy")
@@ -98,7 +98,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   names(fc)       <- rownames(a.samples);
   rownames(means) <- rownames(a.samples);
   names(tt)       <- rownames(a.samples);
-
+  
   return(new("PairComp",fc=fc,tt=tt,means=means,group=group,members=members))
 }
 
@@ -111,7 +111,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
     pd <- unique(as.character(pData(x)[,group]))
     if(is.null(pd)) {
       stop(paste("Can't find a group called",group));
-    }
+    }      
     if(length(pd) != 2)  {
       stop("There must be exactly two groups for a pairwise comparison. Please specify which groups you want to compare.");
     }
@@ -120,19 +120,19 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   if(!is.null(spots)) {
     pmac <- detection.p.val(spots);
     results <- get.fold.change.and.t.test(x,group,members,logged=logged,a.order=a.order,b.order=b.order,method=method);
-    results@calls <- pmac$call;
+    calls(results) <- pmac;
   }
   else {
     results <- get.fold.change.and.t.test(x,group,members,logged=logged,a.order=a.order,b.order=b.order,method=method);
   }
-  return(results);
+  return(results); 
 }
 
 
 pairwise.filter <- function(object,x,min.exp=log2(100),min.exp.no=0,min.present.no=3,fc=1.0,tt=0.001) {
 
-  if(! is(object, "Paircomp")) { stop("Can only filter an object of class 'PairComp'"); }
-  if(! is(x, "exprSet")) { stop("Can only filter using class 'exprSet' for parameter 'x'"); }
+  if(class(object) != "PairComp") { stop("Can only filter an object of class 'PairComp'"); }
+  if(class(x) != "exprSet") { stop("Can only filter using class 'exprSet' for parameter 'x'"); }
   pass.fc              <- (abs(fc(object)) > fc);
   pass.tt              <- (tt(object) < tt );
 
@@ -144,7 +144,7 @@ pairwise.filter <- function(object,x,min.exp=log2(100),min.exp.no=0,min.present.
 
   min.intensity.thresh <- rowSums(intensity.thresh)
 
-
+  
   pass.intensity <- (min.intensity.thresh >= min.exp.no);
 
   if(nrow(calls(object))>0) {

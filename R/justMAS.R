@@ -29,8 +29,8 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   bgc <- bg.correct.sa(unnormalised);
 
   cat("Retrieving data from AffyBatch...");
-  pms <-as.matrix(pm(bgc))
-  mms <-as.matrix(mm(bgc))
+  pms <-pm(bgc)
+  mms <-mm(bgc)
   pns <- probeNames(bgc);
   unique.pns <- unique(pns);
 ########################### SUMMARIES
