@@ -216,7 +216,7 @@ qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=clean
   rownames(spike.vals) <- colnames(x);
 
   bb <- getBioB(cdfn)
-  cat(bb)
+
   if(!is.na(bb)) {
     biobcalls <- det$call[bb,]
   }
@@ -329,7 +329,7 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
   gdh <- rats[,2];
   ba  <- rats[,1];
   bb  <- qcs@bioBCalls
-  cat(bb)
+
   for(i in 1:n) {
     if(d1 > sf.thresh) { col = "red" } else {col="blue"}
      x1 <- sfs[i] * cos(i * arc);
