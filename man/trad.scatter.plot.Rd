@@ -6,7 +6,7 @@
   Plots expression data as a scatter plot with optional fold-change lines
 }
 \usage{
-trad.scatter.plot(x, y, add = FALSE, fc.lines = log2(c(2, 4, 6, 8)), draw.fc.lines = TRUE, draw.fc.line.labels = TRUE, fc.line.col = "lightgrey", pch = 20, ...)
+trad.scatter.plot(x, y, add = FALSE, fc.lines = log2(c(2, 4, 6, 8)), draw.fc.lines = TRUE, draw.fc.line.labels = TRUE, fc.line.col = "lightgrey", pch = 20,xlim=NULL,ylim=NULL, ...)
 }
 
 \arguments{
@@ -18,6 +18,8 @@ trad.scatter.plot(x, y, add = FALSE, fc.lines = log2(c(2, 4, 6, 8)), draw.fc.lin
   \item{draw.fc.line.labels}{ Label the fold change lines with the fold changes they represent? }
   \item{fc.line.col}{ The colour to draw fold change lines }
   \item{pch}{ Plotting character to use for the scatter data (see \code{plot} for more details) }
+  \item{xlim}{ Range for the xaxis }  
+  \item{ylim}{ Range for the yaxis }
   \item{\dots}{ Additional parameters to pass through to the underlying \code{plot} function }
 }
 \references{ http://bioinformatics.picr.man.ac.uk/ }

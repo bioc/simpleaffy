@@ -35,8 +35,8 @@ setMethod("calculated.from","PairComp",function(object) object@calculated.from)
 
 setMethod("[", "PairComp", function(x,i,j,...,drop=FALSE) {
   if(nrow(calls(x))>0) {calls <- calls(x)[i,,...,drop=FALSE];}
-  else { calls <- matrix(); }
-  y <- new ("PairComp",means=means(x)[i,,...,drop=FALSE],fc=fc(x)[i,...,drop=FALSE],tt=tt(x)[i,...,drop=FALSE],calls=calls,group=group(x),members=members(x),pData=pData(x))
+  else { calls <- matrix(nrow=0,ncol=0); }
+  y <- new ("PairComp",means=means(x)[i,,...,drop=FALSE],fc=fc(x)[i,...,drop=FALSE],tt=tt(x)[i,...,drop=FALSE],calls=calls,group=group(x),members=members(x),pData=pData(x),calculated.from=calculated.from(x))
   return(y)
 })
 
@@ -377,3 +377,5 @@ setMethod("plot","PairComp",function(x,y) plot.pairwise.comparison(x,y,...))
    }
 
 }
+
+
