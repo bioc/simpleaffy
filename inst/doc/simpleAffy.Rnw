@@ -311,6 +311,12 @@ Averages can be calculated 3 ways:
 By default, unlogged values are used, but the parameter, \Rfunction{method},
 allows you to change this by specifying method='unlogged','logged' or 'median'.
 
+{\it Note} that if you have no replicates in one or both of your
+experimental groups - so that you have only one control or treatment
+chip, for example, the function returns a p-score of 0.0 for
+each t-test comparison {\it rather than generating an error} complaining that
+there are not enough observations.
+
 The function \Rfunction{pairwise.filter} takes the output of
 \Rfunction{pairwise.comparison} and filters it for significantly
 changing genes:
