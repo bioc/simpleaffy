@@ -1,4 +1,4 @@
-"pairwise.comparison" <- function(x,group,members=NULL,logged=T,spots=NULL,a.order=NULL,b.order=NULL,method="unlogged") {
+"pairwise.comparison" <- function(x,group,members=NULL,spots=NULL,a.order=NULL,b.order=NULL,method="unlogged",logged=T) {
   if(is.null(members)) {
     pd <- unique(as.character(pData(x)[,group]))
     if(is.null(pd)) {

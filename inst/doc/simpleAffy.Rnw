@@ -291,7 +291,7 @@ from the group:
 R> results <- pairwise.comparison(
      x.rma,                  ## processed data
      "treatment",            ## the factor in covdesc 
-     raw.data                ## for PMA calls
+     spots=raw.data          ## for PMA calls
    )                   
 R> ## Find the 100 most changing genes 
 R> sort(abs(results$fc),decreasing=TRUE)[1:100] 

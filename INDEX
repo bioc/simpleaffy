@@ -1,0 +1,23 @@
+detection.p.val         Filter pairwise comparison statistics between
+                        two experimental groups
+get.annotation          Get annotation data for a gene list
+get.array.subset        Get a subset of chips from an AffyBatch object
+                        according to their phenotypic data
+get.fold.change.and.t.test
+                        Compute pairwise comparison statistics between
+                        two experimental groups
+journalpng              Produce a device for producing artwork for
+                        presentations and journals
+ma                      Generate M and A values suitable for an MvA
+                        plot
+norm                    normalise Affymetrix data
+pairwise.comparison     Compute pairwise comparison statistics between
+                        two experimental groups
+pairwise.filter         Filter pairwise comparison statistics between
+                        two experimental groups
+qc.ratios               Get gapdh and betactin ratios
+read.affy               Read a set of affy .CEL files and associated
+                        phenotypic data
+simple.mva.plot         Generate a simple MvA plot
+trad.scatter.plot       Does a traditional scatter plot of expression
+                        data

@@ -7,7 +7,7 @@
   Generate fold changes, t-tests and means for a pair of experimental groups
 }
 \usage{
-  pairwise.comparison(x,group,members=NULL,logged=T,spots=NULL,a.order=NULL,b.order=NULL,method="unlogged")
+  pairwise.comparison(x,group,members=NULL,spots=NULL,a.order=NULL,b.order=NULL,method="unlogged",logged=T)
 }
 
 %- maybe also 'usage' for other objects documented here.
