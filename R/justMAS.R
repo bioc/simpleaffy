@@ -54,8 +54,6 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
                annotation  = bgc@annotation, 
                description = bgc@description, 
                notes       = bgc@notes);
-    res@description@preprocessing$sfs = unlist(sfs);
-    res@description@preprocessing$tgt = tgt;
 
    for(x in 1:length(expression.calls[1,])) {
      vals <- sort(2^expression.calls[,x]);
@@ -67,6 +65,9 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
      expression.calls[,x] <- log2((2^expression.calls[,x]) * sf)
      sfs[x] <- sf; 
    }
+    res@description@preprocessing$sfs = unlist(sfs);
+    res@description@preprocessing$tgt = tgt;
+
   }
   else {
    res@description@preprocessing$sfs = stop("Arrays were not scaled") 
