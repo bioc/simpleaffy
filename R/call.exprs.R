@@ -51,7 +51,7 @@ function(x,algorithm="rma",do.log = TRUE,sc=100,method=NA) {
      return(tmp);
   }
   else if(algorithm == "mas5") { # use Simpleaffy MAS5.0
-    tmp <- justMas(x);
+    tmp <- justMas(x,tgt=sc);
     if(!do.log) {
       exprs(tmp) <- 2^exprs(tmp);
     }
