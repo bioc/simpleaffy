@@ -1,0 +1,246 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+%\VignetteIndexEntry{simpleaffy primer}
+%\VignetteKeywords{Analysis, Affymetrix}
+%\VignetteDepends{simpleaffy}
+%\VignettePackage{simpleaffy}
+%documentclass[12pt, a4paper]{article}
+\documentclass[12pt]{article}
+
+\usepackage{amsmath,pstricks}
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\author{Crispin J Miller}
+\begin{document}
+\title{Description of simpleaffy: easy analysis routines for Affymetrix data}
+
+\maketitle
+\tableofcontents
+\section{Introduction}
+
+The \Rpackage{simpleaffy} package is part of the
+Bioconductor\footnote{\url{http://www.bioconductor.org/}} project. It
+it was written to provide a starting point for exploring
+Affymetrix data, and to provide functions for some of the most common
+tasks we found ourselves doing over and over again. It's based on the
+\Rpackage{affy} package, which does does most of the hard work.
+
+\Rpackage{affy} provides a variety of functions for processing
+Affymetrix data, with many more in \Rpackage{affycomp}. Even so, some
+tasks (such as computing t-tests and fold changes between replicate
+groups, plotting scatter-plots and generating tables of annotated
+'hits') require a bit of coding, and some of the most commonly used
+functions can be a bit slower than we would like. This package aims to provide high-level
+methods to perform these routine analysis tasks, and many of them have
+been re-implemented in C for speed.
+
+Since \Rpackage{simpleaffy} is written over the top of the
+\Rpackage{affy} package, a basic understanding of the library and its vignette is a good idea. We also assume that
+the reader knows how the Affymetrix system works. If not, a brief
+introduction can be found at {\url http://bioinf.picr.man.ac.uk/}; 
+a more detailed description is in the Affymetrix MAS manual at {\url http://www.affymetrix.com}.
+
+
+\section{Reading in data and normalising it}
+\label{sec:get.started} The first thing you need to do is to get R to use
+the \Rpackage{simpleaffy} package by telling it to load the library:
+
+\begin{Sinput}
+R> library(simpleaffy) ##the affy package also gets loaded
+\end{Sinput}
+<<echo=F,results=hide>>=
+library(affy)
+@
+
+Affymetrix data is produced by processing an image of the microarray
+(stored in a .DAT file) to produce a .CEL file, which contains, for
+each probe on the array, a single number defining its intensity. Both
+the \Rpackage{affy} and \Rpackage{simpleaffy} packages work on the
+data in .CEL files, so we need to load them into R. In order to
+compute means, fold changes and t-tests, \Rpackage{simpleaffy} needs
+to know about the replicates in your experiment, so we must also load
+some descriptive data that says which arrays were replicates and also
+something about the different experimental conditions you were
+testing. This means that \Rpackage{simpleaffy} needs {\it two things}:
+\begin{enumerate} 
+\item your .CEL files, and 
+\item a white-space delimited file describing the samples that went on them.  
+\end{enumerate}
+
+By default, this file is called {\it covdesc}. The first column should
+have no header, and contains the names of the .CEL files you want to
+process. Each remaining column is used to describe something in the
+experiment you want to study. For example you might have a set of
+chips produced by treating a cell line with two drugs. Your {\it
+covdesc} file might look like something like this:
+
+\begin{tabular}{rr}
+ & treatment \\
+ctrl1.cel& n \\
+ctrl2.cel& n \\
+ctrl3.cel& n \\
+a1.cel& a \\
+a2.cel& a \\
+a3.cel& a \\
+b1.cel& b \\
+b2.cel& b \\
+b3.cel& b \\
+ab1.cel& a.b \\
+ab2.cel& a.b 
+\end{tabular}
+
+
+Sooo, the easiest way to get going is it:
+\begin{enumerate}
+\item Create a directory, move all the relevant
+{\it CEL} files to that directory
+\item Create a {\it covdesc} file and put it in the same directory
+\item If using linux/unix, start R in that directory.
+\item If using the Rgui for 
+Microsoft Windows make sure your working directory contains the {\it
+Cel} files (use ``File -> Change Dir'' menu item).
+\item Load the library.
+\begin{Sinput}
+R> library(simpleaffy) ##load the simpleaffy package 
+                       ##(which loads the affy package too)
+\end{Sinput}
+\item Read in the data and generate expression calls, (using RMA), for example.
+\begin{Sinput}
+R> library(simpleaffy)
+R> unnormalised.data <-  read.affy() ##read data in working directory
+R> eset.rma <- norm(unnormalised.data,"rma")
+R> # alternatively, use MAS 5.0: eset.mas <- norm(unnormalised.data,"mas5")
+\end{Sinput}
+\end{enumerate}
+
+Take a look at the help files for a more detailed description of these functions:
+\begin{Sinput}
+R> ?read.affy
+R> ?norm
+\end{Sinput}
+
+As an aside, Affy chips use probes at the 3' and 5' ends of the GAPDH
+and beta actin genes to measure RNA quality. A standard part of the
+Affymetrix QC process is to calculate 5'/3' ratios. The function
+\Rfunction{qc.ratios} can do this... look at \Rfunction{?qc.ratio} for
+more details.
+
+\section{Filtering by expression measures}
+
+When R loaded the .CEL files, it also used the data in the covdesc
+file to define which experimental groups the chips belonged to. The
+\Rfunction {get.array.subset} function makes it easy to select a
+subest of arrays from the experiment. For example,
+
+\begin{Sinput}
+R> get.array.subset(eset.rma,"treatment",c("a","n"))
+\end{Sinput}
+will return an \Robject{exprSet} containing just the chips corresponding to treatment with drug 'a' or or with no drug at all.
+
+The function \Rfunction{pairwise.comparison} allows you to take a subset of chips and perform the following analyses on it:
+\begin{enumerate}
+\item find means of the data,
+\item compute log2 fold changes between the means,
+\item compute a t-test between the groups,
+\item possibly compute MAS5.0 style detection {\it p} values and Present/Marginal/Absent calls.
+\end{enumerate}
+it returns a list containing the results of the analysis:
+\begin{Sinput}
+R> results <- pairwise.comparison(eset.rma,               ## normalised data
+                                  "treatment", c("n","a"),## groups to compare
+                                  unnormalised.data)      ## for PMA calls
+R> sort(abs(results$fc),decreasing=TRUE)[1:100] ## Find the 100 most changing genes 
+\end{Sinput}
+
+This function is implemented in C for speed - and does everything in
+one go. There are no individual functions for fold-change and p-value,
+because it works out quicker simply to get everything and to discard
+the stuff you don't need.
+
+
+The function \Rfunction{pairwise.filter} takes the output of \Rfunction{pairwise.comparison} and filters it for significantly changing genes:
+\begin{Sinput}
+R> # find genes expressed with an intensity greater than 10 on at least 6 chips
+R> # that show a fold change greater than 1.5 and are significantly different 
+R> # between groups with a t-test p.value of 0.001 or better   
+R> significant <- pairwise.filter(results,min.exp=log2(10), 
+                                  min.exp.no=6, fc=log2(1.5), 
+                                  tt= 0.001)
+\end{Sinput}
+
+Again, the help pages for these functions explain more about them and the values they return.
+
+\section{Viewing results}
+The function \Rfunction{trad.scatter.plot} does a scatter plot between a pair of vectors:
+\begin{Sinput}
+R> trad.scatter.plot(exprs(eset)[,1],exprs(eset)[,3],fc.line.col="lightblue");
+R> trad.scatter.plot(exprs(eset)[,2],exprs(eset)[,4],add=T,col="red");
+R> legend(2,12,c("Control v. treatment rep 1","Control v. treatment rep 2"),col=c("black","red"),pch=16)
+\end{Sinput}
+
+Another thing that can sometimes be tricky is producing figures for
+papers and presentations.  Two utility functions,
+\Rfunction{journalpng} and \Rfunction{screenpng} make it easy to
+generate .png files at 300dpi (huge) and 72dpi. Most journals accept
+.pngs, and they can be converted into other formats using a
+decent graphics package. 
+
+R uses the concept of a {\it device} to deal
+with graphics.  When you start to plot a graph, it looks for a
+graphics device to print it on. If it can't find one that's already there, it opens a new
+one, which by default corresponds to a window on the screen. 
+In order to generate a {\it file} (rather than a window) containing our figure, we can use \Rfunction{journalpng} and \Rfunction{screenpng} to
+ create a new graphics device that R can use instead. This device results in our graph being plotted to a file on disk - when you type something like:
+\begin{Sinput}
+R> journalpng(file="results/figure1.png");
+R> trad.scatter.plot(exprs(eset)[,1],exprs(eset)[,3],fc.line.col="lightblue");
+R> dev.off();
+\end{Sinput}
+
+a new png file is created, the scatterplot is printed into that file and then, when dev.off() is called,
+the data is saved. Note that because R is plotting to our \Rfunction{journalpng} device rather than the screen, we
+won't see any pictures (or anything happen at all). 
+
+\subsection{Generating a table of results}
+It would also be nice to know what our changing genes actually do. The
+function \Rfunction{get.annotation} takes a list of probe set names
+along with a string specifying the type of array we are looking at,
+and uses these to look up annotation for our data.  The resulting
+dataframe, when saved as a tab delimited .XLS file, loads into excel,
+with hyperlinks to the NCBI's Unigene and LocusLink databases. 
+
+Two functions \Rfunction{results.summary} and \Rfunction{write.annotation}
+are also useful - the former generates a summary table with expression data and associated annotation, 
+the latter spits it out in tab delimited format (see \Rfunction{?get.annotation} for more details):
+
+\begin{Sinput}
+R> eset     <- read.affy()
+R> eset.rma <- norm(eset,"rma")
+R> pw       <- pairwise.comparison(eset,"drug",c("formulaX",nothing"))
+R> pw.filtered <- pairwise.filter(pw)
+R> summary     <- results.summary(pw.filtered,"hgu133a")
+R> write.annotation(file="spreadsheet.xls",summary)
+\end{Sinput}
+
+\bibliography{simpleaffy}
+
+\end{document}
+
+
+
+
+
+
