@@ -1,49 +1,27 @@
-\name{bioB}
-\alias{bioB}
-\alias{bioC}
-\alias{bioD}
-\alias{actin3}
-\alias{actin35}
-\alias{actin3M}
-\alias{actin5}
-\alias{actinM}
+\name{spikeInProbes}
+\alias{spikeInProbes}
+\alias{qcProbes}
 \alias{avbg}
-\alias{creX}
-\alias{gapdh3}
-\alias{gapdh35}
-\alias{gapdh5}
-\alias{gapdhM}
-\alias{gapdh3M}
 \alias{maxbg}
 \alias{minbg}
 \alias{percent.present}
 \alias{sfs}
 \alias{target}
+\alias{ratios}
 \title{ Accessor Methods for QCStats class }
 \description{
   Get and set my slots
 }
 \usage{
-bioB(object)
-bioC(object)
-bioD(object)
-actin3(object)
-actin35(object)
-actin3M(object)
-actin5(object)
-actinM(object)
+spikeInProbes(object)
+qcProbes(object)
 avbg(object)
-creX(object)
-gapdh3(object)
-gapdh35(object)
-gapdh5(object)
-gapdhM(object)
-gapdh3M(object)
 maxbg(object)
 minbg(object)
 percent.present(object)
 sfs(object)
 target(object)
+ratios(object)
 }
 
 \arguments{
@@ -51,7 +29,7 @@ target(object)
 }
 
 \seealso{
-  type \code{showMethods("bioB")} etc. to find out more about what these accessors do
+  type \code{showMethods("spikeInProbes")} etc. to find out more about what these accessors do
 }
 
 

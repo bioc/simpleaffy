@@ -1,5 +1,15 @@
+# Provides a wrapper around some of the various expression calling
+# algorithms on offer. 
+
+
+
 "call.exprs" <-
 function(x,algorithm="rma",do.log = TRUE,sc=100,method=NA) {
+
+  if(class(x) != "AffyBatch") { 
+	stop("call.exprs() should be called on an an AffyBatch object.\nSee ?call.exprs for more detail.");
+  }
+
   if(algorithm == "rma-R") {       # use RMA
     if(is.na(method)) {
       method<-"quantiles";
@@ -61,6 +71,6 @@ function(x,algorithm="rma",do.log = TRUE,sc=100,method=NA) {
     return(tmp);
   }
   else {
-    stop(paste("Don't know how to compute algorithm '",algorithm,"'."));
+    stop(paste("Don't know how to compute algorithm '",algorithm,"'.\nSee ?call.exprs() for more details."));
   }
 }

@@ -8,7 +8,7 @@
    Draws a scatter plot between means from a pairwise comparison. Colours according to PMA calls and identifies 'signficant' genes yielded by a filtering
 }
 \usage{
-plot.pairwise.comparison(x,y=NULL,labels=colnames(means(x)),showPMA=TRUE,...)
+plot.pairwise.comparison(x,y=NULL,labels=colnames(means(x)),showPMA=TRUE,type="scatter",...)
 }
 
 \arguments{
@@ -16,6 +16,7 @@ plot.pairwise.comparison(x,y=NULL,labels=colnames(means(x)),showPMA=TRUE,...)
   \item{y}{ A \code{PairComp} object }
   \item{labels}{ A list containing x and y axis labels }
   \item{showPMA}{ True if PMA calls are to be identified }
+  \item{type}{ Can be 'scatter', 'ma' or 'volcano' }
   \item{...}{ Additional arguments to plot }
 }
 \details{
@@ -30,6 +31,9 @@ identifies spots in that object, by drawing them as black
 circles. This allows, for example, the results of a
 \code{pairwise.filter} to be plotted on the same graph.
 
+If type is 'scatter' does a simple scatter plot.
+If type is 'volcano' does a volcano plot.
+If type is 'ma' does an MA plot.
 }
 \author{ Crispin J Miller }
 

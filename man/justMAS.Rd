@@ -20,7 +20,7 @@
 
 \details{ 
   Uses a C code implementation of the MAS5.0 algorithm (As described in Affymetrix's 'Statistical Algorithms Reference Guide' - see 
-  \url{http://www.affymetrix.com/support/technical/technotes/statistical_reference_guide.pdf}).
+  \url{http://www.affymetrix.com}, and in Hubbell et al. (2002) Robust Estimators for expression analysis. Bioinformatics 18(12) 1585-1592).
 }
 \value{
   An AffyBatch object, with, in addition, scale-factors for each array stored in the object's \code{description@preprocessing@sfs} slot, and the target intensity the arrays were scaled to in  \code{description@preprocessing@tgt}

@@ -1,7 +1,8 @@
 library("methods")
 library("affy")
+
 # holds the results of a pairwise comparison
-setClass("PairComp",representation(means="matrix",fc="numeric",tt="numeric",calls="matrix",group="character",members="character",pData="data.frame"))
+setClass("PairComp",representation(means="matrix",fc="numeric",tt="numeric",calls="matrix",group="character",members="character",pData="data.frame",calculated.from="exprSet"))
 
 #accessor methods
 setGeneric("means", function(object) standardGeneric("means"))
@@ -25,6 +26,9 @@ setMethod("members","PairComp",function(object) object@members)
 
 setGeneric("pData", function(object) standardGeneric("pData"))
 setMethod("pData","PairComp",function(object) object@pData)
+
+setGeneric("calculated.from", function(object) standardGeneric("calculated.from"))
+setMethod("calculated.from","PairComp",function(object) object@calculated.from)
 
 
 ##subseting. can only happen by gene
@@ -109,7 +113,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   these.pd <- pd[is.element(grp,members),]
 
   
-  return(new("PairComp",fc=fc,tt=tt,means=means,group=group,members=members,pData=these.pd))
+  return(new("PairComp",fc=fc,tt=tt,means=means,group=group,members=members,pData=these.pd,calculated.from=x))
 }
 
 
@@ -144,14 +148,57 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
 }
 
 
-pairwise.filter <- function(object,x,min.exp=log2(100),min.exp.no=0,min.present.no=3,fc=1.0,tt=0.001) {
 
+
+all.present.in.group <- function(x,group,members=NULL,calls,no="all") {
+  
+  pd      <- pData(x)
+  grp     <- as.factor(pd[,colnames(pd) == group])
+  if(is.null(members)) {
+    members <- levels(grp)
+  }
+  colnames(calls) <- grp
+  result  <- rep(FALSE,dim(calls)[1])
+  for(i in members) {
+    print(paste("Checking member",i,"in group: '",group,"'"))
+    this.group <- calls[,grp %in% i]
+    this.group <- array(sapply(this.group,
+                        function(val) { if(val == "P") { 1 } else { 0 } } 
+                       ),dim=dim(this.group));
+    sums <- apply(this.group,1,sum)
+
+    if(no=="all") { expected.number <- dim(this.group)[2] }
+    else { expected.number <- no}
+    ok   <- (sums >= expected.number) 
+    result <- result | ok;
+  }
+  return(result)  
+}
+
+
+
+all.present <- function(x,calls,no = "all") {
+  pd      <- pData(x)
+    calls <- array(sapply(calls,
+                   function(val) { if(val == "P") { 1 } else { 0 } } 
+                  ),dim=dim(calls));
+    sums <- apply(calls,1,sum)
+    if(no=="all") { expected.number <- dim(calls)[2] }
+    else { expected.number <- no}
+    ok   <- (sums >= expected.number)
+  return(ok)  
+}
+
+
+pairwise.filter <- function(object,min.exp=log2(100),min.exp.no=0, min.present.no=0,present.by.group=T,fc=1.0,tt=0.001) {
+  
   if(class(object) != "PairComp") { stop("Can only filter an object of class 'PairComp'"); }
-  if(class(x) != "exprSet") { stop("Can only filter using class 'exprSet' for parameter 'x'"); }
+  x <- calculated.from(object)
   pass.fc              <- (abs(fc(object)) > fc);
   pass.tt              <- (tt(object) < tt );
 
   samples <- exprs(get.array.subset(x,group(object),members(object)));
+  samples <- samples[names(fc(object)),]
   no.chips             <- length(colnames(samples));
 
   intensity.thresh     <- array(sapply(samples,function(x) { if(x > min.exp) { 1 } else { 0 } } ),dim=dim(samples));
@@ -162,10 +209,12 @@ pairwise.filter <- function(object,x,min.exp=log2(100),min.exp.no=0,min.present.
   pass.intensity <- (min.intensity.thresh >= min.exp.no);
 
   if(nrow(calls(object))>0) {
-    present.thresh      <- array(sapply(calls(object),function(x) { if(x == "P") { 1 } else { 0 } } ),dim=dim(calls(object)));
-    min.present.thresh  <- rowSums(present.thresh);
-    pass.present   <- (min.present.thresh >= min.present.no);
-
+    if(present.by.group) {
+      pass.present <- all.present.in.group(object,group(object),members(object),calls(object),min.present.no);
+    }
+    else {
+      pass.present <- all.present(object,calls(object),min.present.no);
+    }
     return(object[(pass.fc & pass.tt & pass.intensity & pass.present),]);
   }
   else {
@@ -174,7 +223,14 @@ pairwise.filter <- function(object,x,min.exp=log2(100),min.exp.no=0,min.present.
 }
 
 
-plot.pairwise.comparison <- function(x,y=NULL,labels=colnames(means(x)),showPMA=TRUE,...) {
+plot.pairwise.comparison <- function(x,y=NULL,labels=colnames(means(x)),showPMA=TRUE,type="scatter",...) {
+  if(type=="scatter") { .pcscatterplot(x,y,labels,showPMA,...) }
+  else if(type=="volcano") { .volcanoplot(x,y,labels,showPMA,...) }
+  else if(type=="ma") { .maplot(x,y,labels,showPMA,...) }
+}
+
+
+.pcscatterplot <- function(x,y,labels,showPMA,...) {
 	pd <- pData(x)
 	gp <- pd[,colnames(pd) == group(x)]
 	me <- members(x)
@@ -215,8 +271,9 @@ plot.pairwise.comparison <- function(x,y=NULL,labels=colnames(means(x)),showPMA=
 	  	trad.scatter.plot(means(x)[,1],means(x)[,2],xlab=labels[1],ylab=labels[2],col="light grey",...); 
  	}
 	if(!missing(y)) {
-    	  trad.scatter.plot(means(y)[,1],means(y)[,2],add=T,pch=1,col="black");
+    	  trad.scatter.plot(means(y)[,1],means(y)[,2],add=T,pch=1,col="blue");
 	}
+
 }
 
 
@@ -224,9 +281,99 @@ setMethod("plot","PairComp",function(x,y) plot.pairwise.comparison(x,y,...))
 
 
 
-volcano <- function(x,y=NULL,labels=colnames(means(x))) {
-   plot(fc(x),tt(x),xlab=paste(labels[2],"<-- fold change -->",labels[1]),ylab="p-score",pch=20)
+.volcanoplot <- function(x,y,labels,...) {
+	pd <- pData(x)
+	gp <- pd[,colnames(pd) == group(x)]
+	me <- members(x)
+	calls <- calls(x)
+        d <- dim(calls)
+	if(!(d[1] == 0 & d[2] == 0)) {
+	  	callsA <- calls[,gp == me[1]]
+	  	callsB <- calls[,gp == me[2]]
+	  	sumsA <- apply(callsA,1,function(row) { 
+                    apply(sapply(row,function(val) {
+                         if(val == "P") {return(c(1,0,0))}
+                         if(val == "M") {return(c(0,1,0))}
+                         if(val == "A") {return(c(0,0,1))}
+                    }),1,sum)
+              })
+	  	sumsB <- apply(callsB,1,function(row) { 
+                    apply(sapply(row,function(val) {
+                         if(val == "P") {return(c(1,0,0))}
+                         if(val == "M") {return(c(0,1,0))}
+                         if(val == "A") {return(c(0,0,1))}
+                    }),1,sum)
+              })
+ 	   	inA <- length(colnames(callsA))
+ 	   	inB <- length(colnames(callsB))
+	  	allPA <- sumsA[1,] == inA
+	  	allPB <- sumsB[1,] == inB
+	  	allAA <- sumsA[3,] == inA
+	  	allAB <- sumsB[3,] == inB
+	  	allP  <- allPA & allPB
+	  	allA  <- allAA & allAB
+                AorB  <- (allPA | allPB) & !(allA | allP)
+
+	   plot(fc(x),log2(tt(x)),xlab=paste(labels[2],"<-- fold change -->",labels[1]),ylab="p-score",pch=20,col="yellow")
+	   points(fc(x)[AorB],log2(tt(x)[AorB]),pch=20,col="orange")
+   	   points(fc(x)[allP],log2(tt(x)[allP]),pch=20,col="red")
+       }
+       else {
+	   plot(fc(x),log2(tt(x)),xlab=paste(labels[2],"<-- fold change -->",labels[1]),ylab="p-score",pch=20,col="light grey")
+       }
    if(!missing(y)) {
-     points(fc(y),tt(y),col="red",pch=20);
+     points(fc(y),log2(tt(y)),col="blue",pch=1);
    }
+}
+
+
+.maplot<- function(x,y,labels,...) {
+	m <- fc(x);
+        a <- (means(x)[,1] + means(x)[,2])/2
+	pd <- pData(x)
+	gp <- pd[,colnames(pd) == group(x)]
+	me <- members(x)
+	calls <- calls(x)
+        d <- dim(calls)
+	if(!(d[1] == 0 & d[2] == 0)) {
+	  	callsA <- calls[,gp == me[1]]
+	  	callsB <- calls[,gp == me[2]]
+	  	sumsA <- apply(callsA,1,function(row) { 
+                    apply(sapply(row,function(val) {
+                         if(val == "P") {return(c(1,0,0))}
+                         if(val == "M") {return(c(0,1,0))}
+                         if(val == "A") {return(c(0,0,1))}
+                    }),1,sum)
+              })
+	  	sumsB <- apply(callsB,1,function(row) { 
+                    apply(sapply(row,function(val) {
+                         if(val == "P") {return(c(1,0,0))}
+                         if(val == "M") {return(c(0,1,0))}
+                         if(val == "A") {return(c(0,0,1))}
+                    }),1,sum)
+              })
+ 	   	inA <- length(colnames(callsA))
+ 	   	inB <- length(colnames(callsB))
+	  	allPA <- sumsA[1,] == inA
+	  	allPB <- sumsB[1,] == inB
+	  	allAA <- sumsA[3,] == inA
+	  	allAB <- sumsB[3,] == inB
+	  	allP  <- allPA & allPB
+	  	allA  <- allAA & allAB
+                AorB  <- (allPA | allPB) & !(allA | allP)
+
+	   plot(a,m,xlab="A",ylab="M",pch=20,col="yellow")
+	   points(a[AorB],m[AorB],pch=20,col="orange")
+   	   points(a[allP],m[allP],pch=20,col="red")
+       }
+       else {
+	   plot(a,m,xlab="A",ylab="M",pch=20,col="light grey")
+       }
+   if(!missing(y)) {
+	m <- fc(y);
+        a <- (means(y)[,1] + means(y)[,2])/2
+
+     points(a,m,col="blue",pch=1);
+   }
+
 }

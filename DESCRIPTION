@@ -1,6 +1,6 @@
 Package: simpleaffy
 Title: Very simple high level analysis of Affymetrix data
-Version: 1.3.2
+Version: 2.0
 Author: Crispin J Miller
 Description: Provides high level functions for reading Affy .CEL
   files, phenotypic data, and then computing simple things with it,
@@ -8,7 +8,7 @@ Description: Provides high level functions for reading Affy .CEL
   library. Also has some basic scatter plot functions and mechanisms for 
   generating high resolution journal figures...
 Maintainer: Crispin Miller <cmiller@picr.man.ac.uk>
-Depends: R (>= 1.9.0), affy
+Depends: R (>= 2.0), affy
 License: GPL version 2 or later
 URL: http://www.bioconductor.org, http://bioinformatics.picr.man.ac.uk/simpleaffy/
-Packaged: Thu Sep  9 17:19:40 2004; cmiller
+Packaged: Thu Oct 21 09:56:29 2004; cmiller

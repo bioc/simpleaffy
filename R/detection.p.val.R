@@ -1,5 +1,5 @@
-
 detection.p.val <- function(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfname(cdfName(x))),alpha2=getAlpha2(cleancdfname(cdfName(x))),ignore.saturated=TRUE) {
+  if(class(x) != "AffyBatch") { stop("detection.p.val() should be called on an AffyBatch object.\nSee ?detection.p.val for more details.") }
   if(alpha1 < 0)      {stop("alpha1 must be  > 0 "); }
   if(alpha1 > alpha2) {stop("alpha2 must be  > alpha1 "); }
   if(alpha2 > 1)      {stop("alpha2 must be  <1 "); }

@@ -1,16 +1,27 @@
 
+.strip.list <- function(x) {
+  mapply(function(y,z) {
+                        if(length(y) > 1) {
+                            print(paste("WARNING: '",z,"' has more than one entry in annotation list. Taking the first one."));
+    	 		    print(y)
+                        }
+                        return(y[1]);
+                      },x,names(x));
+}
+
 get.annotation <- function(x,cdfname) {
   library(cdfname,character.only=T);
-  symb  <- unlist(multiget(x,env=get(paste(cdfname,"SYMBOL",sep=""))),use.names=F);
-  desc  <- unlist(multiget(x,env=get(paste(cdfname,"GENENAME",sep=""))),use.names=F);
-  accno <- unlist(multiget(x,env=get(paste(cdfname,"ACCNUM",sep=""))),use.names=F);
-  uni   <- unlist(multiget(x,env=get(paste(cdfname,"UNIGENE",sep=""))),use.names=F);
+  symb  <- .strip.list(mget(x,envir=get(paste(cdfname,"SYMBOL",sep=""))));
+  desc  <- .strip.list(mget(x,envir=get(paste(cdfname,"GENENAME",sep=""))));
+  accno <- .strip.list(mget(x,envir=get(paste(cdfname,"ACCNUM",sep=""))));
+  uni   <- .strip.list(mget(x,envir=get(paste(cdfname,"UNIGENE",sep=""))));
   acc.lnk <- paste("=HYPERLINK(\"http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=search&db=nucleotide&term=",accno,"\",\"",accno,"\")",sep="");
   uni.lnk <- paste("=HYPERLINK(\"http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=search&db=unigene&term=",uni,"&dopt=unigene\",\"",uni,"\")",sep="")	
   res <- cbind(symb,acc.lnk,uni.lnk,desc);
   colnames(res) <- c("gene name","accession","unigene","description");
   return(res);
 }
+
 
 write.annotation <- function(summary,file="results/annotation.table.xls") {
   write.table(summary,file=file,sep="\t",quote=F,col.names=NA)
