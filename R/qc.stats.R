@@ -95,7 +95,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 "rae230bcdf",		
 "rgu34acdf",		
 "rgu34bcdf",		
-"rgu34ccdf")		
+"rgu34ccdf",
+"ygs98cdf")		
 
 .alpha1 <- c(0.04,	
 	     0.05,	
@@ -128,6 +129,7 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     0.05,	
 	     0.04,	
 	     0.04,	
+	     0.04,
 	     0.04)	
 
 .alpha2 <- c(0.06,	
@@ -161,7 +163,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     0.065,	
 	     0.06,	
 	     0.06,	
-	     0.06)
+	     0.06,
+             0.06)
 
 .actin3 <- c("AFFX-r2-At-Actin-3_s_at",		
 	     "AFFX-r2-At-Actin-3_s_at",		
@@ -194,7 +197,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     "AFFX_Rat_beta-actin_3_at",	
 	     "AFFX_Rat_beta-actin_3_at",	
 	     "AFFX_Rat_beta-actin_3_at",	
-	     "AFFX_Rat_beta-actin_3_at")
+	     "AFFX_Rat_beta-actin_3_at",
+             "AFFX-YFL039C3_at")
 
 
 .actinM <- c("AFFX-r2-At-Actin-M_s_at",		
@@ -228,7 +232,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     "AFFX_Rat_beta-actin_M_at",	
 	     "AFFX_Rat_beta-actin_M_at",	
 	     "AFFX_Rat_beta-actin_M_at",	
-	     "AFFX_Rat_beta-actin_M_at")
+	     "AFFX_Rat_beta-actin_M_at",
+             "AFFX-YFL039CM_at")
 
 
 .actin5 <- c("AFFX-r2-At-Actin-5_s_at",		
@@ -262,7 +267,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     "AFFX_Rat_beta-actin_5_at",	
 	     "AFFX_Rat_beta-actin_5_at",	
 	     "AFFX_Rat_beta-actin_5_at",	
-	     "AFFX_Rat_beta-actin_5_at")
+	     "AFFX_Rat_beta-actin_5_at",
+             "AFFX-YFL039C5_at")
 
 .gapdh3 <- c("AFFX-Athal-GAPDH_3_s_at",		
 	     "AFFX-Athal-GAPDH_3_s_at",		
@@ -295,7 +301,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     "AFFX_Rat_GAPDH_3_at",		
 	     "AFFX_Rat_GAPDH_3_at",		
 	     "AFFX_Rat_GAPDH_3_at",		
-	     "AFFX_Rat_GAPDH_3_at")		
+	     "AFFX_Rat_GAPDH_3_at",
+             "AFFX-YER022w3_at")		
 
 .gapdhM <- c("AFFX-Athal-GAPDH_M_s_at",		
 	     "AFFX-Athal-GAPDH_M_s_at",		
@@ -328,7 +335,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     "AFFX_Rat_GAPDH_M_at",		
 	     "AFFX_Rat_GAPDH_M_at",		
 	     "AFFX_Rat_GAPDH_M_at",		
-	     "AFFX_Rat_GAPDH_M_at")		
+	     "AFFX_Rat_GAPDH_M_at",
+	     "AFFX-YER022w3_at")		
 
 .gapdh5 <- c("AFFX-Athal-GAPDH_5_s_at",		
 	     "AFFX-Athal-GAPDH_5_s_at",		
@@ -361,7 +369,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	     "AFFX_Rat_GAPDH_5_at",		
 	     "AFFX_Rat_GAPDH_5_at",		
 	     "AFFX_Rat_GAPDH_5_at",		
-	     "AFFX_Rat_GAPDH_5_at")		
+	     "AFFX_Rat_GAPDH_5_at",
+	     "AFFX-YER022w3_at")		
 
 .biob <- c("AFFX-BioB-3_at",      
 	    "AFFX-r2-Ec-bioB-3_at",
@@ -394,7 +403,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	    "AFFX-r2-Ec-bioB-3_at",
 	    "AFFX-BioB-3_at",	    
 	    "AFFX-BioB-3_at",	    
-	    "AFFX-BioB-3_at")	  
+	    "AFFX-BioB-3_at",
+            "AFFX-BioB-3_at")	  
 
 .bioc <- c("AFFX-BioC-3_at",      
 	    "AFFX-r2-Ec-bioC-3_at",
@@ -427,7 +437,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	    "AFFX-r2-Ec-bioC-3_at",
 	    "AFFX-BioC-3_at",	    
 	    "AFFX-BioC-3_at",	    
-	    "AFFX-BioC-3_at")	    
+	    "AFFX-BioC-3_at",
+            "AFFX-BioC-3_at")	    
 
 .biod <- c("AFFX-BioD-3_at",      
 	    "AFFX-r2-Ec-bioD-3_at",
@@ -460,7 +471,8 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	    "AFFX-r2-Ec-bioD-3_at",
 	    "AFFX-BioDn-3_at",	    
 	    "AFFX-BioDn-3_at",	    
-	    "AFFX-BioDn-3_at")	    
+	    "AFFX-BioDn-3_at",
+            "AFFX-BioDn-3_at")
 
 .crex <- c("AFFX-CreX-3_at",      
 	    "AFFX-r2-P1-cre-3_at",
@@ -493,6 +505,7 @@ setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
 	    "AFFX-r2-P1-cre-3_at",
 	    "AFFX-CreX-3_at",	    
 	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",
 	    "AFFX-CreX-3_at")	    
 
 names(.alpha1) <- .nms
@@ -618,14 +631,28 @@ qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE,
   maxbg  <- apply(bgsts,1,max);
 
   stdvbg <- sqrt(apply(bgsts,1,var));
-
-  gapdh3 <- x[gapdh3,];
-  gapdhM <- x[gapdhM,];
-  gapdh5 <- x[gapdh5,];
-
-  actin3 <- x[actin3,];
-  actinM <- x[actinM,];
-  actin5 <- x[actin5,];
+  if(!gapdh3 == "NA") {
+    gapdh3 <- x[gapdh3,];
+    gapdhM <- x[gapdhM,];
+    gapdh5 <- x[gapdh5,];
+  }
+  else {
+    print("Warning couldn't find gapdh probesets... setting ratio to 1");
+    gapdh3 <- 1;
+    gapdhM <- 1;
+    gapdh5 <- 1;
+  }
+  if(!gapdh3 == "NA") {
+    actin3 <- x[actin3,];
+    actinM <- x[actinM,];
+    actin5 <- x[actin5,];
+  }
+  else {
+    print("Warning couldn't find actin probesets... setting ratio to 1");
+    actin3 <- 1;
+    actinM <- 1;
+    actin5 <- 1;
+  }
 
   bioB <- det$call[bioB,];
   bioC <- det$call[bioC,];

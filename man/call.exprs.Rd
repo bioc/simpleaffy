@@ -27,7 +27,7 @@ call.exprs(x, algorithm = "rma", do.log = TRUE, sc = 100, method = NA)
 
 \seealso{ \code{\link{read.affy}}, \code{\link{expresso}}, \code{\link{justRMA}}, \code{\link{justMAS}} }
 \keyword{ misc }
-\examples { 
+\examples{ 
   \dontrun{
     eset.rma  <- call.exprs(eset,"rma"); 
     eset.mas5 <- call.exprs(eset,"mas5"); 

@@ -39,12 +39,7 @@ instead. T-tests are always computed with the logged data.
   A Pairwise comparison object.
 }
 \references{ http://bioinformatics.picr.man.ac.uk/ } \author{ Crispin J Miller }
-
- ~Make other sections like Warning with \section{Warning }{....} ~ 
-
-
-
-\examples { 
+\examples{ 
   \dontrun{
     pc <- pairwise.comparison(eset.rma,"group",c("A","P")) 
   }

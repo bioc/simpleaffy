@@ -30,7 +30,7 @@
 
 \author{ Crispin J Miller }
 
-\examples { 
+\examples{ 
    \dontrun{
      eset.mas <- justMAS(eset.mas);    
    }

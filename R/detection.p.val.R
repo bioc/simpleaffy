@@ -27,6 +27,7 @@ detection.p.val <- function(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfn
   }
   else       {
     cat("Doing PMA Calls\n");
+
     calls <- sapply(p,function(y) { if(y < alpha1) { return("P") } else { if(y < alpha2) { return("M") } else { return("A") }}});
     calls <- matrix(calls,nrow=nrow(p),ncol=ncol(p));
     colnames(calls) <- paste(sampleNames(x),".present",sep="");

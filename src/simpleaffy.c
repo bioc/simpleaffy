@@ -392,7 +392,7 @@ void rank(double *x, int nx, double *r) {
 }
 
 /* a straight translation of relevant bits of the wilcox.test method in the R base library */
-double wilcox(double *x, int nx, double mu) {
+double wilcox(double *x, int n, double mu) {
   int i = 0;
   int j = 0;
   double *r    = 0;
@@ -405,6 +405,7 @@ double wilcox(double *x, int nx, double mu) {
   double z         = 0;
   double SIGMA     = 0;
   double PVAL      = 0;
+  double nx        = n;
   for(i = 0; i < nx; i++) {
     x[j] = x[i] - mu;
     if(x[j] != 0) j++; /* eliminate zeros */

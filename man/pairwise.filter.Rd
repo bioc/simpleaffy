@@ -29,7 +29,7 @@
 
 
 
-\examples { 
+\examples{ 
   \dontrun{
     pc <- pairwise.comparison(eset.rma,"group",c("A","P"))
     pf <- pairwise.filter(pc,eset,tt=0.01);

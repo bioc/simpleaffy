@@ -7,10 +7,9 @@
 \description{
   Generates a visual summary of the various QC statistics recommended by Affymetrix in their 'Data Analysis Fundamentals' handbook.
 }
-\usage{
+\section{Usage}{
 plot.qc.stats(x, fc.line.col = "black", sf.ok.region = "light blue", chip.label.col = "black", sf.thresh = 3, gdh.thresh = 3, ba.thresh = 3, present.thresh = 10, bg.thresh = 20, label = NULL, ...)
 }
-
 \arguments{
   \item{x}{ A \code{QCStats} object }
   \item{fc.line.col}{ The colour to mark fold change lines with }

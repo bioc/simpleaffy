@@ -1,15 +1,15 @@
-\name{read.affy}
-\alias{read.affy}
+\name{read.affy.mixed}
+\alias{read.affy.mixed}
 
-\title{ Read a Set of .CEL Files and Phenotypic Data }
+\title{ Read a Set of .CEL Files and Phenotypic Data from mixed chip types}
 \description{
  Reads the specified file, which defines phenotypic data for a
  set of .CEL files. Reads the specified files into an \code{\link{AffyBatch}} object and
  then creates a \code{\link{phenoData}} object, defining the experimental factors 
- for those chips.
+ for those chips. This function deals with different array types by generating a pseudo arrayset containing only the probes in common. It does this by finding the smallest chip type in the set, and using this as a template. Probesets that aren't shared are set to 0. Other probesets are copied in. Note that this means that spots that were in one place on one array, appear to be at a different place on another. What this does to position specific background correction algorithms (such as mas5) is left as an exercise to the reader). Beware...
 }
 \usage{
-read.affy(covdesc = "covdesc",path=".", ...)
+read.affy.mixed(covdesc = "covdesc",path=".", ...)
 }
 
 \arguments{
@@ -32,7 +32,8 @@ read.affy(covdesc = "covdesc",path=".", ...)
 \keyword{ misc }
 \examples{ 
   \dontrun{
-    eset <- read.affy(); # read a set of CEL files
+    eset <- read.affy.mixed(); # read a set of CEL files
+  
     eset.rma <- call.exprs(eset,"rma");   
   }
 }
