@@ -6,14 +6,14 @@
 #include "R_ext/Boolean.h"
 
 
-// T test stuff from Numerical Recipes in C
+/* T test stuff from Numerical Recipes in C */
 
 double log2(double v) {
   return log(v)/log(2);
 }
 
 
-// find the k lowest values in data[]
+/* find the k lowest values in data[] */
 void partial_sort(double  *data, int N, int k) {
   double v,t;
   int i,j,l,r;
@@ -73,16 +73,17 @@ double median(double *data, int N) {
   return r;
 }
 
-//a and b are matrices containg replicate data for each half of the
-//test. nx gives the number of columns in the arrays, ny, the number
-//of rows.
-// returns means in mx, my, fold change in fc, and t-test in tt
-// NB median messes with the array!!!
-
+/*
+a and b are matrices containg replicate data for each half of the
+test. nx gives the number of columns in the arrays, ny, the number
+of rows.
+ returns means in mx, my, fold change in fc, and t-test in tt
+ NB median messes with the array!!!
+*/
 double get_ave(double *a, double nx, Rboolean isLogged,int meth) {
   int    i = 0;
   double r = 0;
-  if(meth == 3) { // median
+  if(meth == 3) { /* median */
     r = median(a,nx);
   }
   else {
@@ -289,7 +290,7 @@ void FCMandTT(double *a, double *b, int *nacol, int *nbcol, int *ngene, Rboolean
   }
 
   while(gene_idx_a < ((*nacol) * (*ngene))) {
-    if(*meth == 3) { // median
+      if(*meth == 3) { /* median */
       for(j =0; j < *nacol; j++) {
   tmpa[j] = a[gene_idx_a + j];
       }
@@ -297,7 +298,7 @@ void FCMandTT(double *a, double *b, int *nacol, int *nbcol, int *ngene, Rboolean
   tmpb[j] = b[gene_idx_b + j];
       }
     }
-    else { //mean before or after logging
+      else { /*mean before or after logging */
       tmpa = &a[gene_idx_a];
       tmpb = &b[gene_idx_b];
     }
@@ -319,9 +320,10 @@ void FCMandTT(double *a, double *b, int *nacol, int *nbcol, int *ngene, Rboolean
   }
 }
 
-// This is a numerical approximation to the normal distribution as described in
-// Abramowitz and Stegun: Handbook of Mathematical functions
-// see page 931: 26.2.1, 932:26.2.17
+/* This is a numerical approximation to the normal distribution as described in
+ Abramowitz and Stegun: Handbook of Mathematical functions
+ see page 931: 26.2.1, 932:26.2.17
+*/
 double pnorm_approx(double z) {
     double b1 =  0.31938153;
     double b2 = -0.356563782;
@@ -341,7 +343,7 @@ double pnorm_approx(double z) {
     return n;
 }
 
-// Given a double array length nx, rank it, and put the results in 'r'
+/* Given a double array length nx, rank it, and put the results in 'r' */
 void rank(double *x, int nx, double *r) {
   int i       = 0;
   int rank    = 1;
@@ -371,7 +373,8 @@ void rank(double *x, int nx, double *r) {
   }
 }
 
-// a straight translation of relevant bits of the wilcox.test method in the R base library
+/* a straight translation of relevant bits of the wilcox.test method
+   in the R base library */
 double wilcox(double *x, int nx, double mu) {
   int i = 0;
   int j = 0;
@@ -387,7 +390,7 @@ double wilcox(double *x, int nx, double mu) {
   double PVAL      = 0;
   for(i = 0; i < nx; i++) {
     x[j] = x[i] - mu;
-    if(x[j] != 0) j++; // eliminate zeros
+    if(x[j] != 0) j++; /* eliminate zeros */
   }
 
   nx = j;
@@ -430,11 +433,12 @@ double wilcox(double *x, int nx, double mu) {
   return(PVAL);
 }
 
-
-// compute the detection p-value for a particular probe using the algorithm described in
-// Liu et al. Bioinformatics(2002) 1593-1599
-// pms is a list of probe perfect matches, mms is a list of mismatches n, the number of probe-pairs.
-// tao and sat are parameters, as desccribed in the Liu et al. paper
+/*
+ compute the detection p-value for a particular probe using the algorithm described in
+ Liu et al. Bioinformatics(2002) 1593-1599
+ pms is a list of probe perfect matches, mms is a list of mismatches n, the number of probe-pairs.
+ tao and sat are parameters, as desccribed in the Liu et al. paper
+*/
 double pma(double *pms, double*mms, int n, double tao,double sat) {
   int i = 0;
   int *ignore  = 0;
@@ -445,7 +449,7 @@ double pma(double *pms, double*mms, int n, double tao,double sat) {
 if( sat >= 0 )
 {
 ignore = ( int * )R_alloc( n, sizeof( int ) ) ;
-//dodgy saturation correction from the paper
+/*dodgy saturation correction from the paper */
 totalSat = 0 ;
 for( i = 0 ; i < n ; i++ )
 {
@@ -459,7 +463,7 @@ for( i = 0 ; i < n ; i++ )
 }
 last = 0 ;
 if( ( totalSat > 0 ) & ( totalSat < n ) )
-{ // ignore probes with saturated mms unless they're all saturated
+ { /* ignore probes with saturated mms unless they're all saturated */
   for( i = 0 ; i < n ; i++ )
   {
     if( !ignore[ i ] )
@@ -481,11 +485,12 @@ p = wilcox( dv, i, tao ) ;
 return( p ) ;
 }
 
-
-// compute for all probes
-// assumes that pm mm pairs line up in the arrays and that the names do to. Also assumes that probes within a set are contiguous in each array.
-// pm, mm and names are all length n long, and are, effectively, three columns from a matrix
-// returns with 'dpval' containing the detection p values for each probeset.
+/*
+ compute for all probes
+ assumes that pm mm pairs line up in the arrays and that the names do to. Also assumes that probes within a set are contiguous in each array.
+ pm, mm and names are all length n long, and are, effectively, three columns from a matrix
+ returns with 'dpval' containing the detection p values for each probeset.
+*/
 void DetectionPValue (double *pm, double *mm, char **names, int *nprobes, double *tao, double *sat, double *dpval, int *nprobesets) {
   int start = 0;
   int i = 0;
@@ -501,24 +506,26 @@ void DetectionPValue (double *pm, double *mm, char **names, int *nprobes, double
   dpval[j] = pma(&(pm[start]),&(mm[start]),i - start,*tao,*sat);
 }
 
-// given a spot on a chip, which grid cell is it in?
+/* given a spot on a chip, which grid cell is it in? */
 void grid(int x, int y, int nrow, int ncol, int gridx, int gridy, int *gx, int *gy) {
   *gx = (int) ((double) (gridx * x) / (double) nrow);
   *gy = (int) ((double) (gridy * y) / (double) ncol);
 }
 
 
-// given an idx array, a probe number and a column size get an x y location and value out of raw
+/* given an idx array, a probe number and a column size get an x y
+   location and value out of raw */
 void lookup(int *idx, int no, double *raw, int ncol, int *x, int *y, double *val) {
     *x = idx[no] % ncol;
     *y = idx[no] / ncol;
     *val = raw[idx[no]];
 }
 
-
-// given a load of probes in the array raw, chip order specified by idx with rws rows and cls cols
-// divide the chip into xgridsize by ygridsize squares and compute the background
-// put the background and sd of each grid square in zonebg,
+/*
+ given a load of probes in the array raw, chip order specified by idx with rws rows and cls cols
+ divide the chip into xgridsize by ygridsize squares and compute the background
+ put the background and sd of each grid square in zonebg,
+*/
 void bgmas(int *idx, int *nidx,
            double *raw, int *nraw,
            int *rws, int *cls, int *xgridsize, int *ygridsize, double *zonebg, double *zonesd, double *corrected) {
@@ -539,7 +546,8 @@ void bgmas(int *idx, int *nidx,
   double *xc        = (double *)  R_alloc(ngrid,sizeof(double));
   double *yc        = (double *)  R_alloc(ngrid,sizeof(double));
 
-  // Initialise the arrays containing the computed backgrounds for each cell
+  /* Initialise the arrays containing the computed backgrounds for
+     each cell */
   for(i = 0;i<ngrid; i++) {
     zonebg[i] = 0;
     zonesd[i] = 0;
@@ -548,7 +556,8 @@ void bgmas(int *idx, int *nidx,
   }
 
 
-  // count the number of spots in each cell and store consecutively in scratch the values from each grid cell
+  /* count the number of spots in each cell and store consecutively in
+     scratch the values from each grid cell */
   for(i = 0; i < n; i++) {
     lookup(idx, i, raw, ncol, &x, &y, &val);
 
@@ -558,19 +567,22 @@ void bgmas(int *idx, int *nidx,
 
     scratches[gn][ends[gn]] = val;
 
-    ends[gn]++;  // store the number of spots in each cell, and also use this to find out where the stuff is in scratch
+    ends[gn]++;  /* store the number of spots in each cell, and also
+		    use this to find out where the stuff is in scratch */
     if(ends[gn] >= ncol * nrow/ngrid) fprintf(stderr,"ouch! %d %d %d %d\n",ncol * nrow/ngrid,gxn,gn,ends[gn]);
     if(gn >= ngrid) fprintf(stderr,"Really ouch! %d %d\n",gn,ends[gn]);
   }
   for(i = 0; i < ngrid; i++) {
-    pn = (2.0 * ends[i]) / 100;             // 2% of the probes in each square
-    partial_sort(scratches[i],ends[i], pn); // find lowest 2%
+    pn = (2.0 * ends[i]) / 100;             /* 2% of the probes in
+					       each square */
+    partial_sort(scratches[i],ends[i], pn); /* find lowest 2% */
     for(j = 0; j < pn; j++) {
-      zonebg[i] += scratches[i][j];         // mean
+	zonebg[i] += scratches[i][j];         /* mean */
     }
     zonebg[i]   /= (double) pn;
     for(j = 0; j < pn; j++) {
-      zonesd[i] += (scratches[i][j] - zonebg[i]) * (scratches[i][j] - zonebg[i]); // sd
+      zonesd[i] += (scratches[i][j] - zonebg[i]) * (scratches[i][j] -
+						    zonebg[i]); /* sd */
     }
     zonesd[i]   = sqrt(zonesd[i] / (double) (pn - 1));
   }
@@ -676,11 +688,12 @@ double expcall(double *pm, double *mm, int n, double ct, double st) {
   return t;
 }
 
-
-// compute for all probes
-// assumes that pm mm pairs line up in the arrays and that the names do to. Also assumes that probes within a set are contiguous in each array.
-// pm, mm and names are all length n long, and are, effectively, three columns from a matrix
-// returns with 'expressions' containing mas5 style calls
+/*
+ compute for all probes
+ assumes that pm mm pairs line up in the arrays and that the names do to. Also assumes that probes within a set are contiguous in each array.
+ pm, mm and names are all length n long, and are, effectively, three columns from a matrix
+ returns with 'expressions' containing mas5 style calls
+*/
 void GetExpressionLevels(double *pm, double *mm, char **names, int *nprobes, double *ct, double *st, double *expressions, int *nprobesets) {
   int start = 0;
   int i = 0;
