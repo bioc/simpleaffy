@@ -41,7 +41,7 @@ results.summary(results,cdfname)
 \examples{
  \dontrun{
    eset     <- read.affy()
-   eset.rma <- norm(eset,"rma")
+   eset.rma <- call.exprs(eset,"rma")
    pw       <- pairwise.comparison(eset,"drug",c("formulaX",nothing"))
    pw.filtered <- pairwise.filter(pw)
    summary     <- results.summary(pw.filtered,"hgu133a")

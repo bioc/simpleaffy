@@ -27,7 +27,7 @@ trad.scatter.plot(x, y, add = F, fc.lines = c(1, 2, 3, 4), draw.fc.lines = T, dr
 \examples{
   \dontrun{
    eset <- read.affy();
-   rma  <- norm(eset,"rma" )    
+   rma  <- call.exprs(eset,"rma" )    
    results <- pairwise.comparison(rma,"drug",c("a","b"))
 
   # plot four scatter plots with differing p-value cutoffs

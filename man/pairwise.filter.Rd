@@ -30,7 +30,7 @@
 \examples{
  \dontrun{
    eset     <- read.affy();
-   eset.rma <- norm(eset,"rma");
+   eset.rma <- call.exprs(eset,"rma");
    results.a.v.none  <- pairwise.comparison(eset.rma,"drug",c("a","none"));
    # find genes expressed with an intensity greater than 60 in at least 3 chips
    # with a fold change of more than 2 and a p-score less than 0.001

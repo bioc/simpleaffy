@@ -32,6 +32,6 @@ read.affy(covdesc = "covdesc", ...)
 \examples { 
   \dontrun{
     eset <- read.affy();
-    eset.rma <- norm(eset,"rma");
+    eset.rma <- call.exprs(eset,"rma");
   }
 } 
