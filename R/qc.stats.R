@@ -1,7 +1,7 @@
 library("methods")
 
 #holds the results of a pairwise comparison
-setClass("QCStats",representation(scale.factors="numeric",target="numeric",percent.present="numeric",average.background="numeric",minimum.background="numeric",maximum.background="numeric",spikes="matrix",qc.probes="matrix"));
+setClass("QCStats",representation(scale.factors="numeric",target="numeric",percent.present="numeric",average.background="numeric",minimum.background="numeric",maximum.background="numeric",spikes="matrix",qc.probes="matrix",bioBCalls="character"));
 
 #accessor methods
 setGeneric("sfs", function(object) standardGeneric("sfs"))
@@ -214,8 +214,18 @@ qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=clean
   spike.vals <- rbind(c(),(sapply(spike.probenames, function(y) {x[y,]})))
 
   rownames(spike.vals) <- colnames(x);
+
+  bb <- getBioB(cdfn)
+  cat(bb)
+  if(!is.na(bb)) {
+    biobcalls <- det$call[bb,]
+  }
+  else {
+     biobcalls <- NULL
+  }
+
   return(new("QCStats",scale.factors=sfs,target=target,percent.present=dpv,average.background=meanbg,minimum.background=minbg,maximum.background=maxbg,
-              spikes=spike.vals,qc.probes=qc.probe.vals));
+              spikes=spike.vals,qc.probes=qc.probe.vals,bioBCalls=biobcalls));
 }
 
 
@@ -260,5 +270,104 @@ for(no in 1:length(unnormalised)){
   rownames(zonebg) <- sampleNames(unnormalised);
   return(list(zonebg=zonebg,zonesd=zonesd))
 }
+
+
+
+plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.label.col="black",sf.thresh = 3.0,gdh.thresh = 3.0,ba.thresh = 3.0,present.thresh=10,bg.thresh=20,label=NULL,...) {
+
+  sfs    <- log2(sfs(x))
+
+  n      <- length(sfs)
+
+  meansf <- mean(sfs)
+
+  dpv <- percent.present(x)
+  dpv <- (round(100*dpv))/100;
+
+  abg <- avbg(x)
+  abg <- (round(100*abg))/100;
+	
+  sfs <- sfs + 6.0;
+  if(is.null(label)) { label <- 1:n }
+  col=c("red","green");
+  d1 <- 0.0;
+  d2 <- 0.0;
+  d3 <- 0.0;
+
+  for(i in 1:n) {
+    for(j in 1:n) { 
+      d1 <- max(abs(sfs[i] - sfs[j]),d1);
+      d2 <- max(abs(dpv[i] - dpv[j]),d1);
+      d3 <- max(abs(abg[i] - abg[j]),d3);
+    }
+  }
+  i<-1:101;
+  arc <- 2 * pi / 100;
+  x1 <- (7.5 +  meansf) * cos(i * arc);
+  y1 <- (7.5 +  meansf) * sin(i * arc);
+  x2 <- (4.5 +  meansf) * cos(i * arc);
+  y2 <- (4.5 +  meansf) * sin(i * arc);
+
+  plot(x1[1],y1[1],pch=".",xlim=range(-12,12),ylim=range(-12,12),xaxt="n",yaxt="n",xlab="",ylab="",col=sf.ok.region,...);
+
+  polygon(c(x1,rev(x2),x1[1]),c(y1,rev(y2),y1[1]),col=sf.ok.region,border=sf.ok.region);
+
+  x1 <- 3 * cos(i * arc);
+  y1 <- 3 * sin(i * arc);
+  points(x1,y1,pch=".",col=fc.line.col);
+  x1 <- 6 * cos(i * arc);
+  y1 <- 6 * sin(i * arc);
+  points(x1,y1,pch=".",col=fc.line.col);
+  x1 <- 9 * cos(i * arc);
+  y1 <- 9 * sin(i * arc);
+  points(x1,y1,pch=".",col=fc.line.col);
+  text(0,3,"-3",col=fc.line.col)
+  text(0,6,"0",col=fc.line.col)
+  text(0,9,"+3",col=fc.line.col)
+  arc <- 2 * pi / n;
+  rats <- ratios(x);
+  gdh <- rats[,2];
+  ba  <- rats[,1];
+  bb  <- qcs@bioBCalls
+  cat(bb)
+  for(i in 1:n) {
+    if(d1 > sf.thresh) { col = "red" } else {col="blue"}
+     x1 <- sfs[i] * cos(i * arc);
+     y1 <- sfs[i] * sin(i * arc);
+     x2 <- 6 * cos(i * arc);
+     y2 <- 6 * sin(i * arc);
+     lines(c(x2,x1),c(y2,y1),col=col);
+     points(x1,y1,col=col,pch=20);
+     text(x1,y1,col=chip.label.col,label=label[i],adj=0.2 * c(cos(i * arc),sin(i * arc)));
+     x2 <- (6 + gdh[i]) * cos(i * arc);
+     y2 <- (6 + gdh[i]) * sin(i * arc);
+     if(gdh[i] > gdh.thresh) { col = "red" } else {col="blue"}	
+     points(x2,y2,pch=1,col=col);
+     x2 <- (6 + ba[i]) * cos(i * arc);
+     y2 <- (6 + ba[i]) * sin(i * arc);
+     if(ba[i] > ba.thresh) { col = "red" } else {col="blue"}	
+     points(x2,y2,pch=2,col=col);
+
+     if(d2 > present.thresh) { col = "red" } else {col="blue"}
+     x2 <- (9 * cos(i * arc));
+     y2 <- (9 * sin(i * arc));
+     text(x2,y2,label=paste(dpv[i],"%",sep=""),col=col);
+
+     if(d3 > bg.thresh) { col = "red" } else {col="blue"}
+     x2 <- (11 * cos(i * arc));
+     y2 <- (11 * sin(i * arc));
+     text(x2,y2,label=abg[i],col=col);
+
+     if(bb[i]!="P") {
+       x2 <- (12 * cos(i * arc));
+       y2 <- (12 * sin(i * arc));
+       text(x2,y2,label="bioB",col="red");
+     }
+  }
+  legend(-11,12,pch=1:2,colnames(rats)[1:2])
+}
+
+setMethod("plot","QCStats",function(x,y) plot.qc.stats(x,...))
+
 
 
