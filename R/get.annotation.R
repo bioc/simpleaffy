@@ -1,3 +1,4 @@
+
 get.annotation <- function(x,cdfname) {
   library(cdfname,character.only=T);
   symb  <- unlist(multiget(x,env=get(paste(cdfname,"SYMBOL",sep=""))),use.names=F);
@@ -16,11 +17,20 @@ write.annotation <- function(summary,file="results/annotation.table.xls") {
 }
 
 results.summary <- function(results,cdfname) {
-  res <- cbind(results$means,results$fc,sapply(results$fc,function(x) { if(x <0) { -1 * 2 ^ (-1 * x) } else { 2^x } }),results$tt,get.annotation(names(results$fc),cdfname));
+  res <- cbind(means(results),fc(results),sapply(fc(results),function(x) { if(x <0) { -1 * 2 ^ (-1 * x) } else { 2^x } }),tt(results),get.annotation(names(fc(results)),cdfname));
   cns <- colnames(res);
   cns[3]<-"log2(fc)";
   cns[4]<-"fc";
   cns[5]<-"tt";
   colnames(res) <- cns;
   return(res);
+}
+
+
+journalpng <- function(file="figure.png",width=4, height=4,res=300) {
+  bitmap(file=file,type="png16m",width=width,height=height,res=res)
+}
+
+screenpng <- function(file="figure.png",width=4, height=4,res=72) {
+  bitmap(file=file,type="png16m",width=width,height=height,res=res)
 }

@@ -1,33 +1,35 @@
 \name{get.array.subset}
 \alias{get.array.subset}
+\alias{get.array.subset,AffyBatch-method}
+\alias{get.array.subset,exprSet-method}
 
-\title{ Get a subset of chips from an AffyBatch object according to their phenotypic data }
+\title{ Get a subset of arrays from an affybatch object, split by phnotypic data }
 \description{
-  Each AffyBatch object has a pData object, which is a data.frame, associated with it. Each column in the 
-  data.frame (such as "group"), defines an experimental condition (e.g. "treatment" or "control"). This function
-  extracts chips from an AffyBatch object that are in one or more category.
+  Looks at a factor in the phenotypic data for an \code{AffyBatch} or \code{exprSet} object and
+  uses it to select a subset of arrays, as defined by 'members'.
 }
+
+
 \usage{
-get.array.subset(x, group, members)
+get.array.subset(x,group,members)
 }
 
 \arguments{
-  \item{x}{ An \code{AffyBatch} object }
-  \item{group}{ A column name in the pData object }
-  \item{members}{ a vector of labels within the specified column }
+  \item{x}{ An \code{exprSet} or \code{AffyBatch} object }
+  \item{group}{ The name of the pData column to use. }
+  \item{members}{ The labels within the pData column to match against. }
 }
-\details{
-  given an AffyBatch object eset, with a column called "drug" containing labels "a", "b" and "none" in its pData, 
-  get.array.subset(eset,"drug",c("a","none")) returns an AffyBatch object just containing the chips for "a" and "none".
-}
-\value{
-  An AffyBatch object
-}
-\references{ http://bioinformatics.picr.man.ac.uk/ }
+
 \author{ Crispin J Miller }
-\keyword{ misc }
+
+\seealso{ \code{\link{get.array.subset.affybatch}}  \code{\link{get.array.subset.exprset}} }
+
 \examples{
   \dontrun{
-    a.v.b <- get.array.subset(eset,"drug",c("a","b"));
-  } 
+    subset1 <- get.array.subset.affybatch(eset.rma,"group","A")
+    subset2 <- get.array.subset.exprset(eset.rma,"group",c("A","P"))
+    subset3 <- get.array.subset(eset.rma,"group","A")
+  }
 }
+
+\keyword{ misc }

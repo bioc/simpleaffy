@@ -35,7 +35,7 @@ The \Rpackage{simpleaffy} package is part of the
 Bioconductor\footnote{\url{http://www.bioconductor.org/}} project. It
 it was written to provide a starting point for exploring
 Affymetrix data, and to provide functions for some of the most common
-tasks we found ourselves doing over and over again. It's based on the
+tasks we found ourselves doing over and over again. It is based on the
 \Rpackage{affy} package, which does does most of the hard work.
 
 \Rpackage{affy} provides a variety of functions for processing
@@ -137,8 +137,8 @@ R> ?read.affy
 R> ?call.exprs
 \end{Sinput}
 
-The function \Rfunction{justMas} provides a faster implementation of the MAS 5.0 expression summary algorithm
-written in C. By default, this is used \Rfunction{justMas} by \Rfunction{call.exprs}, to use the \Rfunction{expresso} version
+The function \Rfunction{justMAS} provides a faster implementation of the MAS 5.0 expression summary algorithm
+written in C. By default, this is used \Rfunction{justMAS} by \Rfunction{call.exprs}, to use the \Rfunction{expresso} version
 specify 'mas5-R' instead of 'mas5' when you invoke \Rfunction{call.exprs}.
 
 \section{Quality Control}
@@ -149,7 +149,7 @@ problems, and are described in detail in the Affymetrix {\it Data
 Analysis Fundamentals} manual, which can be found on their website
 at {\url http://www.affymetrix.com}.
 
-The function qc.stats generates the most commonly used metrics:
+The function \Rfunction{qc} generates the most commonly used metrics:
 
 \begin{enumerate}
 \item Average background
@@ -168,7 +168,7 @@ stages of the sample preparation process are used to verify
 hybridisation efficiency. These probes (BioB,BioC,BioD,and CreX)
 should be present in increasing intensity.
 
-The function \Rfunction{qc.stats} produces a table of QC metrics for
+The function \Rfunction{qc} produces an object of class 'QCStats' containing QC metrics for
 each array in a project. It takes both processed and raw data, since it
 makes use of numbers generated during the mas 5.0 expression calling
 algorithm. Alternatively, it can be called with just the raw data, in
@@ -178,7 +178,7 @@ example,
 \begin{Sinput}
 R> x <- read.affy("covdesc");
 R> x.mas5 <- call.exprs(x,"mas5");
-R> qc <- qc.stats(x,x.mas5);
+R> qc <- qc(x,x.mas5);
 \end{Sinput}
 
 Note that we have used \Rfunction{call.exprs(x,"mas5")} to normalise the
@@ -192,17 +192,15 @@ R> x.mas5@description@preprocessing
  \Rfunction{sfs} is a list of scale factors for each chip,
 \Rfunction{tgt}, the target intensity they were scaled to.
 
-qc.stats returs a matrix with a row for each array, and columns
-representing GAPDH 3'/5', GAPDH 3'/M, beta.actin 3'/5', beta.actin 3'/M,
-log2(scale factor), scale factor, fold change(scale factor),target
-intensity, \% present, average, mininimum, maximum and mean background
+\Rfunction{qc} returns an object containing scale-factors, GAPDH 3'/5', GAPDH 3'/M, beta.actin 3'/5', beta.actin 3'/M,
+target intensity, \% present, average, mininimum, maximum and mean background
 intensities, and bioB, bioC, bioD and creX present calls
-(1=present;0=not present).
+(1=present;0=not present). See ?qc for more details.
 
 
-A summary figure of QC data can be produced using \Rfunction{plot.qc.stats}:
+A summary figure of QC data can be produced using \Rfunction{plot}:
 \begin{Sinput}
-R> plot.qc.stats(qc,label=sampleNames(x))
+R> plot(qc,label=sampleNames(x))
 \end{Sinput}
 
 A lot of information is presented in this one figure. The dotted
@@ -264,7 +262,7 @@ The function \Rfunction{pairwise.comparison} allows you to take a subset of chip
 \item compute a t-test between the groups,
 \item possibly compute MAS5.0 style detection {\it p} values and Present/Marginal/Absent calls.
 \end{enumerate}
-it returns a list containing the results of the analysis:
+it returns a 'PairComp' object containing the results of the analysis:
 \begin{Sinput}
 R> results <- pairwise.comparison(
      x.rma,                  ## processed data
@@ -273,8 +271,6 @@ R> results <- pairwise.comparison(
      c("n","a"),             ## groups to compare
      raw.data       ## for PMA calls
    )                   
-R> ## Find the 100 most changing genes 
-R> sort(abs(results$fc),decreasing=TRUE)[1:100] 
 \end{Sinput}
 
 This function is implemented in C for speed - and does everything in
@@ -294,7 +290,7 @@ R> results <- pairwise.comparison(
      spots=raw.data          ## for PMA calls
    )                   
 R> ## Find the 100 most changing genes 
-R> sort(abs(results$fc),decreasing=TRUE)[1:100] 
+R> sort(abs(fc(results)),decreasing=TRUE)[1:100] 
 \end{Sinput}
 
 Since \Rfunction{call.exprs} {\it always} returns logged data, \Rfunction{pairwise.comparison}
@@ -360,7 +356,7 @@ R> results <- pairwise.comparison(
     a.order=c(1,3,2),       ## a.1 matches b.1
     b.order=c(1,2,3))       ## a.3 matches b.2 etc...
 R> ## Find the 100 most changing genes 
-R> sort(abs(results$fc),decreasing=TRUE)[1:100] 
+R> sort(abs(fc(results)),decreasing=TRUE)[1:100] 
 \end{Sinput}
 
 Here, we have specified the order the replicate samples should be
@@ -370,20 +366,6 @@ replicate 2 in group b, and so on.
 Again, the help pages for these functions explain more about them and
 the values they return.
 
-\subsection{ANOVA}
-
-If we have more than two conditions (no treatment, drug A, drug B and
-drug A+B, for example) ANOVA lets us find the set of genes that are
-significantly different in at least one of those groups. For example,
- 
-\begin{Sinput}
-R> results <- do.anova(x.rma,                 ## processed data
-              "treatment", c("n","a","b","a.b"));## groups to compare
-\end{Sinput}
-
-generates a matrix of p values for each gene in each of the sample groups specified.
-See the man pages for more details...
- 
 \section{Viewing results}
 The function \Rfunction{trad.scatter.plot} does a scatter plot between a pair of vectors:
 \begin{Sinput}

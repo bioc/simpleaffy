@@ -32,26 +32,29 @@ function(x,algorithm="rma",do.log = TRUE,sc=100,method=NA) {
 
   else if(algorithm == "mas5-R") { # use expresso MAS5.0
      if(is.na(method)) {
-     	tmp1 <- expresso(x, normalize=F,bgcorrect.method="mas",
+     tmp1 <- expresso(x, normalize=FALSE,bgcorrect.method="mas",
                         pmcorrect.method="mas",summary.method="mas");
         tmp  <- affy.scalevalue.exprSet(tmp1,sc=sc);
      }
      else {
-     	tmp1 <- expresso(x, normalize.method=method,bgcorrect.method="mas",
+     tmp1 <- expresso(x, normalize.method=method,bgcorrect.method="mas",
                         pmcorrect.method="mas",summary.method="mas");
         tmp  <- affy.scalevalue.exprSet(tmp1,sc=sc);
      }
      if(do.log) {
        exprs(tmp) <- log2(exprs(tmp));
-       description(tmp)@preprocessing <- list(sfs=list(log2(apply(2^(exprs(tmp) - log2(exprs(tmp1))),2,mean))),tgt=sc)
+       description(tmp)@preprocessing$sfs=apply(2^(exprs(tmp) - log2(exprs(tmp1))),2,mean)
+       description(tmp)@preprocessing$tgt=sc
      }
      else {
-       description(tmp)@preprocessing <- list(sfs=list(log2(apply(2^(log2(exprs(tmp)) - log2(exprs(tmp1))),2,mean))),tgt=sc)
+       description(tmp)@preprocessing$sfs=apply(2^(exprs(tmp) - log2(exprs(tmp1))),2,mean)
+       description(tmp)@preprocessing$tgt=sc
+
      }
      return(tmp);
   }
   else if(algorithm == "mas5") { # use Simpleaffy MAS5.0
-    tmp <- justMas(x,tgt=sc);
+    tmp <- justMAS(x,tgt=sc);
     if(!do.log) {
       exprs(tmp) <- 2^exprs(tmp);
     }

@@ -1,82 +1,651 @@
-qc.stats <-function(unnormalised,normalised=NULL,logged=T,tau=0.015,alpha1=0.04,alpha2=0.06) {
-  if(is.null(normalised)) {
-    normalised <- call.exprs(unnormalised,"mas5");
-  }
-  x <- exprs(normalised);
-  det <- detection.p.val(unnormalised,tau=tau,alpha1=alpha1,alpha2=alpha2);
-  dpv<-apply(det$call,2,function(x) {
-            x[x!="P"] <- 0;
-	    x[x=="P"] <- 1;
-            x<-as.numeric(x);
-            return(100 * sum(x)/length(x));
-  });
-  sfs <- normalised@description@preprocessing$sfs;
-  sfs2<-log2(sfs);
-  sfs3<-sapply(sfs2,function(a){ if( a <0 ) { -2^-a} else { 2^a}})
-  if(!logged) { x <- log2(x); }
-  n <- cleancdfname(cdfName(unnormalised));
-  if(n %in% c("hgu133acdf", "hgu133atagcdf", "hgu133bcdf", "hgu133plus2cdf", "hgu133a_2cdf", "hgu95acdf",
-              "hgu95av2cdf", "hgu95bcdf", "hgu95ccdf", "hgu95dcdf", "hgu95ecdf")) {
-    rats <- 2^cbind((x["AFFX-HUMGAPDH/M33197_3_at",] - x["AFFX-HUMGAPDH/M33197_5_at",]),
-                    (x["AFFX-HUMGAPDH/M33197_3_at",] - x["AFFX-HUMGAPDH/M33197_M_at",]),
-                    (x["AFFX-HSAC07/X00351_3_at",]  - x["AFFX-HSAC07/X00351_5_at",]),
-                    (x["AFFX-HSAC07/X00351_3_at",]  - x["AFFX-HSAC07/X00351_M_at",]));
+library("methods")
 
-  }
-  else {
-    if (n %in% c("mgu74acdf", "mgu74av2cdf", "mgu74bcdf", "mgu74bv2cdf", "mgu74ccdf", "mgu74cv2cdf", "moe430acdf", "moe430bcdf", "moe430_2cdf", "moe430a_2cdf")) {
-      rats <- 2^cbind((x["AFFX-GapdhMur/M32599_3_at",] - x["AFFX-GapdhMur/M32599_5_at",]),
-                      (x["AFFX-GapdhMur/M32599_3_at",] - x["AFFX-GapdhMur/M32599_M_at",]),
-                      (x["AFFX-b-ActinMur/M12481_3_at",]  - x["AFFX-b-ActinMur/M12481_5_at",]),
-                     (x["AFFX-b-ActinMur/M12481_3_at",]  - x["AFFX-b-ActinMur/M12481_M_at",]));
-    }
-    else {
-      if (n %in% c("rae230acdf")) {
-        rats <- 2^cbind((x["AFFX_Rat_GAPDH_3_at",] - x["AFFX_Rat_GAPDH_5_at",]),
-                        (x["AFFX_Rat_GAPDH_3_at",] - x["AFFX_Rat_GAPDH_M_at",]),
-                        (x["AFFX_Rat_beta-actin_3_at",]  - x["AFFX_Rat_beta-actin_5_at",]),
-                       (x["AFFX_Rat_beta-actin_3_at",]  - x["AFFX_Rat_beta-actin_5_at",]));
-      }
-      else { stop(paste("Sorry - I'm afraid I don't know about the spike probes on '",n,"' arrays.")) }
-    }
-  }
+#holds the results of a pairwise comparison
+setClass("QCStats",representation(scale.factors="numeric",target="numeric",percent.present="numeric",average.background="numeric",minimum.background="numeric",maximum.background="numeric",bioB="character",bioC="character",bioD="character",creX="character",gapdh3="numeric",gapdhM="numeric",gapdh5="numeric",actin3="numeric",actinM="numeric",actin5="numeric"));
+
+#accessor methods
+setGeneric("sfs", function(object) standardGeneric("sfs"))
+setMethod("sfs","QCStats",function(object) object@scale.factors)
+
+setGeneric("target", function(object) standardGeneric("target"))
+setMethod("target","QCStats",function(object) object@target)
+
+setGeneric("percent.present", function(object) standardGeneric("percent.present"))
+setMethod("percent.present","QCStats",function(object) object@percent.present)
+
+setGeneric("avbg", function(object) standardGeneric("avbg"))
+setMethod("avbg","QCStats",function(object) object@average.background)
+
+setGeneric("minbg", function(object) standardGeneric("minbg"))
+setMethod("minbg","QCStats",function(object) object@minimum.background)
+
+setGeneric("maxbg", function(object) standardGeneric("maxbg"))
+setMethod("maxbg","QCStats",function(object) object@maximum.background)
+
+setGeneric("bioB", function(object) standardGeneric("bioB"))
+setMethod("bioB","QCStats",function(object) object@bioB)
+
+setGeneric("bioC", function(object) standardGeneric("bioC"))
+setMethod("bioC","QCStats",function(object) object@bioC)
+
+setGeneric("bioD", function(object) standardGeneric("bioD"))
+setMethod("bioD","QCStats",function(object) object@bioD)
+
+setGeneric("creX", function(object) standardGeneric("creX"))
+setMethod("creX","QCStats",function(object) object@creX)
+
+setGeneric("gapdh3", function(object) standardGeneric("gapdh3"))
+setMethod("gapdh3","QCStats",function(object) object@gapdh3)
+
+setGeneric("gapdhM", function(object) standardGeneric("gapdhM"))
+setMethod("gapdhM","QCStats",function(object) object@gapdhM)
+
+setGeneric("gapdh5", function(object) standardGeneric("gapdh5"))
+setMethod("gapdh5","QCStats",function(object) object@gapdh5)
+
+setGeneric("actin5", function(object) standardGeneric("actin5"))
+setMethod("actin5","QCStats",function(object) object@actin5)
+
+setGeneric("actinM", function(object) standardGeneric("actinM"))
+setMethod("actinM","QCStats",function(object) object@actinM)
+
+setGeneric("actin3", function(object) standardGeneric("actin3"))
+setMethod("actin3","QCStats",function(object) object@actin3)
+
+setGeneric("gapdh35", function(object) standardGeneric("gapdh35"))
+setMethod("gapdh35","QCStats",function(object) object@gapdh3 - object@gapdh5);
+
+setGeneric("actin35", function(object) standardGeneric("actin35"))
+setMethod("actin35","QCStats",function(object) object@actin3 - object@actin5);
+
+setGeneric("gapdh3M", function(object) standardGeneric("gapdh3M"))
+setMethod("gapdh3M","QCStats",function(object) object@gapdh3 - object@gapdhM);
+
+setGeneric("actin3M", function(object) standardGeneric("actin3M"))
+setMethod("actin3M","QCStats",function(object) object@actin3 - object@actinM);
+
+.nms <- c("atgenomecdf",	
+"ath1121501cdf",	
+"drosgenome1cdf",	
+"hcg110cdf",		
+"hgu133acdf",		
+"hgu133a_2cdf",	
+"hgu133atagcdf",	
+"hgu133bcdf",		
+"hgu133plus2cdf",	
+"hgu95acdf",		
+"hgu95av2cdf",	
+"hgu95bcdf",		
+"hgu95ccdf",		
+"hgu95dcdf",		
+"hgu95ecdf",		
+"mgu74acdf",		
+"mgu74av2cdf",	
+"mgu74bcdf",		
+"mgu74bv2cdf",	
+"mgu74ccdf",		
+"mgu74cv2cdf",	
+"moe430_2cdf",	
+"moe430acdf",		
+"moe430a_2cdf",	
+"moe430bcdf",		
+"mu11ksubacdf",	
+"mu11ksubbcdf",	
+"rae230acdf",		
+"rae230bcdf",		
+"rgu34acdf",		
+"rgu34bcdf",		
+"rgu34ccdf")		
+
+.alpha1 <- c(0.04,	
+	     0.05,	
+	     0.05,	
+	     0.04,	
+	     0.05,	
+	     0.05,	
+	     0.05,	
+	     0.05,	
+	     0.05,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.04,	
+	     0.05,	
+	     0.05,	
+	     0.05,	
+	     0.05,	
+	     0.04,	
+	     0.04,	
+	     0.05,	
+	     0.05,	
+	     0.04,	
+	     0.04,	
+	     0.04)	
+
+.alpha2 <- c(0.06,	
+	     0.065,	
+	     0.065,	
+	     0.06,	
+	     0.065,	
+	     0.065,	
+	     0.065,	
+	     0.065,	
+	     0.065,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.06,	
+	     0.065,	
+	     0.065,	
+	     0.065,	
+	     0.065,	
+	     0.06,	
+	     0.06,	
+	     0.065,	
+	     0.065,	
+	     0.06,	
+	     0.06,	
+	     0.06)
+
+.actin3 <- c("AFFX-r2-At-Actin-3_s_at",		
+	     "AFFX-r2-At-Actin-3_s_at",		
+	     "AFFX-Dros-ACTIN_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-HSAC07/X00351_3_at",		
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX-b-ActinMur/M12481_3_at",	
+	     "AFFX_Rat_beta-actin_3_at",	
+	     "AFFX_Rat_beta-actin_3_at",	
+	     "AFFX_Rat_beta-actin_3_at",	
+	     "AFFX_Rat_beta-actin_3_at",	
+	     "AFFX_Rat_beta-actin_3_at")
 
 
-  bgsts<-bg.stats(unnormalised)$zonebg
-  backgrounds<-apply(bgsts,1,mean);
-  backgrounds<-cbind(backgrounds,apply(bgsts,1,min));
-  backgrounds<-cbind(backgrounds,apply(bgsts,1,max));
-  backgrounds<-cbind(backgrounds,sqrt(apply(bgsts,1,var)));
-  if(n %in% c("hgu133acdf", "hgu133atagcdf", "hgu133bcdf","hgu133a_2cdf", "hgu133plus2cdf", "moe430acdf", "moe430bcdf", "moe430_2cdf", "moe430a_2cdf" )) {
-    spikes <- cbind(det$call["AFFX-r2-Ec-bioB-3_at",],
-                    det$call["AFFX-r2-Ec-bioC-3_at",],
-                    det$call["AFFX-r2-Ec-bioD-3_at",],
-                    det$call["AFFX-r2-P1-cre-3_at",]);
-  }
-  else  {
-     if (n %in% c("mgu74acdf", "mgu74av2cdf", "mgu74bcdf", "mgu74bv2cdf", "mgu74ccdf", "mgu74cv2cdf","hgu95acdf",
-                  "hgu95av2cdf", "hgu95bcdf", "hgu95ccdf", "hgu95dcdf", "hgu95ecdf","rae230acdf")) {
-       spikes <- cbind(det$call["AFFX-BioB-3_at",],
-                       det$call["AFFX-BioC-3_at",],
-                       det$call["AFFX-BioDn-3_at",],
-                      det$call["AFFX-CreX-3_at",]);
-     }
-  }
+.actinM <- c("AFFX-r2-At-Actin-M_s_at",		
+	     "AFFX-r2-At-Actin-M_s_at",		
+	     "AFFX-Dros-ACTIN_M_r_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-HSAC07/X00351_M_at",		
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX-b-ActinMur/M12481_M_at",	
+	     "AFFX_Rat_beta-actin_M_at",	
+	     "AFFX_Rat_beta-actin_M_at",	
+	     "AFFX_Rat_beta-actin_M_at",	
+	     "AFFX_Rat_beta-actin_M_at",	
+	     "AFFX_Rat_beta-actin_M_at")
 
-  spikes[spikes != "P"] <- 0;
-  spikes[spikes == "P"] <- 1;
-  spikes <- matrix(as.numeric(spikes),nrow=nrow(spikes))
-  rats <- cbind(rats,as.vector(sfs),as.vector(sfs2),as.vector(sfs3),normalised@description@preprocessing$tgt,dpv,backgrounds,spikes);
-  colnames(rats) <- c("GAPDH.3'/5'","GAPDH.3'/M","beta.actin.3'/5'","beta.actin.3'/M",
-                      "s.f.","log2(s.f.)","fc(s.f.)","tgt",
-                      "%present",
-                      "avbg","minbg","maxbg","stdevbg",
-                      "bioB","bioC","bioD","creX");
-  return(rats);
+
+.actin5 <- c("AFFX-r2-At-Actin-5_s_at",		
+	     "AFFX-r2-At-Actin-5_s_at",		
+	     "AFFX-Dros-ACTIN_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-HSAC07/X00351_5_at",		
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX-b-ActinMur/M12481_5_at",	
+	     "AFFX_Rat_beta-actin_5_at",	
+	     "AFFX_Rat_beta-actin_5_at",	
+	     "AFFX_Rat_beta-actin_5_at",	
+	     "AFFX_Rat_beta-actin_5_at",	
+	     "AFFX_Rat_beta-actin_5_at")
+
+.gapdh3 <- c("AFFX-Athal-GAPDH_3_s_at",		
+	     "AFFX-Athal-GAPDH_3_s_at",		
+	     "AFFX-Dros-GAPDH_3_at",		
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-HUMGAPDH/M33197_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX-GapdhMur/M32599_3_at",	
+	     "AFFX_Rat_GAPDH_3_at",		
+	     "AFFX_Rat_GAPDH_3_at",		
+	     "AFFX_Rat_GAPDH_3_at",		
+	     "AFFX_Rat_GAPDH_3_at",		
+	     "AFFX_Rat_GAPDH_3_at")		
+
+.gapdhM <- c("AFFX-Athal-GAPDH_M_s_at",		
+	     "AFFX-Athal-GAPDH_M_s_at",		
+	     "AFFX-Dros-GAPDH_M_at",		
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-HUMGAPDH/M33197_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX-GapdhMur/M32599_M_at",	
+	     "AFFX_Rat_GAPDH_M_at",		
+	     "AFFX_Rat_GAPDH_M_at",		
+	     "AFFX_Rat_GAPDH_M_at",		
+	     "AFFX_Rat_GAPDH_M_at",		
+	     "AFFX_Rat_GAPDH_M_at")		
+
+.gapdh5 <- c("AFFX-Athal-GAPDH_5_s_at",		
+	     "AFFX-Athal-GAPDH_5_s_at",		
+	     "AFFX-Dros-GAPDH_5_at",		
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-HUMGAPDH/M33197_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX-GapdhMur/M32599_5_at",	
+	     "AFFX_Rat_GAPDH_5_at",		
+	     "AFFX_Rat_GAPDH_5_at",		
+	     "AFFX_Rat_GAPDH_5_at",		
+	     "AFFX_Rat_GAPDH_5_at",		
+	     "AFFX_Rat_GAPDH_5_at")		
+
+.biob <- c("AFFX-BioB-3_at",      
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-r2-Ec-bioB-3_at",
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at",	    
+	    "AFFX-BioB-3_at")	  
+
+.bioc <- c("AFFX-BioC-3_at",      
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-r2-Ec-bioC-3_at",
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at",	    
+	    "AFFX-BioC-3_at")	    
+
+.biod <- c("AFFX-BioD-3_at",      
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-BioD-3_at",	    
+	    "AFFX-BioD-3_at",	    
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-r2-Ec-bioD-3_at",
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at",	    
+	    "AFFX-BioDn-3_at")	    
+
+.crex <- c("AFFX-CreX-3_at",      
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-r2-P1-cre-3_at",
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at",	    
+	    "AFFX-CreX-3_at")	    
+
+names(.alpha1) <- .nms
+names(.alpha2) <- .nms
+
+names(.actin3) <- .nms
+names(.actinM) <- .nms
+names(.actin5) <- .nms
+
+names(.gapdh3) <- .nms
+names(.gapdhM) <- .nms
+names(.gapdh5) <- .nms
+
+names(.biob) <- .nms
+names(.bioc) <- .nms
+names(.biod) <- .nms
+names(.crex) <- .nms
+
+
+.getTao <- function(name) {
+  0.015;
+}
+
+.getAlpha1 <- function(name) {
+  .alpha1[name]
+}
+
+.getAlpha2 <- function(name) {
+  .alpha2[name]
+}
+
+.getActin3 <- function(name) {
+  .actin3[name]
+}
+
+.getActinM <- function(name) {
+  .actinM[name]
+}
+
+.getActin5 <- function(name) {
+  .actin5[name]
+}
+
+.getGapdh3 <- function(name) {
+  .gapdh3[name]
+}
+
+.getGapdhM <- function(name) {
+  .gapdhM[name]
+}
+
+.getGapdh5 <- function(name) {
+  .gapdh5[name]
+}
+
+.getBioB <- function(name) {
+  .biob[name]
 }
 
 
-bg.stats <- function(unnormalised, grid=c(4,4)) {
+.getBioC <- function(name) {
+  .bioc[name]
+}
+
+
+.getBioD <- function(name) {
+  .biod[name]
+}
+
+
+.getCreX <- function(name) {
+  .crex[name]
+}
+
+
+
+
+qc.affy <-function(unnormalised,normalised=NULL,logged=TRUE) {
+  if(is.null(normalised)) {
+    normalised <- call.exprs(unnormalised,"mas5");
+  }
+  nme    <- cleancdfname(cdfName(unnormalised))
+  tau    <- .getTao(nme)
+  alpha1 <- .getAlpha1(nme)
+  alpha2 <- .getAlpha2(nme)
+
+  if(is.na(alpha1)) { 
+    warning(paste("Couldn't get tao, alpha1 and alpha2 parameters for array type",nme,"Defaulting to alpha1=0.04 and alpha2=0.06"))
+    alpha1 <- 0.04;
+    alpha2 <- 0.06;
+    tao    <- 0.015;
+  }
+
+  x <- exprs(normalised);
+
+  det <- detection.p.val(unnormalised,tau=tau,alpha1=alpha1,alpha2=alpha2);
+
+  dpv<-apply(det$call,2,function(x) { 
+            x[x!="P"] <- 0;
+	    x[x=="P"] <- 1;
+            x<-as.numeric(x);			       
+            return(100 * sum(x)/length(x));
+  });
+
+  sfs    <- normalised@description@preprocessing$sfs;
+  target <- normalised@description@preprocessing$tgt;
+
+  if(!logged) { x <- log2(x); }
+
+  n <- cleancdfname(cdfName(unnormalised));
+
+  g3 <- exprs(normalised)[.getGapdh3(n),]
+  gM <- exprs(normalised)[.getGapdhM(n),]
+  g5 <- exprs(normalised)[.getGapdh5(n),]
+
+  a3 <- exprs(normalised)[.getActin3(n),]
+  aM <- exprs(normalised)[.getActinM(n),]
+  a5 <- exprs(normalised)[.getActin5(n),]
+
+  biob <- det$call[.getBioB(n),]
+  bioc <- det$call[.getBioC(n),]
+  biod <- det$call[.getBioD(n),]
+  crex <- det$call[.getCreX(n),]
+
+  bgsts<-.bg.stats(unnormalised)$zonebg
+
+  meanbg <- apply(bgsts,1,mean);
+
+  minbg  <- apply(bgsts,1,min);
+
+  maxbg  <- apply(bgsts,1,max);
+
+  stdvbg <- sqrt(apply(bgsts,1,var));
+
+  return(new("QCStats",scale.factors=sfs,target=target,percent.present=dpv,average.background=meanbg,minimum.background=minbg,maximum.background=maxbg,gapdh3=g3,gapdhM=gM,gapdh5=g5,actin3=a3,actinM=aM,actin5=a5,bioB=biob,bioC=bioc,bioD=biod,creX=crex));
+}
+
+
+setGeneric("qc", function(unnormalised,...) standardGeneric("qc"))
+setMethod("qc","AffyBatch",function(unnormalised,...) qc.affy(unnormalised,...)) 
+
+setGeneric("getQCParams", function(x) standardGeneric("getQCParams") )
+
+setMethod("getQCParams","AffyBatch",function(x) {
+  n <- cleancdfname(cdfName(x))
+
+  res <- list(.getGapdh3(n),.getGapdhM(n),.getGapdh5(n),.getActin3(n),.getActinM(n),.getActin5(n),.getBioB(n),.getBioC(n),.getBioD(n),.getCreX(n),.getAlpha1(n),.getAlpha2(n),.getTao(n))
+  names(res) <- c("Gapdh3","GapdhM","Gapdh5","Actin3","ActinM","Actin5","BioB","BioC","BioD","CreX","Alpha1","Alpha2","Tao")
+  return(res)
+})
+
+
+.bg.stats <- function(unnormalised, grid=c(4,4)) {
 pms         <- unlist(pmindex(unnormalised))
 mms         <- unlist(mmindex(unnormalised))
 all         <- c(pms,mms)
@@ -93,8 +662,7 @@ for(no in 1:length(unnormalised)){
        as.integer(cls),
        as.integer(grid[1]),as.integer(grid[2]),
        zonebg=double(grid[1] * grid[2]),
-       zonesd=double(grid[1] *
-       grid[2]),corrected=double(length(this.array)), PACKAGE="simpleaffy");
+       zonesd=double(grid[1] * grid[2]),corrected=double(length(this.array)),PACKAGE="simpleaffy");
   zonesd <- rbind(zonesd, result$zonesd);
   zonebg <- rbind(zonebg, result$zonebg);
   }
@@ -105,15 +673,22 @@ for(no in 1:length(unnormalised)){
   return(list(zonebg=zonebg,zonesd=zonesd))
 }
 
-plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light blue",chip.label.col="black",sf.thresh = 3.0,gdh.thresh = 3.0,ba.thresh = 3.0,present.thresh=10,bg.thresh=20,label=NULL,...) {
-  n <- length(rownames(x));
-  sfs <- x[,"fc(s.f.)"]
+
+
+plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.label.col="black",sf.thresh = 3.0,gdh.thresh = 3.0,ba.thresh = 3.0,present.thresh=10,bg.thresh=20,label=NULL,...) {
+
+  sfs    <- log2(sfs(x))
+
+  n      <- length(sfs)
+
   meansf <- mean(sfs)
 
-  dpv <- x[,"%present"]
+  dpv <- percent.present(x)
   dpv <- (round(100*dpv))/100;
-  abg <- round(x[,"avbg"])
 
+  abg <- avbg(x)
+  abg <- (round(100*abg))/100;
+	
   sfs <- sfs + 6.0;
   if(is.null(label)) { label <- 1:n }
   col=c("red","green");
@@ -122,7 +697,7 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
   d3 <- 0.0;
 
   for(i in 1:n) {
-    for(j in 1:n) {
+    for(j in 1:n) { 
       d1 <- max(abs(sfs[i] - sfs[j]),d1);
       d2 <- max(abs(dpv[i] - dpv[j]),d1);
       d3 <- max(abs(abg[i] - abg[j]),d3);
@@ -134,8 +709,11 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
   y1 <- (7.5 +  meansf) * sin(i * arc);
   x2 <- (4.5 +  meansf) * cos(i * arc);
   y2 <- (4.5 +  meansf) * sin(i * arc);
+
   plot(x1[1],y1[1],pch=".",xlim=range(-12,12),ylim=range(-12,12),xaxt="n",yaxt="n",xlab="",ylab="",col=sf.ok.region,...);
+
   polygon(c(x1,rev(x2),x1[1]),c(y1,rev(y2),y1[1]),col=sf.ok.region,border=sf.ok.region);
+
   x1 <- 3 * cos(i * arc);
   y1 <- 3 * sin(i * arc);
   points(x1,y1,pch=".",col=fc.line.col);
@@ -149,6 +727,11 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
   text(0,6,"0",col=fc.line.col)
   text(0,9,"+3",col=fc.line.col)
   arc <- 2 * pi / n;
+
+  gdh <- gapdh35(x);
+  ba  <- actin35(x)
+  bb  <- bioB(x)
+
   for(i in 1:n) {
     if(d1 > sf.thresh) { col = "red" } else {col="blue"}
      x1 <- sfs[i] * cos(i * arc);
@@ -158,15 +741,13 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
      lines(c(x2,x1),c(y2,y1),col=col);
      points(x1,y1,col=col,pch=20);
      text(x1,y1,col=chip.label.col,label=label[i],adj=0.2 * c(cos(i * arc),sin(i * arc)));
-     gdh <- log2(x[i,1]);
-     ba  <- log2(x[i,3]);
-     x2 <- (6 + gdh) * cos(i * arc);
-     y2 <- (6 + gdh) * sin(i * arc);
-     if(gdh > gdh.thresh) { col = "red" } else {col="blue"}
+     x2 <- (6 + gdh[i]) * cos(i * arc);
+     y2 <- (6 + gdh[i]) * sin(i * arc);
+     if(gdh[i] > gdh.thresh) { col = "red" } else {col="blue"}	
      points(x2,y2,pch=1,col=col);
-     x2 <- (6 + ba) * cos(i * arc);
-     y2 <- (6 + ba) * sin(i * arc);
-     if(ba > ba.thresh) { col = "red" } else {col="blue"}
+     x2 <- (6 + ba[i]) * cos(i * arc);
+     y2 <- (6 + ba[i]) * sin(i * arc);
+     if(ba[i] > ba.thresh) { col = "red" } else {col="blue"}	
      points(x2,y2,pch=2,col=col);
 
      if(d2 > present.thresh) { col = "red" } else {col="blue"}
@@ -179,7 +760,7 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
      y2 <- (10 * sin(i * arc));
      text(x2,y2,label=abg[i],col=col);
 
-     if(x[i,"bioB"]!="1") {
+     if(bb[i]!="P") {
        x2 <- (11 * cos(i * arc));
        y2 <- (11 * sin(i * arc));
        text(x2,y2,label="bioB",col="red");
@@ -187,3 +768,5 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
   }
   legend(-10,10,pch=1:2,c("GAPDH","Beta Actin"))
 }
+
+setMethod("plot","QCStats",function(x,y) plot.qc.stats(x,...))

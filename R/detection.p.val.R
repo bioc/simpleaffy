@@ -1,5 +1,5 @@
 
-detection.p.val <- function(x, tau = 0.015,calls=T,alpha1=0.04,alpha2=0.06,ignore.saturated=T) {
+detection.p.val <- function(x, tau = 0.015,calls=TRUE,alpha1=0.04,alpha2=0.06,ignore.saturated=TRUE) {
   if(alpha1 < 0)      {stop("alpha1 must be  > 0 "); }
   if(alpha1 > alpha2) {stop("alpha2 must be  > alpha1 "); }
   if(alpha2 > 1)      {stop("alpha2 must be  <1 "); }
@@ -12,18 +12,18 @@ detection.p.val <- function(x, tau = 0.015,calls=T,alpha1=0.04,alpha2=0.06,ignor
   # shouldn't be a problem with new scanners or those that have had an engineer visit
   if(ignore.saturated) { sat <- 46000; }
   else { sat <- -1; }
-
+  
   pns <- probeNames(x);
   unique.pns <- unique(pns);
   cat("Computing p-values\n");
-  p<-sapply(1:length(pms[1,]),function(x) {
+  p<-sapply(1:length(pms[1,]),function(x) { 
     .C("DetectionPValue",as.double(pms[,x]),as.double(mms[,x]),as.character(pns),as.integer(length(mms[,x])),
-	as.double(tau),as.double(sat),dpval=double(length(unique.pns)),length(unique.pns), PACKAGE="simpleaffy")$dpval;
+	as.double(tau),as.double(sat),dpval=double(length(unique.pns)),length(unique.pns),PACKAGE="simpleaffy")$dpval;
   });
   rownames(p) <- unique.pns;
   colnames(p) <- paste(sampleNames(x),".detection.p.val",sep="");
-  if(!calls) {
-    l <- list(detection.p.values=p);
+  if(!calls) { 
+    l <- list(detection.p.values=p); 
   }
   else       {
     cat("Doing PMA Calls\n");
@@ -32,7 +32,7 @@ detection.p.val <- function(x, tau = 0.015,calls=T,alpha1=0.04,alpha2=0.06,ignor
     colnames(calls) <- paste(sampleNames(x),".present",sep="");
     rownames(calls) <- rownames(p)
     l<- list(pval=p,call=calls);
-    return(l);
+    return(l); 
   }
 
-}
+}     

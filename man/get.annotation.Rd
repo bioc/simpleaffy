@@ -3,7 +3,7 @@
 \alias{write.annotation}
 \alias{results.summary}
 
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{ Get annotation data for a gene list}
 \description{
   Takes a vector of probeset names and a CDF name. Produces a table of
@@ -28,7 +28,7 @@ results.summary(results,cdfname)
   \item{cdfname}{ the name of the chip (as produced by cdfName(AffyBatch) }
   \item{summary}{ a table of data to write in a format appropriate to read into Excel }
   \item{file}{ a table delimited file }
-  \item{results}{ a list of values, as produced by pairwise.comparison and pairwise.filter }
+  \item{results}{ a PairComp object, as produced by pairwise.comparison and pairwise.filter }
 }
 
 \value{
@@ -40,9 +40,7 @@ results.summary(results,cdfname)
 
 \examples{
  \dontrun{
-   eset     <- read.affy()
-   eset.rma <- call.exprs(eset,"rma")
-   pw       <- pairwise.comparison(eset,"drug",c("formulaX",nothing"))
+   pw       <- pairwise.comparison(eset.rma,"group",c("A","P"))
    pw.filtered <- pairwise.filter(pw)
    summary     <- results.summary(pw.filtered,"hgu133a")
    write.annotation(file="spreadsheet.xls",summary)

@@ -4,13 +4,13 @@
 
 \title{ Produce a device for producing artwork for presentations and journals }
 \description{
-  journalpng generates a device to print an 11.5 x 8 inch 300 dpi figure (by default).
+  journalpng generates a device to print a 4 x 4 inch 300 dpi figure (by default).
   screenpng does the same, but 72dpi.
 }
 
 \usage{
-journalpng(file="figure.png",width=11, height=8.5,res=300)
-screenpng(file="figure.png",width=11, height=8.5,res=72)
+journalpng(file="figure.png",width=4, height=4,res=300)
+screenpng(file="figure.png",width=4, height=4,res=72)
 }
 
 
@@ -29,10 +29,11 @@ screenpng(file="figure.png",width=11, height=8.5,res=72)
 
 
 \examples{
- \dontrun{
-    journalpng(file="results/figure1.png"); # starts a new device
-    trad.scatter.plot(x,y)
-    dev.off();    # writes the file at this point.
+   \dontrun{
+     journalpng(file="results/figure1.png"); # starts a new device
+     trad.scatter.plot(exprs(eset)[,1],exprs(eset)[,2])
+     dev.off();    # writes the file at this point.
+   }
   }
 }
 \keyword{ misc }
