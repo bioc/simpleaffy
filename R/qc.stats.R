@@ -4,18 +4,18 @@ qc.stats <-function(unnormalised,normalised=NULL,logged=T,tau=0.015,alpha1=0.04,
   }
   x <- exprs(normalised);
   det <- detection.p.val(unnormalised,tau=tau,alpha1=alpha1,alpha2=alpha2);
-  dpv<-apply(det$call,2,function(x) { 
+  dpv<-apply(det$call,2,function(x) {
             x[x!="P"] <- 0;
 	    x[x=="P"] <- 1;
-            x<-as.numeric(x);			       
+            x<-as.numeric(x);
             return(100 * sum(x)/length(x));
   });
   sfs <- normalised@description@preprocessing$sfs;
   sfs2<-log2(sfs);
-  sfs3<-sapply(sfs2,function(a){ if( a <0 ) { -2^-a} else { 2^a}}) 
+  sfs3<-sapply(sfs2,function(a){ if( a <0 ) { -2^-a} else { 2^a}})
   if(!logged) { x <- log2(x); }
   n <- cleancdfname(cdfName(unnormalised));
-  if(n %in% c("hgu133acdf", "hgu133atagcdf", "hgu133bcdf", "hgu133plus2cdf", "hgu133a_2cdf", "hgu95acdf", 
+  if(n %in% c("hgu133acdf", "hgu133atagcdf", "hgu133bcdf", "hgu133plus2cdf", "hgu133a_2cdf", "hgu95acdf",
               "hgu95av2cdf", "hgu95bcdf", "hgu95ccdf", "hgu95dcdf", "hgu95ecdf")) {
     rats <- 2^cbind((x["AFFX-HUMGAPDH/M33197_3_at",] - x["AFFX-HUMGAPDH/M33197_5_at",]),
                     (x["AFFX-HUMGAPDH/M33197_3_at",] - x["AFFX-HUMGAPDH/M33197_M_at",]),
@@ -54,14 +54,14 @@ qc.stats <-function(unnormalised,normalised=NULL,logged=T,tau=0.015,alpha1=0.04,
                     det$call["AFFX-r2-P1-cre-3_at",]);
   }
   else  {
-     if (n %in% c("mgu74acdf", "mgu74av2cdf", "mgu74bcdf", "mgu74bv2cdf", "mgu74ccdf", "mgu74cv2cdf","hgu95acdf", 
+     if (n %in% c("mgu74acdf", "mgu74av2cdf", "mgu74bcdf", "mgu74bv2cdf", "mgu74ccdf", "mgu74cv2cdf","hgu95acdf",
                   "hgu95av2cdf", "hgu95bcdf", "hgu95ccdf", "hgu95dcdf", "hgu95ecdf","rae230acdf")) {
        spikes <- cbind(det$call["AFFX-BioB-3_at",],
                        det$call["AFFX-BioC-3_at",],
                        det$call["AFFX-BioDn-3_at",],
                       det$call["AFFX-CreX-3_at",]);
      }
-  } 
+  }
 
   spikes[spikes != "P"] <- 0;
   spikes[spikes == "P"] <- 1;
@@ -93,7 +93,8 @@ for(no in 1:length(unnormalised)){
        as.integer(cls),
        as.integer(grid[1]),as.integer(grid[2]),
        zonebg=double(grid[1] * grid[2]),
-       zonesd=double(grid[1] * grid[2]),corrected=double(length(this.array)));
+       zonesd=double(grid[1] *
+       grid[2]),corrected=double(length(this.array)), PACKAGE="simpleaffy");
   zonesd <- rbind(zonesd, result$zonesd);
   zonebg <- rbind(zonebg, result$zonebg);
   }
@@ -112,7 +113,7 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
   dpv <- x[,"%present"]
   dpv <- (round(100*dpv))/100;
   abg <- round(x[,"avbg"])
-	
+
   sfs <- sfs + 6.0;
   if(is.null(label)) { label <- 1:n }
   col=c("red","green");
@@ -121,7 +122,7 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
   d3 <- 0.0;
 
   for(i in 1:n) {
-    for(j in 1:n) { 
+    for(j in 1:n) {
       d1 <- max(abs(sfs[i] - sfs[j]),d1);
       d2 <- max(abs(dpv[i] - dpv[j]),d1);
       d3 <- max(abs(abg[i] - abg[j]),d3);
@@ -161,11 +162,11 @@ plot.qc.stats<-function(x,unnormalised,fc.line.col="black",sf.ok.region="light b
      ba  <- log2(x[i,3]);
      x2 <- (6 + gdh) * cos(i * arc);
      y2 <- (6 + gdh) * sin(i * arc);
-     if(gdh > gdh.thresh) { col = "red" } else {col="blue"}	
+     if(gdh > gdh.thresh) { col = "red" } else {col="blue"}
      points(x2,y2,pch=1,col=col);
      x2 <- (6 + ba) * cos(i * arc);
      y2 <- (6 + ba) * sin(i * arc);
-     if(ba > ba.thresh) { col = "red" } else {col="blue"}	
+     if(ba > ba.thresh) { col = "red" } else {col="blue"}
      points(x2,y2,pch=2,col=col);
 
      if(d2 > present.thresh) { col = "red" } else {col="blue"}

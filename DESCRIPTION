@@ -1,6 +1,6 @@
 Package: simpleaffy
 Title: Very simple high level analysis of Affymetrix data
-Version: 1.08
+Version: 1.09
 Author: Crispin J Miller
 Description: Provides high level functions for reading Affy .CEL
   files, phenotypic data, and then computing simplethings with it,
