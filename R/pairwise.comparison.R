@@ -49,7 +49,7 @@ function(x,group,members) {
 function(x,group,members) {
   pd <- pData(x);
   grp <- pd[,colnames(pd) == group];
-  return(x[is.element(grp,members),]);
+  return(x[,is.element(grp,members)]);
 }
 
 setGeneric("get.array.subset", function(x,group,members) standardGeneric("get.array.subset"))
@@ -120,7 +120,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   if(!is.null(spots)) {
     pmac <- detection.p.val(spots);
     results <- get.fold.change.and.t.test(x,group,members,logged=logged,a.order=a.order,b.order=b.order,method=method);
-    calls(results) <- pmac;
+    results@calls <- pmac$call;
   }
   else {
     results <- get.fold.change.and.t.test(x,group,members,logged=logged,a.order=a.order,b.order=b.order,method=method);

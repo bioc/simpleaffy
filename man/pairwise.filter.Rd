@@ -2,18 +2,19 @@
 \alias{pairwise.filter}
 
 \title{ Filter pairwise comparison statistics between two experimental groups }
+
 \description{
   Given the results of a pairwise.comparison, filter the resulting gene list on expression level, PMA calls (if available), fold change and t-test statistic
 }
 
-\usage {
-  pairwise.filter(object,eset,min.exp=log2(100),min.exp.no=0,min.present.no=3,fc=1.0,tt=0.001)
+\usage{
+  pairwise.filter(object,x,min.exp=log2(100),min.exp.no=0,min.present.no=3,fc=1.0,tt=0.001)
 }
 
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{object}{ a 'PairComp' object }
-  \item{eset}{ an 'exprSet' object used to filter by intensity }
+  \item{x}{ an 'exprSet' object used to filter by intensity }
   \item{min.exp}{ Filter genes using a minimum expression cut off }
   \item{min.exp.no}{ A gene must have an expression intensity greater than 'min.exp' in at least this number of chips }
   \item{min.present.no}{ A gene must be called present on at least this number of chips }
