@@ -7,7 +7,7 @@
 \description{
   Generates a visual summary of the various QC statistics recommended by Affymetrix in their 'Data Analysis Fundamentals' handbook.
 }
-\section{
+\usage{
 plot.qc.stats(x, fc.line.col = "black", sf.ok.region = "light blue", chip.label.col = "black", sf.thresh = 3, gdh.thresh = 3, ba.thresh = 3, present.thresh = 10, bg.thresh = 20, label = NULL, ...)
 }
 
