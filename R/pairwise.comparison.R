@@ -87,7 +87,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   ngene <- as.integer(length(a.samples[,1]));
   nbcol <- as.integer(length(b.samples[1,]));
 
-  if(class(logged) != "logical") stop("Parameter 'logged' should be TRUE or FALSE")
+  if(! is(logged, "logical")) stop("Parameter 'logged' should be TRUE or FALSE")
   if((nacol == 1) | (nbcol == 1))  warning("There was only one sample in one (or both) of your sample groups. Not computing t-tests - instead, returning 0.0 for p-scores...");
 
   c.res <- .C("FCMandTT",a.samples.array,b.samples.array,nacol,nbcol,ngene,as.logical(logged),pw,as.integer(m),ma = double(ngene),mb = double(ngene),fc = double(ngene),tt = double(ngene),PACKAGE="simpleaffy")
