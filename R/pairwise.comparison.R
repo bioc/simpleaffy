@@ -377,3 +377,5 @@ setMethod("plot","PairComp",function(x,y) plot.pairwise.comparison(x,y,...))
    }
 
 }
+
+

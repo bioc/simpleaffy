@@ -328,7 +328,7 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
   rats <- ratios(x);
   gdh <- rats[,2];
   ba  <- rats[,1];
-  bb  <- qcs@bioBCalls
+  bb  <- x@bioBCalls
 
   for(i in 1:n) {
     if(d1 > sf.thresh) { col = "red" } else {col="blue"}
