@@ -47,6 +47,16 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   if(scale) {
    cat(paste("scaling to a TGT of",tgt,"..."));
    sfs <- double(length(expression.calls[1,]));
+
+    res <- new("exprSet", 
+               exprs       = expression.calls,
+               phenoData   = bgc@phenoData,
+               annotation  = bgc@annotation, 
+               description = bgc@description, 
+               notes       = bgc@notes);
+    res@description@preprocessing$sfs = unlist(sfs);
+    res@description@preprocessing$tgt = tgt;
+
    for(x in 1:length(expression.calls[1,])) {
      vals <- sort(2^expression.calls[,x]);
      l <- length(vals);
@@ -62,15 +72,7 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
    res@description@preprocessing$sfs = stop("Arrays were not scaled") 
    res@description@preprocessing$tgt = stop("Arrays were not scaled") 
   }
-  res <- new("exprSet", 
-             exprs       = expression.calls,
-             phenoData   = bgc@phenoData,
-             annotation  = bgc@annotation, 
-             description = bgc@description, 
-             notes       = bgc@notes);
 
-  res@description@preprocessing$sfs = unlist(sfs);
-  res@description@preprocessing$tgt = tgt;
   return(res);
 }
 
