@@ -8,7 +8,7 @@
 }
 \usage{
 detection.p.val(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfname(cdfName(x))),alpha2=getAlpha2(cleancdfname(cdfName(x))),ignore.saturated=TRUE)
-
+}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ An unnormalised AffyBatch object }
@@ -26,8 +26,6 @@ detection.p.val(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfname(cdfName(
 \references{ http://bioinformatics.picr.man.ac.uk/ }
 \author{ Crispin J Miller }
 
- ~Make other sections like Warning with \section{Warning }{....} ~ 
-
 \note{
   Alpha1 and Alpha2 are parameters that change according to the chip type you are using. see \code{\link{getQCParams}} for more details.
 }
@@ -38,6 +36,5 @@ detection.p.val(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfname(cdfName(
    \dontrun{
      dpv <- detection.p.val(eset);
    }
-  }
 }
 \keyword{ misc }
