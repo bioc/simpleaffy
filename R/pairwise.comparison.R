@@ -57,18 +57,18 @@ setMethod("get.array.subset","AffyBatch",get.array.subset.affybatch);
 setMethod("get.array.subset","exprSet",get.array.subset.exprset);
 
 "get.fold.change.and.t.test" <- function(x,group,members,logged = TRUE, a.order=NULL,b.order=NULL,method=c("unlogged","logged","median")) {
-  
+
   a.samples <- exprs(get.array.subset(x,group,members[1]));
   b.samples <- exprs(get.array.subset(x,group,members[2]));
- 
+
   pw <- FALSE;
 
-  if(!is.null(a.order)) { 
+  if(!is.null(a.order)) {
     a.samples <- a.samples[,a.order];
-    if(!is.null(b.order)) { 
-      b.samples <- b.samples[,b.order]; 
+    if(!is.null(b.order)) {
+      b.samples <- b.samples[,b.order];
       pw <- TRUE;
- 
+
     }
     else {
      stop("Both a.order and b.order must be specified for a paired t-test");
@@ -98,7 +98,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   names(fc)       <- rownames(a.samples);
   rownames(means) <- rownames(a.samples);
   names(tt)       <- rownames(a.samples);
-  
+
   return(new("PairComp",fc=fc,tt=tt,means=means,group=group,members=members))
 }
 
@@ -111,7 +111,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
     pd <- unique(as.character(pData(x)[,group]))
     if(is.null(pd)) {
       stop(paste("Can't find a group called",group));
-    }      
+    }
     if(length(pd) != 2)  {
       stop("There must be exactly two groups for a pairwise comparison. Please specify which groups you want to compare.");
     }
@@ -125,14 +125,14 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   else {
     results <- get.fold.change.and.t.test(x,group,members,logged=logged,a.order=a.order,b.order=b.order,method=method);
   }
-  return(results); 
+  return(results);
 }
 
 
 pairwise.filter <- function(object,x,min.exp=log2(100),min.exp.no=0,min.present.no=3,fc=1.0,tt=0.001) {
 
-  if(class(object) != "PairComp") { stop("Can only filter an object of class 'PairComp'"); }
-  if(class(x) != "exprSet") { stop("Can only filter using class 'exprSet' for parameter 'x'"); }
+  if(! is(object, "Paircomp")) { stop("Can only filter an object of class 'PairComp'"); }
+  if(! is(x, "exprSet")) { stop("Can only filter using class 'exprSet' for parameter 'x'"); }
   pass.fc              <- (abs(fc(object)) > fc);
   pass.tt              <- (tt(object) < tt );
 
@@ -144,7 +144,7 @@ pairwise.filter <- function(object,x,min.exp=log2(100),min.exp.no=0,min.present.
 
   min.intensity.thresh <- rowSums(intensity.thresh)
 
-  
+
   pass.intensity <- (min.intensity.thresh >= min.exp.no);
 
   if(nrow(calls(object))>0) {
