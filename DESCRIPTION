@@ -10,3 +10,5 @@ Maintainer: Crispin Miller <cmiller@picr.man.ac.uk>
 Depends: affy
 License: GPL version 2 or later
 URL: http://www.bioconductor.org, http://www.bioinf.picr.man.ac.uk/simpleaffy/
+ReleaseLevel: devel
+
