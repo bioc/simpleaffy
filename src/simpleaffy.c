@@ -377,10 +377,10 @@ void rank(double *x, int nx, double *r) {
     }
     else {
       if(ntie > 1) {
-  while(prev < i) {
-    r[prev] = (double) ranksum/ (double) ntie;
-    prev++;
-  }
+	while(prev < i) {
+	  r[prev] = (double) ranksum/ (double) ntie;
+	  prev++;
+	}
       }
       rank++;
       ranksum = rank;
@@ -389,6 +389,13 @@ void rank(double *x, int nx, double *r) {
       ntie = 1;
     }
   }
+  if(ntie > 1) {
+    while(prev < i) {
+      r[prev] = (double) ranksum/ (double) ntie;
+      prev++;
+    }
+  }
+ 
 }
 
 /* a straight translation of relevant bits of the wilcox.test method in the R base library */
@@ -406,6 +413,7 @@ double wilcox(double *x, int n, double mu) {
   double SIGMA     = 0;
   double PVAL      = 0;
   double nx        = n;
+
   for(i = 0; i < nx; i++) {
     x[j] = x[i] - mu;
     if(x[j] != 0) j++; /* eliminate zeros */
@@ -443,9 +451,11 @@ double wilcox(double *x, int n, double mu) {
       prev = i;
     }
   }
-  z     = STATISTIC - nx * (nx + 1)/4;
-  SIGMA = sqrt(nx * (nx + 1) * (2 * nx + 1) / 24
-         - NTIES_SUM / 48);
+
+  NTIES_SUM += ntie * ntie * ntie - ntie; // added by Crispin 15 march 2005 - deals with ties in the largest ranks...
+
+  z     = STATISTIC - (nx * (nx + 1))/4;
+  SIGMA = sqrt((nx * (nx + 1) * (2 * nx + 1)) / 24 - (NTIES_SUM / 48));
   PVAL  = pnorm_approx(z / SIGMA);
   PVAL    = 1 - PVAL;
   return(PVAL);
