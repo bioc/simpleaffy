@@ -1,7 +1,7 @@
 % -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
 %\VignetteIndexEntry{simpleaffy primer}
 %\VignetteKeywords{Analysis, Affymetrix}
-%\VignetteDepends{simpleaffy}
+%\VignetteDepends{simpleaffy, affy}
 %\VignettePackage{simpleaffy}
 %documentclass[12pt, a4paper]{article}
 \documentclass[12pt]{article}
