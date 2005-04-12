@@ -43,17 +43,19 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   cat("done.\n");
   rownames(expression.calls) <- unique.pns;
   colnames(expression.calls) <- paste(sampleNames(bgc))
+
+  res <- new("exprSet", 
+              exprs       = expression.calls,
+              phenoData   = bgc@phenoData,
+              annotation  = bgc@annotation, 
+              description = bgc@description, 
+              notes       = bgc@notes);
+
 ########################### SCALING
   if(scale) {
-   cat(paste("scaling to a TGT of",tgt,"..."));
+   cat(paste("scaling to a TGT of",tgt,"...\n"));
    sfs <- double(length(expression.calls[1,]));
 
-    res <- new("exprSet", 
-               exprs       = expression.calls,
-               phenoData   = bgc@phenoData,
-               annotation  = bgc@annotation, 
-               description = bgc@description, 
-               notes       = bgc@notes);
 
    for(x in 1:length(expression.calls[1,])) {
      vals <- sort(2^expression.calls[,x]);
@@ -65,9 +67,9 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
      expression.calls[,x] <- log2((2^expression.calls[,x]) * sf)
      sfs[x] <- sf; 
    }
-    res@description@preprocessing$sfs = unlist(sfs);
-    res@description@preprocessing$tgt = tgt;
-
+   res@exprs <- expression.calls;
+   res@description@preprocessing$sfs = unlist(sfs);
+   res@description@preprocessing$tgt = tgt;
   }
   else {
    res@description@preprocessing$sfs = stop("Arrays were not scaled") 
