@@ -25,7 +25,7 @@ call.exprs(x, algorithm = "rma", do.log = TRUE, sc = 100, method = NA)
 \url{http://bioinformatics.picr.man.ac.uk/}
 \author{ Crispin J Miller }
 
-\seealso{ \code{\link{read.affy}}, \code{\link{expresso}}, \code{\link{justRMA}}, \code{\link{justMAS}} }
+\seealso{ \code{\link{read.affy}}, \code{\link[affy]{expresso}}, \code{\link[affy]{justRMA}}, \code{\link{justMAS}} }
 \keyword{ misc }
 \examples{ 
   \dontrun{

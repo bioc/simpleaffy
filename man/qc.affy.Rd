@@ -35,7 +35,7 @@ qc.affy(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,
 }
 
 \value{
-  A QCStats object describing the supplied \code{\link{AffyBatch}}
+  A QCStats object describing the supplied \code{\link[affy]{AffyBatch}}
 }
 
 \author{ Crispin J Miller }
