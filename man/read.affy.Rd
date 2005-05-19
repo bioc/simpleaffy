@@ -28,7 +28,7 @@ read.affy(covdesc = "covdesc",path=".", ...)
 \url{ http://bioinformatics.picr.man.ac.uk/ }
 \author{ Crispin J Miller }
 
-\seealso{ \code{\link{ReadAffy}}, \code{\link[affy]{AffyBatch}} \code{\link{data.frame}} \code{\link[Biobase]{phenoData}}}
+\seealso{ \code{\link[affy]{ReadAffy}}, \code{\link[affy]{AffyBatch}} \code{\link{data.frame}} \code{\link[Biobase]{phenoData}}}
 \keyword{ misc }
 \examples{ 
   \dontrun{
