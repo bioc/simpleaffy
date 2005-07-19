@@ -163,7 +163,7 @@ done, and the results of the comparisons, see our website:
 
 \section{Quality Control}
 One of the nice things about the Affymetrix platform is the collection
-of QC metrics (and accomanying guidelines) that are available. These
+of QC metrics (and accompanying guidelines) that are available. These
 may help flag up arrays that may have problems, and are described in
 detail in the Affymetrix {\it Data Analysis Fundamentals} manual,
 which can be found on their website at {\url
@@ -243,7 +243,7 @@ R> getGapdh3(cleancdfname(cdfName(x))) #where x is an exprSet object
 
 A plot of qc data can also be obtained by \Rfunction{plot(qc)}. The
 resultant image takes a bit of explaining. The three dotted circles
-represnt 3-fold up-regulation, zero change and three-fold down
+represent 3-fold up-regulation, zero change and three-fold down
 regulation (labelled +3, 0 and -3) respectively. Each array is
 represented by a segment of the image, with circles and triangles
 representing beta-actin and gapdh 3'/5' ratios, respectively. High

@@ -18,7 +18,7 @@ annotation (produced by get.annotation).
 }
 
 \usage{
-get.annotation(x, cdfname)
+get.annotation(x, cdfname,verbose=FALSE)
 write.annotation(summary,file="results/annotation.table.xls")
 results.summary(results,cdfname)
 }
@@ -26,6 +26,7 @@ results.summary(results,cdfname)
 \arguments{
   \item{x}{ a vector of probe names }
   \item{cdfname}{ the name of the chip (as produced by cdfName(AffyBatch) }
+  \item{verbose}{ print out information if problems are found looking things up in the annotation data }
   \item{summary}{ a table of data to write in a format appropriate to read into Excel }
   \item{file}{ a table delimited file }
   \item{results}{ a PairComp object, as produced by pairwise.comparison and pairwise.filter }
