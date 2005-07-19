@@ -13,7 +13,7 @@
 }
 
 
-get.annotation <- function (x, cdfname,verbose=F) {
+get.annotation <- function (x, cdfname,verbose=FALSE) {
     library(cdfname, character.only = T)
     symb <- .strip.list(mget(x, envir = get(paste(cdfname, "SYMBOL",
         sep = "")),ifnotfound=list(.if.probeset.not.found)))
