@@ -171,8 +171,8 @@ qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=clean
     normalised <- call.exprs(unnormalised,"mas5");
   }
 
-  if(!haveQCParams(cleancdfname(cdfName(unnormalised)))) {
-	stop(paste("I'm sorry, I do not know about chip type:",cleancdfname(cdfName(unnormalised))))
+  if(!haveQCParams(cdfn)) {
+	stop(paste("I'm sorry, I do not know about chip type:",cdfn))
   }
 
   x <- exprs(normalised);
