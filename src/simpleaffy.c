@@ -452,7 +452,7 @@ double wilcox(double *x, int n, double mu) {
     }
   }
 
-  NTIES_SUM += ntie * ntie * ntie - ntie; // added by Crispin 15 march 2005 - deals with ties in the largest ranks...
+  NTIES_SUM += ntie * ntie * ntie - ntie; /* added by Crispin 15 march 2005 - deals with ties in the largest ranks... */
 
   z     = STATISTIC - (nx * (nx + 1))/4;
   SIGMA = sqrt((nx * (nx + 1) * (2 * nx + 1)) / 24 - (NTIES_SUM / 48));
@@ -513,7 +513,7 @@ return( p ) ;
 }
 
 
-/* compute for all probes
+/* compute for all probes */
 /* assumes that pm mm pairs line up in the arrays and that the names do to. Also assumes that probes within a set are contiguous in each array. */
 /* pm, mm and names are all length n long, and are, effectively, three columns from a matrix */
 /* returns with 'dpval' containing the detection p values for each probeset. */
@@ -587,6 +587,7 @@ void bgmas(int *idx, int *nidx,
 
     gn = gx + gxn * gy;
 
+
     scratches[gn][ends[gn]] = val;
 
     ends[gn]++;  /* store the number of spots in each cell, and also use this to find out where the stuff is in scratch */
@@ -625,10 +626,10 @@ void bgmas(int *idx, int *nidx,
     nz   = 0;
     for(gy =0; gy < gyn;gy++) {
       for(gx =0; gx < gxn;gx++) {
-  w = 1.0 / ((x - xc[gx]) * (x - xc[gx]) + (y - yc[gy]) * (y - yc[gy])+ 100.0);
-  wsum += w;
-  bg += w * zonebg[gx + gxn * gy];
-  nz += w * zonesd[gx + gxn * gy];
+	w = 1.0 / ((x - xc[gx]) * (x - xc[gx]) + (y - yc[gy]) * (y - yc[gy])+ 100.0);
+	wsum += w;
+	bg += w * zonebg[gx + gxn * gy];
+	nz += w * zonesd[gx + gxn * gy];
       }
     }
     bg /= wsum;

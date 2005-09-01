@@ -14,7 +14,12 @@ detection.p.val <- function(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfn
   else { sat <- -1; }
   
   pns <- probeNames(x);
-  unique.pns <- unique(pns);
+  o <- order(pns)
+  pns <- pns[o]
+  pms <- pms[o,,drop=FALSE]
+  mms <- mms[o,,drop=FALSE]
+  unique.pns <- sort(unique(pns));
+
   cat("Computing p-values\n");
   p<-sapply(1:length(pms[1,]),function(x) { 
     .C("DetectionPValue",as.double(pms[,x]),as.double(mms[,x]),as.character(pns),as.integer(length(mms[,x])),

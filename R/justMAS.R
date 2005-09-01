@@ -32,7 +32,12 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   pms <-as.matrix(pm(bgc))
   mms <-as.matrix(mm(bgc))
   pns <- probeNames(bgc);
-  unique.pns <- unique(pns);
+  o <- order(pns)
+  pns <- pns[o]
+  pms <- pms[o,,drop=FALSE]
+  mms <- mms[o,,drop=FALSE]
+  unique.pns <- sort(unique(pns));
+
 ########################### SUMMARIES
   cat("done.\nComputing expression calls... \n");
   expression.calls<-sapply(1:length(pms[1,]),function(x) { 
@@ -87,10 +92,14 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   if(normalize) {
     bgc <- bg.correct.sa(unnormalised);
   }
-  pms <-pm(bgc)
-  mms <-mm(bgc)
+  pms <-as.matrix(pm(bgc))
+  mms <-as.matrix(mm(bgc))
   pns <- probeNames(bgc);
-  unique.pns <- unique(pns);
+  o <- order(pns)
+  pns <- pns[o]
+  pms <- pms[o,,drop=FALSE]
+  mms <- mms[o,,drop=FALSE]
+  unique.pns <- sort(unique(pns));
 ########################### SUMMARIES
   expression.calls<-sapply(1:length(pms[1,]),function(x) { 
     .C("GetExpressionLevels",as.double(pms[,x]),as.double(mms[,x]),as.character(pns),as.integer(length(mms[,x])),
