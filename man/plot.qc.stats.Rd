@@ -9,7 +9,7 @@
   Generates a visual summary of the various QC statistics recommended by Affymetrix in their 'Data Analysis Fundamentals' handbook.
 }
 \section{Usage}{
-plot.qc.stats(x, fc.line.col = "black", sf.ok.region = "light blue", chip.label.col = "black", sf.thresh = 3, gdh.thresh = 1.25, ba.thresh = 3, present.thresh = 10, bg.thresh = 20, label = NULL,title="QC Stats",spread=c(-8,8),usemid=F,type="l", ...)
+plot.qc.stats(x, fc.line.col = "black", sf.ok.region = "light blue", chip.label.col = "black", sf.thresh = 3, gdh.thresh = 1.25, ba.thresh = 3, present.thresh = 10, bg.thresh = 20, label = NULL,title="QC Stats",spread=c(-8,8),usemid=F,type="l",cex=1, ...)
 }
 \arguments{
   \item{x}{ A \code{QCStats} object }
@@ -25,6 +25,7 @@ plot.qc.stats(x, fc.line.col = "black", sf.ok.region = "light blue", chip.label.
   \item{main}{ The title for the plot }
   \item{usemid}{ If true use 3'/M ratios for the GAPDH and beta actin probes }
   \item{type}{ If 'l' draw the plot as a vertical line, if 'c' draw it as a circle }
+  \item{cex}{ Value to scale character size by (e.g. 0.5 means that the text should be plotted half size) }
   \item{\dots}{ Other parameters to pass through to \code{plot} }
 }
 \details{

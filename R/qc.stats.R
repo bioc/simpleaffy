@@ -273,7 +273,7 @@ for(no in 1:length(unnormalised)){
 
 
 
-.plot.qc.stats2<-function(x,fc.line.col,sf.ok.region,chip.label.col,sf.thresh,gdh.thresh,ba.thresh,present.thresh,bg.thresh,label,main,usemid,...) {
+.plot.qc.stats2<-function(x,fc.line.col,sf.ok.region,chip.label.col,sf.thresh,gdh.thresh,ba.thresh,present.thresh,bg.thresh,label,main,usemid,cex=1,...) {
 
   sfs    <- log2(sfs(x))
 
@@ -321,9 +321,9 @@ for(no in 1:length(unnormalised)){
   x1 <- 9 * cos(i * arc);
   y1 <- 9 * sin(i * arc);
   points(x1,y1,pch=".",col=fc.line.col);
-  text(0,3,"-3",col=fc.line.col)
-  text(0,6,"0",col=fc.line.col)
-  text(0,9,"+3",col=fc.line.col)
+  text(0,3,"-3",col=fc.line.col,cex=cex)
+  text(0,6,"0",col=fc.line.col,cex=cex)
+  text(0,9,"+3",col=fc.line.col,cex=cex)
   arc <- 2 * pi / n;
   rats <- ratios(x);
   if(!usemid) {
@@ -344,7 +344,7 @@ for(no in 1:length(unnormalised)){
      y2 <- 6 * sin(i * arc);
      lines(c(x2,x1),c(y2,y1),col=col);
      points(x1,y1,col=col,pch=20);
-     text(x1,y1,col=chip.label.col,label=label[i],adj=0.2 * c(cos(i * arc),sin(i * arc)));
+     text(x1,y1,col=chip.label.col,label=label[i],adj=0.2 * c(cos(i * arc),sin(i * arc)),cex=cex);
      x2 <- (6 + gdh[i]) * cos(i * arc);
      y2 <- (6 + gdh[i]) * sin(i * arc);
      if(gdh[i] > gdh.thresh) { col = "red" } else {col="blue"}	
@@ -357,17 +357,17 @@ for(no in 1:length(unnormalised)){
      if(d2 > present.thresh) { col = "red" } else {col="blue"}
      x2 <- (9 * cos(i * arc));
      y2 <- (9 * sin(i * arc));
-     text(x2,y2,label=paste(dpv[i],"%",sep=""),col=col);
+     text(x2,y2,label=paste(dpv[i],"%",sep=""),col=col,cex=cex);
 
      if(d3 > bg.thresh) { col = "red" } else {col="blue"}
      x2 <- (11 * cos(i * arc));
      y2 <- (11 * sin(i * arc));
-     text(x2,y2,label=abg[i],col=col);
+     text(x2,y2,label=abg[i],col=col,cex=cex);
 
      if(bb[i]!="P") {
        x2 <- (12 * cos(i * arc));
        y2 <- (12 * sin(i * arc));
-       text(x2,y2,label="bioB",col="red");
+       text(x2,y2,label="bioB",col="red",cex=cex);
      }
   }
   if(!usemid) {
@@ -378,9 +378,9 @@ for(no in 1:length(unnormalised)){
   }
 }
 
-plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.label.col="black",sf.thresh = 3.0,gdh.thresh = 1.25,ba.thresh = 3.0,present.thresh=10,bg.thresh=20,label=NULL,main="QC Stats",usemid=F,spread=c(-8,8),type="l",...) {
+plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.label.col="black",sf.thresh = 3.0,gdh.thresh = 1.25,ba.thresh = 3.0,present.thresh=10,bg.thresh=20,label=NULL,main="QC Stats",usemid=F,spread=c(-8,8),type="l",cex=1,...) {
   if(type=="c") { 
-    .plot.qc.stats2(x,fc.line.col,sf.ok.region,chip.label.col,sf.thresh,gdh.thresh,ba.thresh,present.thresh,bg.thresh,label,main,usemid,...) 
+    .plot.qc.stats2(x,fc.line.col,sf.ok.region,chip.label.col,sf.thresh,gdh.thresh,ba.thresh,present.thresh,bg.thresh,label,main,usemid,cex,...) 
     return()
   }
   old.par <- par()
@@ -417,16 +417,12 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
   # the title
   if(is.null(main)) { main="" }
   plot(0,0,xlim=range(0,1),ylim=range(0,1),type="n",yaxs="i",xaxt="n",yaxt="n",bty="n")
-  text(0.5,0.5,labels=main,adj=0,cex=2)
+  text(0.5,0.5,labels=main,adj=0,cex=cex*2)
 
   # write out the array names
 
-  cex <- 1.0
-  while((maxwidth <- max(sapply(label,function(a) { strwidth(a,units="f",cex)} ))) >= 1) cex <- cex/maxwidth
-
   plot(0,0,xlim=range(0,1),ylim=range(-1,n),type="n",yaxs="i",xaxt="n",yaxt="n",bty="n")
-  text(1,(1:n)-0.5,labels=label,adj=1)
-
+  text(1,(1:n)-0.5,labels=label,adj=1,cex=cex)
   plot(0,0,xlim=spread,ylim=c(-1,n),type="n",xaxs="i",yaxs="i",xaxt="n",yaxt="n",bty="n")
 
   x1 <- (sf.thresh/2.0 +  meansf)
@@ -442,13 +438,13 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
   lines(c(1,1),c(0,n),lty=2,col="grey")
   lines(c(2,2),c(0,n),lty=2,col="grey")
   lines(c(3,3),c(0,n),lty=2,col=fc.line.col)
-  text(3,-1,"3",pos=3,col=fc.line.col)
-  text(2,-1,"2",pos=3,col=fc.line.col)
-  text(1,-1,"1",pos=3,col=fc.line.col)
-  text(-3,-1,"-3",pos=3,col=fc.line.col)
-  text(-2,-1,"-2",pos=3,col=fc.line.col)
-  text(-1,-1,"-1",pos=3,col=fc.line.col)
-  text(0,-1,"0",pos=3,col=fc.line.col)
+  text(3,-1,"3",pos=3,col=fc.line.col,cex=cex)
+  text(2,-1,"2",pos=3,col=fc.line.col,cex=cex)
+  text(1,-1,"1",pos=3,col=fc.line.col,cex=cex)
+  text(-3,-1,"-3",pos=3,col=fc.line.col,cex=cex)
+  text(-2,-1,"-2",pos=3,col=fc.line.col,cex=cex)
+  text(-1,-1,"-1",pos=3,col=fc.line.col,cex=cex)
+  text(0,-1,"0",pos=3,col=fc.line.col,cex=cex)
 
   rats <- ratios(x);
   if(!usemid) {
@@ -488,28 +484,28 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
      x2 <- spread[1]
      y2 <- i-0.25
      dpvs<-paste(dpv[i],"%",sep="")
-     text(x2,y2,label=dpvs,col=col,pos=4);
+     text(x2,y2,label=dpvs,col=col,pos=4,cex=cex);
      if(d3 > bg.thresh) { col = "red" } else {col="blue"}
      x2 <- spread[1]
      y2 <- i-0.75
-     text(x2,y2,label=abg[i],col=col,pos=4);
+     text(x2,y2,label=abg[i],col=col,pos=4,cex=cex);
      if(bb[i]!="P") {
-       text(0,i-1,label="bioB",col="red");
+       text(0,i-1,label="bioB",col="red",cex=cex);
      }
 
   }
   plot(0,0,xlim=range(0,1),ylim=range(0,1),type="n",yaxs="i",xaxt="n",yaxt="n",bty="n")
   if(!usemid) {
     points(0.25,0.25,pch=1)
-    text(0.3,0.25,colnames(rats)[2],pos=4)
+    text(0.3,0.25,colnames(rats)[2],pos=4,cex=cex)
     points(0.25,0.5,pch=2)
-    text(0.3,0.5,colnames(rats)[1],pos=4)
+    text(0.3,0.5,colnames(rats)[1],pos=4,cex=cex)
   }
   else {
     points(0.25,0.25,pch=1)
-    text(0.3,0.25,colnames(rats)[4],pos=4)
+    text(0.3,0.25,colnames(rats)[4],pos=4,cex=cex)
     points(0.25,0.5,pch=2)
-    text(0.3,0.5,colnames(rats)[3],pos=4)
+    text(0.3,0.5,colnames(rats)[3],pos=4,cex=cex)
   }
   
   ow <- options("warn")$warn
