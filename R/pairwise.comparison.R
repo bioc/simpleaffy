@@ -60,10 +60,18 @@ function(x,group,members) {
   return(x[,is.element(grp,members)]);
 }
 
+"get.array.indices" <-
+function(x,group,members) {
+  pd <- pData(x);
+  grp <- pd[,colnames(pd) == group];
+  i <- 1:length(grp)
+  return(i[is.element(grp,members)]);
+}
+
 setGeneric("get.array.subset", function(x,group,members) standardGeneric("get.array.subset"))
 setMethod("get.array.subset","AffyBatch",get.array.subset.affybatch);
 setMethod("get.array.subset","exprSet",get.array.subset.exprset);
-
+ 
 "get.fold.change.and.t.test" <- function(x,group,members,logged = TRUE, a.order=NULL,b.order=NULL,method=c("unlogged","logged","median")) {
   
   a.samples <- exprs(get.array.subset(x,group,members[1]));
@@ -82,6 +90,7 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
      stop("Both a.order and b.order must be specified for a paired t-test");
     }
   }
+  if(length(a.order) != length(b.order)) { stop("a.order and b.order must be the same length in a paired t test") }
   method <- match.arg(method)
   m <- switch(method,
               logged   = 2,
@@ -98,11 +107,22 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   if(class(logged) != "logical") stop("Parameter 'logged' should be TRUE or FALSE")
   if((nacol == 1) | (nbcol == 1))  warning("There was only one sample in one (or both) of your sample groups. Not computing t-tests - instead, returning 0.0 for p-scores...");
 
-  c.res <- .C("FCMandTT",a.samples.array,b.samples.array,nacol,nbcol,ngene,as.logical(logged),pw,as.integer(m),ma = double(ngene),mb = double(ngene),fc = double(ngene),tt = double(ngene),PACKAGE="simpleaffy")
+  c.res <- .C("FCM",a.samples.array,b.samples.array,nacol,nbcol,ngene,as.logical(logged),as.integer(m),ma = double(ngene),mb = double(ngene),fc = double(ngene),PACKAGE="simpleaffy")
   means <- cbind(c.res$ma,c.res$mb);
   colnames(means) <- members;
   fc <- c.res$fc;
-  tt <- c.res$tt;
+
+  if(!pw) {  
+    ai <- dim(a.samples)[2]    
+    bi <- dim(b.samples)[2]
+    tt <- fastT(cbind(a.samples,b.samples),1:ai,(ai+1):(ai+bi),var.equal=FALSE)
+    tt <- 2* pt(-abs(tt$z),df=ai+bi-2)
+  }
+  else {
+    i <- 1:(dim(a.samples)[1])
+    tt <- sapply(i,function(y) { t.test(a.samples[y,],b.samples[y,],paired=T)$p.val})
+  }
+
   names(fc)       <- rownames(a.samples);
   rownames(means) <- rownames(a.samples);
   names(tt)       <- rownames(a.samples);
@@ -115,9 +135,6 @@ setMethod("get.array.subset","exprSet",get.array.subset.exprset);
   
   return(new("PairComp",fc=fc,tt=tt,means=means,group=group,members=members,pData=these.pd,calculated.from=x))
 }
-
-
-
 
 
 "pairwise.comparison" <- function(x,group,members=NULL,spots=NULL,a.order=NULL,b.order=NULL,method="unlogged",logged=TRUE) {
