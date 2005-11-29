@@ -6,8 +6,6 @@
 #include "R_ext/Boolean.h"
 
 
-/* T test stuff from Numerical Recipes in C */
-
 double log2(double v) {
   return log(v)/log(2);
 }
@@ -149,96 +147,6 @@ double covariance( double *dataa, double *datab, int l, double meana, double mea
     return covar ;
   }
 
-/** and the standard distribution */
-double standard_deviation(double *dataa, double *datab, int l, double meana, double meanb){
-  double cov = covariance(dataa,datab,l,meana,meanb);
-  double vara= variance(dataa,l,meana);
-  double varb= variance(datab,l,meanb);
-  double sd = sqrt((vara + varb - 2* cov)/(double)l);
-  return sd;
-}
-
-
-double cof[6] = { 76.18009172947146,     -86.5053203032941677,
-      24.01409824083091,     -1.231739572450155,
-      0.1208650973866179e-2, -0.5395239384953e-5  } ;
-/**
- * Computes the ln of the gamma function --
- * "the gamma function is like factorial but for doubles (ish)" (c)C.Miller 2003
- */
-double gammln( double xx ) {
-  double x, y, tmp, ser ;
-  int j;
-  y = x = xx ;
-  tmp = x + 5.5 ;
-  tmp -= ( x + 0.5 ) * log( tmp ) ;
-  ser = 1.000000000190015 ;
-  for(j = 0 ; j < 6 ; j++ ) {
-    ser += cof[ j ] / ++y ;
-  }
-  return -tmp + log( 2.5066282746310005 * ser / x ) ;
-}
-
-double betacf_new( double a, double b, double x )
-  {
-    double eps=3E-7;
-    double fpmin=1E-30;
-    int maxIterations = 1000;
-    int m,m2;
-    double aa,c,d,del,h,qab,qam,qap;
-    qab=a+b;
-    qap=a+1.0;
-    qam=a-1.0;
-    c=1.0;
-    d=1.0-qab*x/qap;
-    if(fabs(d) < fpmin) d=fpmin;
-    d=1.0/d;
-    h=d;
-    for(m=1;m<=maxIterations;m++) {
-      m2=2*m;
-      aa=m*(b-m)*x/((qam+m2)*(a+m2));
-      d=1.0+aa*d;
-      if(fabs(d) < fpmin) d=fpmin;
-      c=1.0+aa/c;
-      if(fabs(c) < fpmin) c=fpmin;
-      d=1.0/d;
-      h *= d*c;
-      aa = -(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
-      d  = 1.0+aa*d;
-      if(fabs(d) < fpmin) d=fpmin;
-      c = 1.0+aa/c;
-      if(fabs(c) < fpmin) c=fpmin;
-      d=1.0/d;
-      del=d*c;
-      h *=del;
-      if(fabs(del-1.0) <= eps) break;
-    }
-    if(m > maxIterations) error("a or b too big or not enough iterations in betacf");
-    return h;
-  }
-
-
-/**
- * Returns the incomplete beta function Ix(a,b)
- */
-double betai( double a, double b, double x ) {
-  double bt ;
-  if(x <0.0 || x > 1.0) error("Bad x in batai routine.");
-  if( x == 0.0 || x == 1.0 )
-    bt = 0.0 ;
-
-  else
-    bt = exp( gammln( a + b ) - gammln( a ) - gammln( b ) +
-        a * log( x ) + b * log( 1.0 - x ) ) ;
-
-  if( x < ( a + 1.0 ) / ( a + b + 2.0 ) )
-    return bt * betacf_new( a, b, x ) / a ;
-
-  else
-    return 1.0 - bt * betacf_new( b, a, 1.0 - x ) / b ;
-}
-
-
 double mean(double *a, double nx) {
   int    i = 0;
   double r = 0;
@@ -247,56 +155,7 @@ double mean(double *a, double nx) {
   return r;
 }
 
-/**
- * Compute the student's t-test with unequal variances between arrays a and b
- */
-double get_pairwise_t_test( double* a, int na, double* b)  {
-    double meana = mean( a, na ) ;
-    double meanb = mean( b, na ) ;
-    double sd  = standard_deviation(a, b, na, meana,meanb ) ;
-    double t,df,prob;
-    if((meana == meanb) && sd == 0) {
-      return sqrt(-1);       /* Not a number! :-) */
-    }
-    t = ( meana - meanb ) / sd;
-    df = (double) (na - 1);
-    prob = betai( 0.5 * df, 0.5, df / ( df + t*t ) ) ;
-    return prob ;
-  }
-
-
-
-
-
-
-
-/**
- * Compute the student's t-test with unequal variances between arrays a and b
- */
-double get_t_test( double* a, int na, double* b, int nb )  {
-    double meana = mean( a, na ) ;
-    double vara = variance( a, na, meana ) ;
-    double meanb = mean( b, nb ) ;
-    double varb = variance( b, nb, meanb ) ;
-    double t,df,prob;
-    if((meana == meanb) && (vara == varb)) {
-      return sqrt(-1); /* Not a number! :-) */
-    }
-    else {
-      t = ( meana - meanb ) / sqrt( vara / na + varb / nb ) ;
-      df = sqr( vara / na + varb / nb ) /
-           ( sqr( vara / na ) / ( na - 1 ) + sqr( varb / nb ) / ( nb - 1 ) ) ;
-      prob = betai( 0.5 * df, 0.5, df / ( df + sqr( t ) ) ) ;
-    }
-    return prob ;
-  }
-
-
-
-
-
-
-void FCMandTT(double *a, double *b, int *nacol, int *nbcol, int *ngene, Rboolean *isLogged, Rboolean *doPairwise, int *meth, double *ma, double *mb, double*fc, double *tt) {
+void FCM(double *a, double *b, int *nacol, int *nbcol, int *ngene, Rboolean *isLogged, int *meth, double *ma, double *mb, double*fc) {
   int idx = 0;
   int gene_idx_a=0;
   int gene_idx_b=0;
@@ -324,15 +183,6 @@ void FCMandTT(double *a, double *b, int *nacol, int *nbcol, int *ngene, Rboolean
     ma[idx] = get_ave(tmpa,*nacol,*isLogged,*meth);
     mb[idx] = get_ave(tmpb,*nbcol,*isLogged,*meth);
     fc[idx] = ma[idx] - mb[idx];
-    if(!*doPairwise) {
-      if((*nacol  <2) || (*nbcol < 2)) tt[idx] = 0.0;
-      else tt[idx] = get_t_test(&a[gene_idx_a],*nacol,&b[gene_idx_b],*nbcol);
-    }
-    else {
-      if(*nacol != *nbcol) { error("Need the same number of replicates in each group for paired t-tests");}
-      if((*nacol  <2) || (*nbcol < 2)) tt[idx] = 0.0;
-      else tt[idx] = get_pairwise_t_test(&a[gene_idx_a],*nacol,&b[gene_idx_b]);
-    }
     idx++;
     gene_idx_a += *nacol;
     gene_idx_b += *nbcol;
@@ -445,7 +295,7 @@ double wilcox(double *x, int n, double mu) {
     }
     else {
       if(ntie > 1) {
-  NTIES_SUM += ntie * ntie * ntie - ntie;
+	NTIES_SUM += ntie * ntie * ntie - ntie;
       }
       ntie = 0;
       prev = i;
@@ -473,43 +323,38 @@ double pma(double *pms, double*mms, int n, double tao,double sat) {
   int last     = 0;
   double *dv   = 0;
   double p     = 0;
-if( sat >= 0 )
-{
-ignore = ( int * )R_alloc( n, sizeof( int ) ) ;
-/* saturation correction from the paper */
-totalSat = 0 ;
-for( i = 0 ; i < n ; i++ )
-{
-  if( mms[ i ] > sat )
-  {
-    ignore[ i ] = 1 ;
-    totalSat++ ;
-  }
-  else
-    ignore[ i ] = 0 ;
-}
-last = 0 ;
-if( ( totalSat > 0 ) & ( totalSat < n ) )
-  { /*  ignore probes with saturated mms unless they're all saturated */
-  for( i = 0 ; i < n ; i++ )
-  {
-    if( !ignore[ i ] )
-    {
-      pms[ last ] = pms[ i ] ;
-      mms[ last ] = mms[ i ] ;
-      last++ ;
+  if( sat >= 0 ) {
+    ignore = ( int * )R_alloc( n, sizeof( int ) ) ;
+    /* saturation correction from the paper */
+    totalSat = 0 ;
+    for( i = 0 ; i < n ; i++ ) {
+      if( mms[ i ] > sat )  {
+	ignore[ i ] = 1 ;
+	totalSat++ ;
+      }
+      else
+	ignore[ i ] = 0 ;
+    }
+    last = 0 ;
+    if( ( totalSat > 0 ) & ( totalSat < n ) )  { /*  ignore probes 
+						     with saturated mms unless 
+						     they're all saturated */
+      for( i = 0 ; i < n ; i++ )  {
+	if( !ignore[ i ] )  {
+	  pms[ last ] = pms[ i ] ;
+	  mms[ last ] = mms[ i ] ;
+	  last++ ;
+	}
+      }
+      n = last ;
     }
   }
-  n = last ;
-}
-}
-dv = ( double * )R_alloc( n, sizeof( double ) ) ;
-for( i = 0 ; i < n ; i++ )
-{
-dv[ i ] = ( pms[ i ] - mms[ i ] ) / ( pms[ i ] + mms[ i ] ) ;
-}
-p = wilcox( dv, i, tao ) ;
-return( p ) ;
+  dv = ( double * )R_alloc( n, sizeof( double ) ) ;
+  for( i = 0 ; i < n ; i++ ) {
+    dv[ i ] = ( pms[ i ] - mms[ i ] ) / ( pms[ i ] + mms[ i ] ) ;
+  }
+  p = wilcox( dv, i, tao ) ;
+  return( p ) ;
 }
 
 
@@ -523,7 +368,7 @@ void DetectionPValue (double *pm, double *mm, char **names, int *nprobes, double
   int j = 0;
   for(i = 1; i < *nprobes; i++) {
     if(strcmp(names[i],names[start]) != 0) {
-  dpval[j] = pma(&(pm[start]),&(mm[start]),i-start,*tao,*sat);
+      dpval[j] = pma(&(pm[start]),&(mm[start]),i-start,*tao,*sat);
       start = i;
       j++;
       if(j > *nprobesets) { error("Expecting %d unique probesets, found %d\n",*nprobesets,j); }
