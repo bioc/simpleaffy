@@ -15,8 +15,8 @@
 \value{
   An AffyBatch object
 }
-\references{ http://bioinformatics.picr.man.ac.uk/ }
-\url{http://www.affymetrix.com/support/technical/technotes/statistical_reference_guide.pdf}
+\references{ \url{http://bioinformatics.picr.man.ac.uk/}
+\url{http://www.affymetrix.com/support/technical/technotes/statistical_reference_guide.pdf}}
 \author{ 
   Crispin J Miller 
 }

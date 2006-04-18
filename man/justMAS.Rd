@@ -27,7 +27,7 @@
   An AffyBatch object, with, in addition, scale-factors for each array stored in the object's \code{description@preprocessing@sfs} slot, and the target intensity the arrays were scaled to in  \code{description@preprocessing@tgt}
 }
 
-\url{ http://bioinformatics.picr.man.ac.uk/ }
+\references{\url{ http://bioinformatics.picr.man.ac.uk/}}
 
 \author{ Crispin J Miller }
 

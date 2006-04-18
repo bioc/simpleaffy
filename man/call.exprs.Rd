@@ -22,7 +22,7 @@ call.exprs(x, algorithm = "rma", do.log = TRUE, sc = 100, method = NA)
 \value{
   An AffyBatch object containing expression summaries.
 }
-\url{http://bioinformatics.picr.man.ac.uk/}
+\references{\url{http://bioinformatics.picr.man.ac.uk/}}
 \author{ Crispin J Miller }
 
 \seealso{ \code{\link{read.affy}}, \code{\link[affy]{expresso}}, \code{\link[affy]{justRMA}}, \code{\link{justMAS}} }

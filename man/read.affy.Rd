@@ -25,7 +25,7 @@ read.affy(covdesc = "covdesc",path=".", ...)
 \value{
   An AffyBatch object
 }
-\url{ http://bioinformatics.picr.man.ac.uk/ }
+\references{\url{ http://bioinformatics.picr.man.ac.uk/}}
 \author{ Crispin J Miller }
 
 \seealso{ \code{\link[affy]{ReadAffy}}, \code{\link[affy]{AffyBatch}} \code{\link{data.frame}} \code{\link[Biobase]{phenoData}}}
