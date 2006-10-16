@@ -38,7 +38,6 @@ function(covdesc="covdesc",path=".",...) {
   }
 
   nms <- unique(sapply(merged,cdfName))
-  cat(paste("Found the following chip type:",nms,"\n"))
 
   acc <- list(probeNames(merged[[1]]))
   nm  <- cdfName(merged[[1]])[1]
@@ -46,11 +45,9 @@ function(covdesc="covdesc",path=".",...) {
   idxs <- list()
   idxs[nm] <- acc
 
-  cat("finding common probesets\n");
 
   common <- as.vector(unlist(acc))
   for(i in 2:length(merged)) {
-    cat(".")
   
     nm  <- cdfName(merged[[i]])[1]
 
@@ -79,13 +76,11 @@ function(covdesc="covdesc",path=".",...) {
 
   exprs(template) <- e
 
-  cat("Building an expression set for the merged data\n")
   result <- template;
   for(i in 2:length(esets)) {
     result <- merge.AffyBatch(result,template)
   }
 
-  cat("Starting merge...\n");
   to.change <- exprs(result)
  
   idxs.small <- unlist(idxs[common])
@@ -95,13 +90,11 @@ function(covdesc="covdesc",path=".",...) {
   changing <- 1;
 
   for(i in 1:length(merged)) {
-    cat("Arranging cel indices...\n");
     idxs.large <- unlist(indexProbes(merged[[i]],"both")[common])
     o <- order(names(idxs.large))
     idxs.large <- idxs.large[o];
 
     for(j in 1:length(merged[[i]])) {
-          cat("   copying\n")
 	  to.copy <- exprs(merged[[i]][j])
 	  to.change[idxs.small,changing] <- to.copy[idxs.large,1]
           changing <- changing + 1;

@@ -25,10 +25,8 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   ct <- 0.03;
   st <- 10.0;
 ########################### BACKGROUND
-  cat("Background correcting\n");
   bgc <- bg.correct.sa(unnormalised);
 
-  cat("Retrieving data from AffyBatch...");
   pms <-as.matrix(pm(bgc))
   mms <-as.matrix(mm(bgc))
   pns <- probeNames(bgc);
@@ -39,13 +37,10 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   unique.pns <- sort(unique(pns));
 
 ########################### SUMMARIES
-  cat("done.\nComputing expression calls... \n");
   expression.calls<-sapply(1:length(pms[1,]),function(x) { 
-    cat(".");
     .C("GetExpressionLevels",as.double(pms[,x]),as.double(mms[,x]),as.character(pns),as.integer(length(mms[,x])),
 	as.double(ct),as.double(st),exprs=double(length(unique.pns)),length(unique.pns),PACKAGE="simpleaffy")$exprs;
   });
-  cat("done.\n");
   rownames(expression.calls) <- unique.pns;
   colnames(expression.calls) <- paste(sampleNames(bgc))
 
@@ -58,7 +53,6 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
 
 ########################### SCALING
   if(scale) {
-   cat(paste("scaling to a TGT of",tgt,"...\n"));
    sfs <- double(length(expression.calls[1,]));
 
 
@@ -68,7 +62,6 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
      frm <- 0.02 *l;
      to  <- 0.98 *l;
      sf  <- tgt/mean(vals[frm:to]);
-     cat(paste("Scale factor for:",sampleNames(unnormalised)[x],sf,"\n"))
      expression.calls[,x] <- log2((2^expression.calls[,x]) * sf)
      sfs[x] <- sf; 
    }
