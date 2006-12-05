@@ -186,8 +186,8 @@ qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=clean
             return(100 * sum(x)/length(x));
   });
 
-  sfs    <- normalised@description@preprocessing$sfs;
-  target <- normalised@description@preprocessing$tgt;
+  sfs    <- preproc(normalised)$sfs;
+  target <- preproc(normalised)$tgt;
 
   if(!logged) { x <- log2(x); }
 

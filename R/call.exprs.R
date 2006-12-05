@@ -53,12 +53,12 @@ function(x,algorithm="rma",do.log = TRUE,sc=100,method=NA) {
      }
      if(do.log) {
        exprs(tmp) <- log2(exprs(tmp));
-       description(tmp)@preprocessing$sfs=apply(2^(exprs(tmp) - log2(exprs(tmp1))),2,mean)
-       description(tmp)@preprocessing$tgt=sc
+       preproc(tmp)$sfs=apply(2^(exprs(tmp) - log2(exprs(tmp1))),2,mean)
+       preproc(tmp)$tgt=sc
      }
      else {
-       description(tmp)@preprocessing$sfs=apply(2^(exprs(tmp) - log2(exprs(tmp1))),2,mean)
-       description(tmp)@preprocessing$tgt=sc
+       preproc(tmp)$sfs=apply(2^(exprs(tmp) - log2(exprs(tmp1))),2,mean)
+       preproc(tmp)$tgt=sc
 
      }
      return(tmp);

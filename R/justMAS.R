@@ -44,12 +44,13 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   rownames(expression.calls) <- unique.pns;
   colnames(expression.calls) <- paste(sampleNames(bgc))
 
-  res <- new("exprSet", 
+  res <- new("ExpressionSet", 
               exprs       = expression.calls,
-              phenoData   = bgc@phenoData,
-              annotation  = bgc@annotation, 
-              description = bgc@description, 
-              notes       = bgc@notes);
+              phenoData   = phenoData(bgc),
+              annotation  = annotation(bgc), 
+              experimentData = experimentData(bgc)) 
+  ##FIXME: bug in ExpressionSet initialization code
+              #notes       = notes(bgc));
 
 ########################### SCALING
   if(scale) {
@@ -65,13 +66,13 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
      expression.calls[,x] <- log2((2^expression.calls[,x]) * sf)
      sfs[x] <- sf; 
    }
-   res@exprs <- expression.calls;
-   res@description@preprocessing$sfs = unlist(sfs);
-   res@description@preprocessing$tgt = tgt;
+   exprs(res) <- expression.calls;
+   preproc(res)$sfs = unlist(sfs);
+   preproc(res)$tgt = tgt;
   }
   else {
-   res@description@preprocessing$sfs = stop("Arrays were not scaled") 
-   res@description@preprocessing$tgt = stop("Arrays were not scaled") 
+   preproc(res)$sfs = stop("Arrays were not scaled") 
+   preproc(res)$tgt = stop("Arrays were not scaled") 
   }
 
   return(res);
@@ -111,14 +112,15 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
     expression.calls[,x] <- log2((2^expression.calls[,x]) * sf)
     sfs[x] <- sf; 
   }
-  res <- new("exprSet", 
+  res <- new("ExpressionSet", 
              exprs       = expression.calls,
-             phenoData   = bgc@phenoData,
-             annotation  = bgc@annotation, 
-             description = bgc@description, 
-             notes       = bgc@notes);
-  res@description@preprocessing$sfs = unlist(sfs);
-  res@description@preprocessing$tgt = sc;
+             phenoData   = phenoData(bgc),
+             annotation  = annotation(bgc),
+             experimentData = experimentData(bgc))
+   ##FIXME: come back and put this back after ExpressionSet bug is fixed
+   ##          notes       = notes(bgc));
+  preproc(res)$sfs = unlist(sfs);
+  preproc(res)$tgt = sc;
   return(res);
 }
 
