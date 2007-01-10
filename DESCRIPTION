@@ -13,5 +13,4 @@ Depends: R (>= 2.0), affy, genefilter
 License: GPL version 2 or later
 URL: http://www.bioconductor.org,
         http://bioinformatics.picr.man.ac.uk/simpleaffy/
-Packaged: Tue Nov 2 09:36:52 2004; root
 biocViews: Microarray, OneChannel, QualityControl, Preprocessing, Transcription, DataImport, Statistics, DifferentialExpression, Annotation, ReportWriting, Visualization
