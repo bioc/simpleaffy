@@ -46,9 +46,8 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
 
   res <- new("ExpressionSet", 
               exprs       = expression.calls,
-              phenoData   = phenoData(bgc),
-              annotation  = annotation(bgc), 
-              experimentData = experimentData(bgc)) 
+              phenoData   = as(phenoData(bgc),"AnnotatedDataFrame"),
+              annotation  = annotation(bgc)) 
   ##FIXME: bug in ExpressionSet initialization code
               #notes       = notes(bgc));
 
@@ -67,12 +66,14 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
      sfs[x] <- sf; 
    }
    exprs(res) <- expression.calls;
-   preproc(res)$sfs = unlist(sfs);
-   preproc(res)$tgt = tgt;
+   expData <- experimentData(res)
+   expData@preprocessing <- c(expData@preprocessing,list(sfs = unlist(sfs),tgt = tgt))
+   experimentData(res) <- expData
   }
   else {
-   preproc(res)$sfs = stop("Arrays were not scaled") 
-   preproc(res)$tgt = stop("Arrays were not scaled") 
+   expData <- experimentData(res)
+   expData@preprocessing <- c(expData@preprocessing,list(sfs = stop("Arrays were not scaled"), stop("Arrays were not scaled")))
+   experimentData(res) <- expData
   }
 
   return(res);
@@ -114,13 +115,12 @@ justMAS     <- function(unnormalised,tgt=100,scale=TRUE) {
   }
   res <- new("ExpressionSet", 
              exprs       = expression.calls,
-             phenoData   = phenoData(bgc),
-             annotation  = annotation(bgc),
-             experimentData = experimentData(bgc))
+             phenoData   = as(phenoData(bgc),"AnnotatedDataFrame"),
+             annotation  = annotation(bgc))
    ##FIXME: come back and put this back after ExpressionSet bug is fixed
    ##          notes       = notes(bgc));
-  preproc(res)$sfs = unlist(sfs);
-  preproc(res)$tgt = sc;
-  return(res);
+   expData <- experimentData(res)
+   expData@preprocessing <- c(expData@preprocessing,list(sfs = stop("Arrays were not scaled"), stop("Arrays were not scaled")))
+   experimentData(res) <- expData
 }
 

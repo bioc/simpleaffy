@@ -2,7 +2,7 @@ library("methods")
 library("affy")
 
 # holds the results of a pairwise comparison
-setClass("PairComp",representation(means="matrix",fc="numeric",tt="numeric",calls="matrix",group="character",members="character",pData="data.frame",calculated.from="exprSet"))
+setClass("PairComp",representation(means="matrix",fc="numeric",tt="numeric",calls="matrix",group="character",members="character",pData="data.frame",calculated.from="ExpressionSet"))
 
 #accessor methods
 setGeneric("means", function(object) standardGeneric("means"))
@@ -70,7 +70,7 @@ function(x,group,members) {
 
 setGeneric("get.array.subset", function(x,group,members) standardGeneric("get.array.subset"))
 setMethod("get.array.subset","AffyBatch",get.array.subset.affybatch);
-setMethod("get.array.subset","exprSet",get.array.subset.exprset);
+setMethod("get.array.subset","ExpressionSet",get.array.subset.exprset);
  
 "get.fold.change.and.t.test" <- function(x,group,members,logged = TRUE, a.order=NULL,b.order=NULL,method=c("unlogged","logged","median")) {
   

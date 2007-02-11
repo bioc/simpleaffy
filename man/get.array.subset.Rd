@@ -1,7 +1,7 @@
 \name{get.array.subset}
 \alias{get.array.subset}
 \alias{get.array.subset,AffyBatch-method}
-\alias{get.array.subset,exprSet-method}
+\alias{get.array.subset,ExpressionSet-method}
 
 \title{ Get a subset of arrays from an affybatch object, split by phnotypic data }
 \description{
@@ -15,7 +15,7 @@ get.array.subset(x,group,members)
 }
 
 \arguments{
-  \item{x}{ An \code{exprSet} or \code{AffyBatch} object }
+  \item{x}{ An \code{ExpressionSet} or \code{AffyBatch} object }
   \item{group}{ The name of the pData column to use. }
   \item{members}{ The labels within the pData column to match against. }
 }

@@ -32,27 +32,27 @@ setMethod("qcProbes","QCStats",function(object) object@qc.probes)
 #for ratios
 .namegrep3 <- function(stems,all) {
    sapply(stems,function(stem) {
-     grep(paste(stem,"[_-]3.?_?.?_at$",sep=""),all,value=T)
+     grep(paste(stem,"[_-wC]3.?_?.?_at$",sep=""),all,value=T)
    });
 }
 
 .namegrepM <- function(stems,all) {
    sapply(stems,function(stem) {
-     grep(paste(stem,"[_-]M.?_?.?_at$",sep=""),all,value=T)
+     grep(paste(stem,"[_-wC]M.?_?.?_at$",sep=""),all,value=T)
    });
 }
 .namegrep5 <- function(stems,all) {
    sapply(stems,function(stem) {
-     grep(paste(stem,"[_-]5.?_?.?_at$",sep=""),all,value=T)
+     grep(paste(stem,"[_-wC]5.?_?.?_at$",sep=""),all,value=T)
    });
 }
 
 .getRatios <- function(x) {
    vals <- x@qc.probes;
    unique.names <- colnames(vals)
-   unique.names <- sub("[_-]5.?_?.?_at$","",unique.names,perl=T);
-   unique.names <- sub("[_-]3.?_?.?_at$","",unique.names,perl=T);
-   unique.names <- sub("[_-]M.?_?.?_at$","",unique.names,perl=T);
+   unique.names <- sub("[_-wC]5.?_?.?_at$","",unique.names,perl=T);
+   unique.names <- sub("[_-wC]3.?_?.?_at$","",unique.names,perl=T);
+   unique.names <- sub("[_-wC]M.?_?.?_at$","",unique.names,perl=T);
    unique.names <- unique(unique.names);
    p3 <- .namegrep3(unique.names,colnames(vals))
    p5 <- .namegrep5(unique.names,colnames(vals));
@@ -186,8 +186,8 @@ qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=clean
             return(100 * sum(x)/length(x));
   });
 
-  sfs    <- preproc(normalised)$sfs;
-  target <- preproc(normalised)$tgt;
+  sfs    <- experimentData(normalised)@preprocessing$sfs;
+  target <- experimentData(normalised)@preprocessing$tgt;
 
   if(!logged) { x <- log2(x); }
 
