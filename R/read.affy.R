@@ -1,6 +1,5 @@
-"read.affy" <-
-function(covdesc="covdesc",path=".",...) {
-  samples <- read.phenoData( paste(path,covdesc,sep="/"));
+read.affy <- function(covdesc="covdesc",path=".",...) {
+  samples <- read.AnnotatedDataFrame( paste(path,covdesc,sep="/"));
   files.to.read <- rownames(pData(samples));
   files.to.read <- paste(path,files.to.read,sep="/")
   eset <- ReadAffy(filenames=files.to.read,...);
@@ -8,9 +7,9 @@ function(covdesc="covdesc",path=".",...) {
   colnames(newPhenoData) <- c(colnames(pData(eset)),colnames(pData(samples)));
   tmp <- as.list(colnames(newPhenoData));
   names(tmp) <- colnames(newPhenoData);
-  newPhenoData <- new("phenoData",pData=newPhenoData,varLabels=tmp)
+  newPhenoData <- as(newPhenoData,"AnnotatedDataFrame")
 
-  eset@phenoData <- newPhenoData;	
+  phenoData(eset) <- newPhenoData;	
   return(eset);
 }
 
