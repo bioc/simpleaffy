@@ -1,5 +1,3 @@
-library("methods")
-
 #holds the results of a pairwise comparison
 setClass("QCStats",representation(scale.factors="numeric",target="numeric",percent.present="numeric",average.background="numeric",minimum.background="numeric",maximum.background="numeric",spikes="matrix",qc.probes="matrix",bioBCalls="character"));
 

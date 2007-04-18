@@ -1,6 +1,3 @@
-library("methods")
-library("affy")
-
 # holds the results of a pairwise comparison
 setClass("PairComp",representation(means="matrix",fc="numeric",tt="numeric",calls="matrix",group="character",members="character",pData="data.frame",calculated.from="ExpressionSet"))
 
