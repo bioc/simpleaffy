@@ -22,6 +22,8 @@
 \alias{qcProbes-methods}
 \alias{ratios-methods}
 
+\alias{plot,QCStats,ANY-method}
+
 \title{Class "QCStats" }
 \description{ Holds Quality Control data for a set of Affymetrix arrays }
 \section{Objects from the Class}{

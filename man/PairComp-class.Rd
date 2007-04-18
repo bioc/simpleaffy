@@ -20,6 +20,7 @@
 \alias{tt}
 \alias{pData}
 \alias{calculated.from}
+\alias{plot,PairComp,ANY-method}
 
 \title{Class "PairComp" Represents the results of pairwise comparison between two experimental factors }
 \description{  Holds fold-change, ttest p-score and detection p-value calls(if used) between a pair of experimental factors.}
