@@ -21,8 +21,8 @@ setGeneric("members", function(object) standardGeneric("members"))
 setMethod("members","PairComp",function(object) object@members)
 
 
-setGeneric("pData", function(object) standardGeneric("pData"))
-setMethod("pData","PairComp",function(object) object@pData)
+
+setMethod(Biobase::pData,"PairComp",function(object) object@pData)
 
 setGeneric("calculated.from", function(object) standardGeneric("calculated.from"))
 setMethod("calculated.from","PairComp",function(object) object@calculated.from)
