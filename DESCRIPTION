@@ -1,6 +1,6 @@
 Package: simpleaffy
 Title: Very simple high level analysis of Affymetrix data
-Version: 2.10.0
+Version: 2.10.1
 Author: Crispin J Miller
 Description: Provides high level functions for reading Affy .CEL
         files, phenotypic data, and then computing simple things with
@@ -15,3 +15,4 @@ URL: http://www.bioconductor.org,
         http://bioinformatics.picr.man.ac.uk/simpleaffy/
 biocViews: Microarray, OneChannel, QualityControl, Preprocessing, Transcription, DataImport, Statistics, DifferentialExpression, Annotation, ReportWriting, Visualization
 SaveImage: yes
+Collate: call.exprs.R detection.p.val.R get.annotation.R heatmap.R justMAS.R pairwise.comparison.R qc.stats.R read.affy.R trad.scatter.plot.R zzz.R
