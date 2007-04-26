@@ -72,15 +72,14 @@ setMethod("ratios","QCStats",function(object) .getRatios(object))
 #Create a new environment containing the probenames and parameters required by the qc functions
 #These data are stored in the data directory of the package as tab delimited files
 
+.qcEnv <- new.env(parent=emptyenv())
 .createQCEnvironment <- function() {
-  if(length(".qcEnv") != 3) {
-     data(alpha,envir =.qcEnv )
-     data(spikes,envir =.qcEnv )
-     data(qc.probes,envir =.qcEnv )
+  if (length(.qcEnv) != 3) {
+     data(alpha,envir =.qcEnv, package="simpleaffy")
+     data(spikes,envir =.qcEnv, package="simpleaffy")
+     data(qc.probes,envir =.qcEnv, package="simpleaffy")
   }
 }
-
-.qcEnv <- new.env(parent=emptyenv())
 .createQCEnvironment()
 
 

@@ -1,3 +1,6 @@
+useDynLib("simpleaffy")
+
+importFrom("utils", "data")
 import("methods")
 
 exportPattern("^[^.]")

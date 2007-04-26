@@ -9,7 +9,8 @@ Description: Provides high level functions for reading Affy .CEL
         functions and mechanisms for generating high resolution
         journal figures...
 Maintainer: Crispin Miller <cmiller@picr.man.ac.uk>
-Depends: R (>= 2.0.0), affy, genefilter, Biobase, methods
+Depends: R (>= 2.0.0), affy, genefilter, Biobase, methods, utils
+Imports: methods, utils
 License: GPL version 2 or later
 URL: http://www.bioconductor.org,
         http://bioinformatics.picr.man.ac.uk/simpleaffy/
