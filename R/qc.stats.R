@@ -74,11 +74,12 @@ setMethod("ratios","QCStats",function(object) .getRatios(object))
 
 .createQCEnvironment <- function() {
   if(!exists(".qcEnv")) {
-    .qcEnv <- new.env()
-     data(alpha,envir =.qcEnv )
-     data(spikes,envir =.qcEnv )
-     data(qc.probes,envir =.qcEnv )
-     assign(".qcEnv",.qcEnv,envir=globalenv())
+     .qcEnv <- new.env()
+     assign(".qcEnv",.qcEnv,pos=globalenv())
+
+     data(alpha,envir =.qcEnv,package="simpleaffy" )
+     data(spikes,envir =.qcEnv,package="simpleaffy"  )
+     data(qc.probes,envir =.qcEnv,package="simpleaffy"  )
   }
 }
 
