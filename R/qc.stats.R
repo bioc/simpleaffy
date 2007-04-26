@@ -73,15 +73,15 @@ setMethod("ratios","QCStats",function(object) .getRatios(object))
 #These data are stored in the data directory of the package as tab delimited files
 
 .createQCEnvironment <- function() {
-  if(!exists(".qcEnv")) {
-     .qcEnv <- new.env()
-     assign(".qcEnv",.qcEnv,pos=globalenv())
-
-     data(alpha,envir =.qcEnv,package="simpleaffy" )
-     data(spikes,envir =.qcEnv,package="simpleaffy"  )
-     data(qc.probes,envir =.qcEnv,package="simpleaffy"  )
+  if(length(".qcEnv") != 3) {
+     data(alpha,envir =.qcEnv )
+     data(spikes,envir =.qcEnv )
+     data(qc.probes,envir =.qcEnv )
   }
 }
+
+.qcEnv <- new.env(parent=emptyenv())
+.createQCEnvironment()
 
 
 getTao <- function(name) {
