@@ -15,4 +15,4 @@ License: GPL version 2 or later
 URL: http://www.bioconductor.org,
         http://bioinformatics.picr.man.ac.uk/simpleaffy/
 biocViews: Microarray, OneChannel, QualityControl, Preprocessing, Transcription, DataImport, Statistics, DifferentialExpression, Annotation, ReportWriting, Visualization
-SaveImage: yes
+LazyLoad: yes
