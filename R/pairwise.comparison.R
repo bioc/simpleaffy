@@ -275,8 +275,7 @@ plot.pairwise.comparison <- function(x,y=NULL,labels=colnames(means(x)),showPMA=
 	  	allAB <- sumsB[3,] == inB
 	  	allP  <- allPA & allPB
 	  	allA  <- allAA & allAB
-              AorB  <- (allPA | allPB) & !(allA | allP)
-	  	
+                AorB  <- (allPA | allPB) & !(allA | allP)
 	  	trad.scatter.plot(means(x)[,1],means(x)[,2],xlab=labels[1],ylab=labels[2],col="yellow",...);
 	  	trad.scatter.plot(means(x)[AorB,1],means(x)[AorB,2],add=T,col="orange");
 	  	trad.scatter.plot(means(x)[allP,1],means(x)[allP,2],add=T,col="red");
