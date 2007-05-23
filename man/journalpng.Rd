@@ -33,7 +33,6 @@ screenpng(file="figure.png",width=4, height=4,res=72)
      journalpng(file="results/figure1.png"); # starts a new device
      trad.scatter.plot(exprs(eset)[,1],exprs(eset)[,2])
      dev.off();    # writes the file at this point.
-   }
   }
 }
 \keyword{ misc }

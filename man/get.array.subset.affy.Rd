@@ -19,7 +19,7 @@
 }
 
 \value{
-  An \code{AffyBatch} or \code{exprSet} (as appropriate) containing the selected subset of chips. }
+  An \code{AffyBatch} or \code{exprSet} (as appropriate) containing the selected subset of chips.
 }
 
 \details{
