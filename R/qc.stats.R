@@ -95,6 +95,12 @@ getAlpha2 <- function(name) {
   get("alpha",envir=.qcEnv)[name,"alpha2"]
 }
 
+setAlpha <- function(name,a1,a2) {
+   a <-   get("alpha",envir=.qcEnv)
+   a[name,] <- c(a1,a2)
+   assign("alpha",a,envir=.qcEnv)
+}
+
 getActin3 <- function(name) {
   as.character(get("qc.probes",envir=.qcEnv)[name,"actin3"])
 }
@@ -117,6 +123,20 @@ getGapdhM <- function(name) {
 
 getGapdh5 <- function(name) {
   as.character(get("qc.probes",envir=.qcEnv)[name,"gapdh5"])
+}
+
+setAllQCProbes <- function(name,a3,aM,a5,g3,gM,g5,rpol3=NA,rpolM=NA,rpol5=NA,tatabp3=NA,tatabpM=NA,tatabp5=NA) {
+   a <-   as.matrix(get("qc.probes",envir=.qcEnv))
+   if(name %in% rownames(a)) {
+     a[name,] <- c(a3,aM,a5,g3,gM,g5,rpol3,rpolM,rpol5,tatabp3,tatabpM,tatabp5)
+   }
+   else {
+    names <- rownames(a)
+    toadd <- c(a3,aM,a5,g3,gM,g5,rpol3,rpolM,rpol5,tatabp3,tatabpM,tatabp5)
+    a <- rbind(a,name=toadd)
+    rownames(a) <- c(names,name)
+  }
+   assign("qc.probes",a,envir=.qcEnv)
 }
 
 getAllQCProbes <- function(name) {
@@ -153,6 +173,20 @@ getAllSpikeProbes <- function(name) {
   r <- r[!is.na(r)]
   names(r) <- n
   return(r)
+}
+
+setAllSpikeProbes <- function(name,bioB,bioC,bioD,creX) {
+  r <- as.matrix(get("spikes",envir=.qcEnv))
+  if(name %in% rownames(r)) {
+    r[name,] <- c(bioB,bioC,bioD,creX)
+  }
+  else {
+    names <- rownames(r)
+    toadd <- c(bioB,bioC,bioD,creX)
+    r <- rbind(r, toadd)
+    rownames(r) <- c(names,name)
+  }
+  assign("spikes",r,envir=.qcEnv)
 }
 
 

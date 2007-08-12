@@ -1,12 +1,12 @@
-\name{getAlpha2}
-\alias{getAlpha2}
+\name{getTao}
+\alias{getTao}
 
-\title{ Gets the probesetid for the specified control probe }
+\title{ Gets the Tao value the specified control probe }
 \description{
-  Gets the probesetid for the specified control probe
+  Gets the Tao value for the specified control probe
 }
 \usage{
-  getAlpha2(name)
+  getTao(name)
 }
 
 \arguments{
@@ -21,7 +21,7 @@
 
 \examples{
   \dontrun{
-     probesetid <- getAlpha2(cleancdfname(cdfName((eset))))
+     tao <- getTao(cleancdfname(cdfName((eset))))
   }
 }
 
