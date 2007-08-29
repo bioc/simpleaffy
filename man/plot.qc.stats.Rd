@@ -24,7 +24,6 @@ plot.qc.stats(x, fc.line.col = "black", sf.ok.region = "light blue", chip.label.
   \item{label}{ What to call the chips }
   \item{main}{ The title for the plot }
   \item{usemid}{ If true use 3'/M ratios for the GAPDH and beta actin probes }
-  \item{type}{ If 'l' draw the plot as a vertical line, if 'c' draw it as a circle }
   \item{cex}{ Value to scale character size by (e.g. 0.5 means that the text should be plotted half size) }
   \item{\dots}{ Other parameters to pass through to \code{plot} }
 }
@@ -66,17 +65,13 @@ printing 'BioB' in red.
 
 In short, everything in the figure should be blue - red highlights a problem!
 
-An earlier version of this function plotted the same data on a circle, this can be done by specifying type="c".
-
 }
 \author{ Crispin J Miller }
 
-\seealso{ \code{\link{qc}} }
+\seealso{ \code{\link[simpleaffy]{qc}} }
 \examples{
-  \dontrun{
-    qc <- qc(eset,eset.mas)
-    plot(qc)
-  }
+  data(qcs)
+  plot(qcs)
 }
 
 

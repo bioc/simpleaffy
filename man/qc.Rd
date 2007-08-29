@@ -18,10 +18,10 @@ the 'Expression Analysis Fundamentals' manual available from
 Affymetrix.
 
 Before using this function you are strongly encouraged to read the 'QC
-and Affymetrix data' doument, which contains detailed examples.
+and Affymetrix data' document, which contains detailed examples.
 
-This function takes an \code{AffyBatch} object and generates a \code{QCStats}
-object containing a set of QC metrics. See \code{qc.affy} for more details.
+This function takes an \code{\link[affy]{AffyBatch}} object and generates a \code{\link[simpleaffy]{QCStats}}
+object containing a set of QC metrics. See \code{\link[simpleaffy]{qc.affy}} for more details.
 }
 \usage{
 qc(unnormalised, ...)
@@ -33,12 +33,26 @@ qc(unnormalised, ...)
 
 \author{ Crispin J Miller }
 
-\seealso{ \code{\link{qc.affy}} }
+\seealso{
+  \code{\link[simpleaffy]{qc.affy}}
+  \code{\link[simpleaffy]{setQCEnvironment}}
+}
 \examples{
   \dontrun{
-    qc <- qc(eset,eset.mas)
-    plot(qc)
+    qcs <- qc(eset,eset.mas)
   }
+  data(qcs)
+  ratios(qcs)
+  avbg(qcs)
+  maxbg(qcs)
+  minbg(qcs)
+  spikeInProbes(qcs)
+  qcProbes(qcs)
+  percent.present(qcs)
+  plot(qcs)
+  sfs(qcs)
+  target(qcs)
+  ratios(qcs)
 }
 
 

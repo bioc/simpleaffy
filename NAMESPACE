@@ -16,7 +16,6 @@ exportMethods(
               "calls",
               "fc",
               "get.array.subset",
-              "getQCParams",
               "group",
               "maxbg",
               "means",

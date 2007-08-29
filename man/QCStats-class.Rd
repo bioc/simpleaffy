@@ -11,23 +11,37 @@
 \alias{spikeInProbes,QCStats-method}
 \alias{qcProbes,QCStats-method}
 \alias{ratios,QCStats-method}
+\alias{arrayType,QCStats-method}
 
-\alias{avbg-methods}
-\alias{maxbg-methods}
-\alias{minbg-methods}
-\alias{percent.present-methods}
-\alias{sfs-methods}
-\alias{target-methods}
-\alias{spikeInProbes-methods}
-\alias{qcProbes-methods}
-\alias{ratios-methods}
+\alias{avbg-method}
+\alias{maxbg-method}
+\alias{minbg-method}
+\alias{percent.present-method}
+\alias{sfs-method}
+\alias{target-method}
+\alias{spikeInProbes-method}
+\alias{qcProbes-method}
+\alias{ratios-method}
+\alias{arrayType-method}
+
+\alias{avbg}
+\alias{maxbg}
+\alias{minbg}
+\alias{percent.present}
+\alias{sfs}
+\alias{target}
+\alias{spikeInProbes}
+\alias{qcProbes}
+\alias{ratios}
+\alias{arrayType}
+
 
 \alias{plot,QCStats,ANY-method}
 
 \title{Class "QCStats" }
 \description{ Holds Quality Control data for a set of Affymetrix arrays }
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{qc(AffyBatch)}.
+Objects can be created by calls of the form \code{qc(\link[affy]{AffyBatch})}.
 }
 \section{Slots}{
   \describe{
@@ -38,7 +52,10 @@ Objects can be created by calls of the form \code{qc(AffyBatch)}.
     \item{\code{minimum.background}:}{Object of class \code{"numeric"} The minimum background for the arrays }
     \item{\code{maximum.background}:}{Object of class \code{"numeric"} The maximum background for the arrays }
     \item{\code{spikes}:}{Object of class \code{"list"} spiked in probes (e.g. biob, bioc...) }
-    \item{\code{qc.probes}:}{Object of class \code{"list"} qc probes (e.g. gapdh 3,5,M,...) }
+    \item{\code{qc.probes}:}{Object of class \code{"list"} qc probes
+      (e.g. gapdh 3,5,M,...) }
+    \item{\code{arrayType}:}{The \code{\link[affy]{cdfName}} of the
+      \code{\link[affy]{AffyBatch}} object used to create the object }
   }
 }
 \section{Methods}{
@@ -52,14 +69,17 @@ Objects can be created by calls of the form \code{qc(AffyBatch)}.
     \item{plot}{\code{signature(x = "QCStats")}: Plot a QCStats object }
     \item{sfs}{\code{signature(object = "QCStats")}: scale factors }
     \item{target}{\code{signature(object = "QCStats")}: target scaling }
-    \item{ratios}{\code{signature(object = "QCStats")}: 5'3' and 5'M ratios for QC Probes }
+    \item{ratios}{\code{signature(object = "QCStats")}: 5'3' and 5'M
+      ratios for QC Probes }
+    \item{arrayType}{\code{signature(object = "QCStats")}: The type of
+      array for which this QC stats object was generated }
   }
 }
 
 \author{ Crispin J Miller }
 
 \seealso{
-
+  \code{\link[simpleaffy]{qc}}
 }
 
 \keyword{classes}

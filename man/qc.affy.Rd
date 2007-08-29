@@ -23,7 +23,7 @@ generates QC metrics. If the MAS calls are not supplied these are claculated int
 }
 \usage{
 qc.affy(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,
-	cdfn=cleancdfname(cdfName(unnormalised)))
+	cdfn=cdfName(unnormalised))
 }
 
 \arguments{
@@ -42,8 +42,20 @@ qc.affy(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,
 
 \examples{
   \dontrun{
-     qc <- qc(eset,eset.mas)
+     qcs <- qc(eset)
   }
+  data(qcs)
+  ratios(qcs)
+  avbg(qcs)
+  maxbg(qcs)
+  minbg(qcs)
+  spikeInProbes(qcs)
+  qcProbes(qcs)
+  percent.present(qcs)
+  plot(qcs)
+  sfs(qcs)
+  target(qcs)
+  ratios(qcs)
 }
 
 \keyword{ misc }

@@ -1,5 +1,5 @@
-#holds the results of a pairwise comparison
-setClass("QCStats",representation(scale.factors="numeric",target="numeric",percent.present="numeric",average.background="numeric",minimum.background="numeric",maximum.background="numeric",spikes="matrix",qc.probes="matrix",bioBCalls="character"));
+#holds the results of a QC comparison
+setClass("QCStats",representation(scale.factors="numeric",target="numeric",percent.present="numeric",average.background="numeric",minimum.background="numeric",maximum.background="numeric",spikes="matrix",qc.probes="matrix",bioBCalls="character",arraytype="character"));
 
 #accessor methods
 setGeneric("sfs", function(object) standardGeneric("sfs"))
@@ -26,192 +26,340 @@ setMethod("spikeInProbes","QCStats",function(object) object@spikes)
 setGeneric("qcProbes", function(object) standardGeneric("qcProbes"))
 setMethod("qcProbes","QCStats",function(object) object@qc.probes)
 
+setGeneric("arrayType", function(object) standardGeneric("arrayType"))
+setMethod("arrayType","QCStats",function(object) object@arraytype)
 
-#for ratios
-.namegrep3 <- function(stems,all) {
-   sapply(stems,function(stem) {
-     grep(paste(stem,"[-_wC]3.?_?.?_at$",sep=""),all,value=T)
-   });
+
+# alter the QC environment - effectively accessor functions into the environment
+
+.qc.is.empty <- function() {
+  get("empty",.qcEnv)
 }
 
-.namegrepM <- function(stems,all) {
-   sapply(stems,function(stem) {
-     grep(paste(stem,"[-_wC]M.?_?.?_at$",sep=""),all,value=T)
-   });
+.qc.set.empty <- function(empty) {
+  assign("empty",empty,envir=.qcEnv)
 }
-.namegrep5 <- function(stems,all) {
-   sapply(stems,function(stem) {
-     grep(paste(stem,"[-_wC]5.?_?.?_at$",sep=""),all,value=T)
-   });
+
+
+qc.set.array <- function(name) {
+  .qc.set.empty(FALSE)
+  assign("array",name,envir=.qcEnv)
 }
+
+qc.get.array <- function() {
+  .qc.test()
+  get("array",.qcEnv)
+}
+
+qc.get.tau <- function() {
+  .qc.test()
+  0.015;
+}
+
+qc.set.alpha1 <- function(value) {
+  .qc.set.empty(FALSE)
+  assign("alpha1",value,envir=.qcEnv)
+}
+
+qc.get.alpha1 <- function() {
+  .qc.test()
+  get("alpha1",.qcEnv)
+}
+
+qc.set.alpha2 <- function(value) {
+  .qc.set.empty(FALSE)
+  assign("alpha2",value,envir=.qcEnv)
+}
+
+qc.get.alpha2 <- function() {
+  .qc.test()
+  get("alpha2",.qcEnv)
+}
+
+qc.get.spikes <- function() {
+  .qc.test()
+  get("spikes",.qcEnv)
+}
+
+qc.get.spike <- function(name) {
+  .qc.test()
+  spikes <- get("spikes",.qcEnv)
+  spikes[[name]]
+}
+
+qc.add.spike <- function(name,probeset) {
+  .qc.set.empty(FALSE)
+  spikes <- qc.get.spikes()
+  names  <- names(spikes)
+  if(name %in% names) {
+    spikes[name] <- probeset
+  }
+  else {
+    spikes <- c(spikes,probeset)
+    names  <- c(names,name)
+    names(spikes) <- names
+  }
+  assign("spikes",spikes,envir=.qcEnv)
+}
+
+qc.get.probes <- function() {
+  .qc.test()
+  get("probes",.qcEnv)
+}
+
+qc.get.probe <- function(name) {
+  .qc.test()
+  probes <- get("probes",.qcEnv)
+  probes[[name]]
+}
+
+qc.add.probe <- function(name,probeset) {
+  .qc.set.empty(FALSE)
+  probes <- qc.get.probes()
+  names  <- names(probes)
+  if(name %in% names) {
+   probes[name] <- probeset
+  }
+  else {
+    probes <- c(probes,probeset)
+    names  <- c(names,name)
+    names(probes) <- names
+  }
+  assign("probes",probes,envir=.qcEnv)
+}
+
+qc.get.ratios <- function() {
+  get("ratios",.qcEnv)
+}
+
+qc.get.ratio <- function(name) {
+  .qc.test()
+  probes <- get("ratios",.qcEnv)
+  probes[[name]]
+}
+
+qc.add.ratio <- function(name,probeset1,probeset2) {
+  .qc.set.empty(FALSE)
+  ratios <- qc.get.ratios()
+  names  <- names(ratios)
+  if(name %in% names) {
+    ratios[[name]] <- c(probeset1,probeset2)
+  }
+  else {
+    if(length(ratios) == 0) {
+      ratios <- list(c(probeset1,probeset2))
+    }
+    else {
+      ratios <- c(ratios,list(c(probeset1,probeset2)))
+    }
+    names  <- c(names,name)
+    names(ratios) <- names
+  }
+  assign("ratios",ratios,envir=.qcEnv)
+}
+
+qc.ok <- function() {
+  !(.qc.is.empty())
+}
+
+.qc.test <- function() {
+  if(.qc.is.empty()) {
+    stop("QC environment is empty.\n See 'setQCEnvironment' for more details.\n")
+  }
+}
+    
+# read a file and use this to set up the QC Environment
+# Expects a (whitespace delimited) file set out like this:
+#
+#
+#    array <arrayname>
+#    ratio <rationame> <pset1> <pset2>
+#    ratio <rationame> <pset1> <pset2>
+#    ratio <rationame> <pset1> <pset2>
+#    ...
+#    spk <spikename> <pset>
+#    spk <spikename> <pset>
+#    spk <spikename> <pset>
+#    spk <spikename> <pset>
+#    ...
+#    alpha1 <value>
+#    alpha2 <value>
+#
+# where spikename can be one of bioB, bioC, bioD or creX
+
+qc.read.file <- function(fn) {
+  .createEmptyQCEnvironment()
+  fl <- file(fn,"r")
+  if(!isOpen(fl)) { stop(paste("Couldn't open file",fn,"\n.")) }
+  lines <- readLines(fl)
+  lines <- strsplit(lines,"\\s+")
+  for(l in lines) {
+    a <- NULL
+    if(length(l) > 0) {
+      switch(l[1],
+             array  = .qc.file.setQCArray(l),
+             spk    = .qc.file.addQCSpike(l,a),
+             ratio  = .qc.file.addQCRatio(l,a),
+             alpha1 = .qc.file.setAlpha1(l,a),
+             alpha2 = .qc.file.setAlpha2(l,a))
+    }
+  }
+  close(fl)
+}
+
+.qc.file.setQCArray <- function(toks) {
+  if(length(toks) != 2) {
+    stop("Array name should be a single string.");
+  }
+  qc.set.array(toks[2])
+}
+
+#Adds or replaces the probeset for the specified QC spike on the array, 'a'
+.qc.file.addQCSpike <- function(toks,a) {
+  if(length(toks) != 3) {
+    stop(paste("Error parsing file\nExpecting: spk '[bioB|bioC|bioD|creX] <probesetid>'\nGot: '",paste(toks,collapse=" "),"'.\n"));
+  }
+  if((toks[2] != "bioB") &
+     (toks[2] != "bioC") &
+     (toks[2] != "bioD") &
+     (toks[2] != "creX"))  {
+    stop(paste("Error parsing file\nSpike name must be one of  'bioB', 'bioC', 'bioD' or 'creX'\nGot: '",paste(toks,collapse=" "),"'.\n"));
+  }
+  qc.add.spike(toks[2],toks[3])
+}
+
+#store in the ratios list in .qcEnv each pairwise comparison. Add the relevant probesets to qc.probes, if they are not already there
+.qc.file.addQCRatio <- function(toks,a) {
+  if(length(toks) != 4) {
+    stop(paste("Error parsing file\nExpecting: ratio <probeset1name>/<probeset2name> <probesetid1> <probesetid2>'\nGot: ",c(toks),"'.\n"));
+  }
+  name <- toks[2]
+  ps1 <- toks[3]
+  ps2 <- toks[4]
+  probenames <- strsplit(name,"/")[[1]]
+  if(length(probenames)!=2) {
+    stop(paste("Error parsing file\nExpecting rationame: '<probeset1name>/<probeset2name>'\nGot: ",name,"'.\n"));
+  }
+  qc.add.probe(probenames[1],ps1)
+  qc.add.probe(probenames[2],ps2)
+  qc.add.ratio(name,ps1,ps2)
+}
+
+.qc.file.setAlpha1 <- function(toks,a) {
+  if(length(toks) != 2) {
+    stop(paste("Error parsing file\nExpecting: alpha1 <value>'\nGot: ",paste(toks),"'.\n"));
+  }
+  v <- as.numeric(toks[2])
+  if(is.na(v)) {
+    stop(paste("Error parsing file\nalpha1 value must be a number'\nGot: ",paste(toks),"'.\n"));
+  }
+
+  qc.set.alpha1(v)
+}
+
+
+.qc.file.setAlpha2 <- function(toks,a) {
+  if(length(toks) != 2) {
+    stop(paste("Error parsing file\nExpecting: alpha2 <value>'\nGot: ",paste(toks),"'.\n"));
+  }
+  v <- as.numeric(toks[2])
+  if(is.na(v)) {
+    stop(paste("Error parsing file\nalpha1 value must be a number'\nGot: ",paste(toks),"'.\n"));
+  }
+
+  qc.set.alpha2(v)
+}
+
+.qcEnv <- new.env(parent=emptyenv())
+
+#initialize the QC environment 
+.createEmptyQCEnvironment <- function() {
+  assign("empty",TRUE,envir=.qcEnv)
+  assign("array",NULL,envir=.qcEnv)
+  assign("alpha1",NULL,envir=.qcEnv)
+  assign("alpha2",NULL,envir=.qcEnv)
+  assign("spikes",vector(),envir=.qcEnv)
+  assign("probes",vector(),envir=.qcEnv)
+  assign("ratios",list(),envir=.qcEnv)
+}
+
+
+qc.have.params <- function(name) {
+  fn <- .get.array.def.file(name)
+  !(fn == "")
+}
+
+
+.initializeQCEnvironment <- function() {
+    .createEmptyQCEnvironment();
+}
+
+.initializeQCEnvironment();
+
+
+# set up the QC environment for a given array type
+# if path specified, look there. Otherwise
+# look in extdata to see if there's a file there
+setQCEnvironment <- function(array,path=NULL) {
+  if(is.null(path)) {
+    fn <- .get.array.def.file(array)
+    if(fn != "") {
+      qc.read.file(fn)
+    }
+    else {
+      stop(paste("Could not find array definition file '",paste(array,"qcdef",sep="."),"'. Simpleaffy does not know the QC parameters for this array type.\nSee the package vignette for details about how to specify QC parameters manually.\n"))
+    }
+  }
+  else {
+    fn <- file.path(path,paste(array,"qcdef",sep="."))
+    if(fn != "") {
+      qc.read.file(fn)
+    }
+    else {
+      stop(paste("Could not find array definition file: '",paste(array,"qcdef",sep="."),"' in the directory specified:",path,"\n"))
+    }
+  }
+}
+
+.get.array.def.file <- function(array) {
+  fn <- paste(array,"qcdef",sep=".")
+  system.file("extdata",fn,package="simpleaffy")
+}
+
+
 
 .getRatios <- function(x) {
-   vals <- x@qc.probes;
-   unique.names <- colnames(vals)
-   unique.names <- sub("[-_wC]5.?_?.?_at$","",unique.names,perl=T);
-   unique.names <- sub("[-_wC]3.?_?.?_at$","",unique.names,perl=T);
-   unique.names <- sub("[-_wC]M.?_?.?_at$","",unique.names,perl=T);
-   unique.names <- unique(unique.names);
-   p3 <- .namegrep3(unique.names,colnames(vals))
-   p5 <- .namegrep5(unique.names,colnames(vals));
-   pM <- .namegrepM(unique.names,colnames(vals));
-   res1 <- rbind(c(),(vals[,p3] - vals[,p5]))
-
-   colnames(res1) <- paste(unique.names,".3'/5'",sep="")
-
-   res2 <- rbind(c(),(vals[,p3] - vals[,pM]))
-   colnames(res2) <- paste(unique.names,".3'/M",sep="")
-   r <- cbind(res1,res2)
+   vals <- qcProbes(x);
+   if(!qc.ok()) {
+     setQCEnvironment(arrayType(x))
+   }
+   to.calculate <- qc.get.ratios();
+   r <- sapply(to.calculate,function(a) { vals[,a[1]] - vals[,a[2]]})
    return(r)
-
 }
 
 setGeneric("ratios", function(object) standardGeneric("ratios"))
 setMethod("ratios","QCStats",function(object) .getRatios(object))
 
-#Create a new environment containing the probenames and parameters required by the qc functions
-#These data are stored in the data directory of the package as tab delimited files
 
-.qcEnv <- new.env(parent=emptyenv())
-.createQCEnvironment <- function() {
-  if (length(.qcEnv) != 3) {
-     data(alpha,envir =.qcEnv, package="simpleaffy")
-     data(spikes,envir =.qcEnv, package="simpleaffy")
-     data(qc.probes,envir =.qcEnv, package="simpleaffy")
-  }
-}
-.createQCEnvironment()
+qc.affy <- function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=cdfName(unnormalised)) {
+   cdfn <- cleancdfname(cdfn)
+   verbose <- getOption("verbose")
 
-
-getTao <- function(name) {
-  0.015;
-}
-
-getAlpha1 <- function(name) {
-  get("alpha",envir=.qcEnv)[name,"alpha1"]
-}
-
-getAlpha2 <- function(name) {
-  get("alpha",envir=.qcEnv)[name,"alpha2"]
-}
-
-setAlpha <- function(name,a1,a2) {
-   a <-   get("alpha",envir=.qcEnv)
-   a[name,] <- c(a1,a2)
-   assign("alpha",a,envir=.qcEnv)
-}
-
-getActin3 <- function(name) {
-  as.character(get("qc.probes",envir=.qcEnv)[name,"actin3"])
-}
-
-getActinM <- function(name) {
-  as.character(get("qc.probes",envir=.qcEnv)[name,"actinM"])
-}
-
-getActin5 <- function(name) {
-  as.character(get("qc.probes",envir=.qcEnv)[name,"actin5"])
-}
-
-getGapdh3 <- function(name) {
-  as.character(get("qc.probes",envir=.qcEnv)[name,"gapdh3"])
-}
-
-getGapdhM <- function(name) {
-  as.character(get("qc.probes",envir=.qcEnv)[name,"gapdhM"])
-}
-
-getGapdh5 <- function(name) {
-  as.character(get("qc.probes",envir=.qcEnv)[name,"gapdh5"])
-}
-
-setAllQCProbes <- function(name,a3,aM,a5,g3,gM,g5,rpol3=NA,rpolM=NA,rpol5=NA,tatabp3=NA,tatabpM=NA,tatabp5=NA) {
-   a <-   as.matrix(get("qc.probes",envir=.qcEnv))
-   if(name %in% rownames(a)) {
-     a[name,] <- c(a3,aM,a5,g3,gM,g5,rpol3,rpolM,rpol5,tatabp3,tatabpM,tatabp5)
-   }
-   else {
-    names <- rownames(a)
-    toadd <- c(a3,aM,a5,g3,gM,g5,rpol3,rpolM,rpol5,tatabp3,tatabpM,tatabp5)
-    a <- rbind(a,name=toadd)
-    rownames(a) <- c(names,name)
-  }
-   assign("qc.probes",a,envir=.qcEnv)
-}
-
-getAllQCProbes <- function(name) {
-  r <- as.matrix(get("qc.probes",envir=.qcEnv)[name,])
-  n <- names(r)
-  r <- r[!is.na(r)]
-  names(r) <- n
-  return(r)
-}
-
-getBioB <- function(name) {
-  as.character(get("spikes",envir=.qcEnv)[name,"biob"])
-}
-
-
-getBioC <- function(name) {
-  as.character(get("spikes",envir=.qcEnv)[name,"bioc"])
-}
-
-
-getBioD <- function(name) {
-  as.character(get("spikes",envir=.qcEnv)[name,"biod"])
-}
-
-
-getCreX <- function(name) {
-  as.character(get("spikes",envir=.qcEnv)[name,"crex"])
-}
-
-
-getAllSpikeProbes <- function(name) {
-  r <- as.matrix(get("spikes",envir=.qcEnv)[name,])
-  n <- names(r)
-  r <- r[!is.na(r)]
-  names(r) <- n
-  return(r)
-}
-
-setAllSpikeProbes <- function(name,bioB,bioC,bioD,creX) {
-  r <- as.matrix(get("spikes",envir=.qcEnv))
-  if(name %in% rownames(r)) {
-    r[name,] <- c(bioB,bioC,bioD,creX)
-  }
-  else {
-    names <- rownames(r)
-    toadd <- c(bioB,bioC,bioD,creX)
-    r <- rbind(r, toadd)
-    rownames(r) <- c(names,name)
-  }
-  assign("spikes",r,envir=.qcEnv)
-}
-
-
-haveQCParams <- function(name) {
-  name %in% rownames(get("alpha",envir=.qcEnv))
-}
-
-
-
-qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=cleancdfname(cdfName(unnormalised))) {
-
-  if(is.null(normalised)) {getAllSpikeProbes("hgu133acdf")
-
+   if(verbose){cat(paste("Looking cdf file for:",cdfn,"\n"))}
+   setQCEnvironment(cdfn)
+     
+  if(is.null(normalised)) {
+    if(verbose){cat(paste("Preprocessing expression data using mas5\n"))}
     normalised <- call.exprs(unnormalised,"mas5");
-  }
-
-  if(!haveQCParams(cleancdfname(cdfName(unnormalised)))) {
-	stop(paste("I'm sorry, I do not know about chip type:",cleancdfname(cdfName(unnormalised))))
   }
 
   x <- exprs(normalised);
 
-  det <- detection.p.val(unnormalised,tau=tau,alpha1=getAlpha1(cdfn),alpha2=getAlpha2(cdfn));
+  det <- detection.p.val(unnormalised,tau=tau,alpha1=qc.get.alpha1(),alpha2=qc.get.alpha2());
 
-  dpv<-apply(det$call,2,function(x) { 
+   #change
+  dpv<-apply(det$call,2,function(x) {
             x[x!="P"] <- 0;
 	    x[x=="P"] <- 1;
             x<-as.numeric(x);			       
@@ -237,17 +385,18 @@ qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=clean
 
 
   #get the probenames for the QC probes for this chip
-  qc.probenames <- getAllQCProbes(cdfn);
-
+  qc.probenames <- qc.get.probes();
+  
   qc.probe.vals <- rbind(c(),(sapply(qc.probenames, function(y) {x[y,]})))
   rownames(qc.probe.vals) <- colnames(x);
-
-  spike.probenames <- getAllSpikeProbes(cdfn);
+  colnames(qc.probe.vals) <- qc.probenames
+  spike.probenames <- qc.get.spikes();
   spike.vals <- rbind(c(),(sapply(spike.probenames, function(y) {x[y,]})))
 
   rownames(spike.vals) <- colnames(x);
-
-  bb <- getBioB(cdfn)
+  colnames(spike.vals) <- spike.probenames
+   
+  bb <- spike.probenames["bioB"]
 
   if(!is.na(bb)) {
     biobcalls <- det$call[bb,]
@@ -257,22 +406,13 @@ qc.affy <-function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=clean
   }
 
   return(new("QCStats",scale.factors=sfs,target=target,percent.present=dpv,average.background=meanbg,minimum.background=minbg,maximum.background=maxbg,
-              spikes=spike.vals,qc.probes=qc.probe.vals,bioBCalls=biobcalls));
+              spikes=spike.vals,qc.probes=qc.probe.vals,bioBCalls=biobcalls,arraytype=cdfn));
 }
 
 
 setGeneric("qc", function(unnormalised,...) standardGeneric("qc"))
 setMethod("qc","AffyBatch",function(unnormalised,...) qc.affy(unnormalised,...)) 
 
-setGeneric("getQCParams", function(x) standardGeneric("getQCParams") )
-
-setMethod("getQCParams","AffyBatch",function(x) {
-  n <- cleancdfname(cdfName(x))
-
-  res <- list(getGapdh3(n),getGapdhM(n),getGapdh5(n),getActin3(n),getActinM(n),getActin5(n),getBioB(n),getBioC(n),getBioD(n),getCreX(n),getAlpha1(n),getAlpha2(n),getTao(n))
-  names(res) <- c("Gapdh3","GapdhM","Gapdh5","Actin3","ActinM","Actin5","BioB","BioC","BioD","CreX","Alpha1","Alpha2","Tao")
-  return(res)
-})
 
 
 .bg.stats <- function(unnormalised, grid=c(4,4)) {
@@ -304,117 +444,7 @@ for(no in 1:length(unnormalised)){
 }
 
 
-
-.plot.qc.stats2<-function(x,fc.line.col,sf.ok.region,chip.label.col,sf.thresh,gdh.thresh,ba.thresh,present.thresh,bg.thresh,label,main,usemid,cex=1,...) {
-
-  sfs    <- log2(sfs(x))
-
-  n      <- length(sfs)
-
-  meansf <- mean(sfs)
-
-  dpv <- percent.present(x)
-  dpv <- (round(100*dpv))/100;
-
-  abg <- avbg(x)
-  abg <- (round(100*abg))/100;
-	
-  sfs <- sfs + 6.0;
-  if(is.null(label)) { label <- 1:n }
-  col=c("red","green");
-  d1 <- 0.0;
-  d2 <- 0.0;
-  d3 <- 0.0;
-
-  for(i in 1:n) {
-    for(j in 1:n) { 
-      d1 <- max(abs(sfs[i] - sfs[j]),d1);
-      d2 <- max(abs(dpv[i] - dpv[j]),d2);
-      d3 <- max(abs(abg[i] - abg[j]),d3);
-    }
-  }
-  i<-1:101;
-  arc <- 2 * pi / 100;
-  x1 <- (7.5 +  meansf) * cos(i * arc);
-  y1 <- (7.5 +  meansf) * sin(i * arc);
-  x2 <- (4.5 +  meansf) * cos(i * arc);
-  y2 <- (4.5 +  meansf) * sin(i * arc);
-
-  plot(x1[1],y1[1],pch=".",xlim=range(-12,12),ylim=range(-12,12),xaxt="n",yaxt="n",xlab="",ylab="",col=sf.ok.region,main=main,...);
-
-  polygon(c(x1,rev(x2),x1[1]),c(y1,rev(y2),y1[1]),col=sf.ok.region,border=sf.ok.region);
-
-  x1 <- 3 * cos(i * arc);
-  y1 <- 3 * sin(i * arc);
-  points(x1,y1,pch=".",col=fc.line.col);
-  x1 <- 6 * cos(i * arc);
-  y1 <- 6 * sin(i * arc);
-  points(x1,y1,pch=".",col=fc.line.col);
-  x1 <- 9 * cos(i * arc);
-  y1 <- 9 * sin(i * arc);
-  points(x1,y1,pch=".",col=fc.line.col);
-  text(0,3,"-3",col=fc.line.col,cex=cex)
-  text(0,6,"0",col=fc.line.col,cex=cex)
-  text(0,9,"+3",col=fc.line.col,cex=cex)
-  arc <- 2 * pi / n;
-  rats <- ratios(x);
-  if(!usemid) {
-    gdh <- rats[,2];
-    ba  <- rats[,1];
-  }
-  else {  
-    gdh <- rats[,4];
-    ba  <- rats[,3];
-  }
-  bb  <- x@bioBCalls
-
-  for(i in 1:n) {
-    if(d1 > sf.thresh) { col = "red" } else {col="blue"}
-     x1 <- sfs[i] * cos(i * arc);
-     y1 <- sfs[i] * sin(i * arc);
-     x2 <- 6 * cos(i * arc);
-     y2 <- 6 * sin(i * arc);
-     lines(c(x2,x1),c(y2,y1),col=col);
-     points(x1,y1,col=col,pch=20);
-     text(x1,y1,col=chip.label.col,label=label[i],adj=0.2 * c(cos(i * arc),sin(i * arc)),cex=cex);
-     x2 <- (6 + gdh[i]) * cos(i * arc);
-     y2 <- (6 + gdh[i]) * sin(i * arc);
-     if(gdh[i] > gdh.thresh) { col = "red" } else {col="blue"}	
-     points(x2,y2,pch=1,col=col);
-     x2 <- (6 + ba[i]) * cos(i * arc);
-     y2 <- (6 + ba[i]) * sin(i * arc);
-     if(ba[i] > ba.thresh) { col = "red" } else {col="blue"}	
-     points(x2,y2,pch=2,col=col);
-
-     if(d2 > present.thresh) { col = "red" } else {col="blue"}
-     x2 <- (9 * cos(i * arc));
-     y2 <- (9 * sin(i * arc));
-     text(x2,y2,label=paste(dpv[i],"%",sep=""),col=col,cex=cex);
-
-     if(d3 > bg.thresh) { col = "red" } else {col="blue"}
-     x2 <- (11 * cos(i * arc));
-     y2 <- (11 * sin(i * arc));
-     text(x2,y2,label=abg[i],col=col,cex=cex);
-
-     if(bb[i]!="P") {
-       x2 <- (12 * cos(i * arc));
-       y2 <- (12 * sin(i * arc));
-       text(x2,y2,label="bioB",col="red",cex=cex);
-     }
-  }
-  if(!usemid) {
-    legend(-11,12,pch=2:1,colnames(rats)[1:2])
-  }
-  else {
-    legend(-11,12,pch=2:1,colnames(rats)[3:4])
-  }
-}
-
-plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.label.col="black",sf.thresh = 3.0,gdh.thresh = 1.25,ba.thresh = 3.0,present.thresh=10,bg.thresh=20,label=NULL,main="QC Stats",usemid=F,spread=c(-8,8),type="l",cex=1,...) {
-  if(type=="c") { 
-    .plot.qc.stats2(x,fc.line.col,sf.ok.region,chip.label.col,sf.thresh,gdh.thresh,ba.thresh,present.thresh,bg.thresh,label,main,usemid,cex,...) 
-    return()
-  }
+plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.label.col="black",sf.thresh = 3.0,gdh.thresh = 1.25,ba.thresh = 3.0,present.thresh=10,bg.thresh=20,label=NULL,main="QC Stats",usemid=F,spread=c(-8,8),cex=1,...) {
   old.par <- par()
   par(mai=c(0,0,0,0))
   sfs    <- log2(sfs(x))
@@ -480,12 +510,12 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
 
   rats <- ratios(x);
   if(!usemid) {
-    gdh <- rats[,2];
+    gdh <- rats[,3];
     ba  <- rats[,1];
   }
   else {
     gdh <- rats[,4];
-    ba  <- rats[,3];
+    ba  <- rats[,2];
   }
 
   bb  <- x@bioBCalls
@@ -529,7 +559,7 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
   plot(0,0,xlim=range(0,1),ylim=range(0,1),type="n",yaxs="i",xaxt="n",yaxt="n",bty="n")
   if(!usemid) {
     points(0.25,0.25,pch=1)
-    text(0.3,0.25,colnames(rats)[2],pos=4,cex=cex)
+    text(0.3,0.25,colnames(rats)[3],pos=4,cex=cex)
     points(0.25,0.5,pch=2)
     text(0.3,0.5,colnames(rats)[1],pos=4,cex=cex)
   }
@@ -537,7 +567,7 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
     points(0.25,0.25,pch=1)
     text(0.3,0.25,colnames(rats)[4],pos=4,cex=cex)
     points(0.25,0.5,pch=2)
-    text(0.3,0.5,colnames(rats)[3],pos=4,cex=cex)
+    text(0.3,0.5,colnames(rats)[2],pos=4,cex=cex)
   }
   
   ow <- options("warn")$warn
@@ -548,3 +578,145 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
 
 
 setMethod("plot","QCStats",function(x,y) plot.qc.stats(x,...))
+
+
+
+#old, DEPRECATED, WILL GO SOON!
+
+getTao <- function(name) {
+  .Deprecated("qc.get.tao","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  qc.get.tau()
+}
+
+getAlpha1 <- function(name) {
+  .Deprecated("qc.get.alpha1","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  qc.get.alpha1()
+}
+
+getAlpha2 <- function(name) {
+  .Deprecated("qc.get.alpha2","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  qc.get.alpha2()
+}
+
+getActin3 <- function(name) {
+  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  rats <- qc.get.ratios()
+  toks <- unlist(strsplit(names(rats),"/"))
+  rats <- unlist(rats)
+  j <- cbind(toks,rats)
+  r <- (j[j[,1] == "actin3",2])[1]
+  names(r) <- NULL
+  r
+}
+
+getActinM <- function(name) {
+  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  rats <- qc.get.ratios()
+  toks <- unlist(strsplit(names(rats),"/"))
+  rats <- unlist(rats)
+  j <- cbind(toks,rats)
+  r <- (j[j[,1] == "actinM",2])[1]
+  names(r) <- NULL
+  r
+}
+
+getActin5 <- function(name) {
+  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  rats <- qc.get.ratios()
+  toks <- unlist(strsplit(names(rats),"/"))
+  rats <- unlist(rats)
+  j <- cbind(toks,rats)
+  r <- (j[j[,1] == "actin5",2])[1]
+  names(r) <- NULL
+  r
+}
+
+getGapdh3 <- function(name) {
+  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  rats <- qc.get.ratios()
+  toks <- unlist(strsplit(names(rats),"/"))
+  rats <- unlist(rats)
+  j <- cbind(toks,rats)
+  r <- (j[j[,1] == "gapdh3",2])[1]
+  names(r) <- NULL
+  r
+}
+
+getGapdhM <- function(name) {
+  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  rats <- qc.get.ratios()
+  toks <- unlist(strsplit(names(rats),"/"))
+  rats <- unlist(rats)
+  j <- cbind(toks,rats)
+  r <- (j[j[,1] == "gapdhM",2])[1]
+  names(r) <- NULL
+  r
+}
+
+getGapdh5 <- function(name) {
+  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name);
+  rats <- qc.get.ratios()
+  toks <- unlist(strsplit(names(rats),"/"))
+  rats <- unlist(rats)
+  j <- cbind(toks,rats)
+  r <- (j[j[,1] == "gapdh5",2])[1]
+  names(r) <- NULL
+  r
+}
+
+getAllQCProbes <- function(name) {
+  .Deprecated("qc.get.probes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name)
+  qc.get.probes()
+}
+
+getBioB <- function(name) {
+  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name)
+  qc.get.spikes()["bioB"]
+}
+
+
+getBioC <- function(name) {
+  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name)
+  qc.get.spikes()["bioC"]
+}
+
+
+getBioD <- function(name) {
+  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name)
+  qc.get.spikes()["bioD"]
+}
+
+
+getCreX <- function(name) {
+  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name)
+  qc.get.spikes()["creX"]
+}
+
+
+getAllSpikeProbes <- function(name) {
+  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  setQCEnvironment(name)
+  qc.get.spikes()
+}
+
+
+haveQCParams <- function(name) {
+  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  qc.have.params(name)
+}
+
+

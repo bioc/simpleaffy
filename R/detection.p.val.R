@@ -1,4 +1,17 @@
-detection.p.val <- function(x, tau = 0.015,calls=TRUE,alpha1=getAlpha1(cleancdfname(cdfName(x))),alpha2=getAlpha2(cleancdfname(cdfName(x))),ignore.saturated=TRUE) {
+detection.p.val <- function(x, tau = NULL,calls=TRUE,alpha1=NULL,alpha2=NULL,ignore.saturated=TRUE) {
+  if(is.null(tau)) { tau <- qc.get.tau() }
+  if(is.null(alpha1)) {
+    if(!qc.have.params()) {
+      setQCEnvironment(cdfName(x))
+    }
+    alpha1 <- qc.get.alpha1()
+  }
+  if(is.null(alpha2)) {
+    if(!qc.have.params()) {
+      setQCEnvironment(cdfName(x))
+    }
+    alpha2 <- qc.get.alpha2()
+  }
   if(class(x) != "AffyBatch") { stop("detection.p.val() should be called on an AffyBatch object.\nSee ?detection.p.val for more details.") }
   if(alpha1 < 0)      {stop("alpha1 must be  > 0 "); }
   if(alpha1 > alpha2) {stop("alpha2 must be  > alpha1 "); }
