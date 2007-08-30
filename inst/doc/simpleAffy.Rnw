@@ -58,10 +58,8 @@ in the Affymetrix MAS manual at {\url http://www.affymetrix.com}.
 \label{sec:get.started} The first thing you need to do is to get R to use
 the \Rpackage{simpleaffy} package by telling it to load the library:
 
-\begin{Sinput}
-R> library(simpleaffy) ##the affy package also gets loaded
-\end{Sinput}
-<<echo=F,results=hide>>=
+<<>>=
+library(simpleaffy) ##the affy package also gets loaded
 library(affy)
 @
 
@@ -120,10 +118,10 @@ Sooo, the easiest way to get going is it:
 Microsoft Windows make sure your working directory contains the {\it
 Cel} files (use ``File -> Change Dir'' menu item).
 \item Load the library.
-\begin{Sinput}
-R> library(simpleaffy) ##load the simpleaffy package 
-                       ##(which loads the affy package too)
-\end{Sinput}
+<<>>=
+library(simpleaffy) ##load the simpleaffy package 
+                    ##(which loads the affy package too)
+@ 
 \item Read in the data and generate expression calls, (using RMA), for example.
 \begin{Sinput}
 R> library(simpleaffy)
@@ -133,11 +131,7 @@ R> # alternatively, use MAS 5.0: x.mas <- call.exprs(raw.data,"mas5")
 \end{Sinput}
 \end{enumerate}
 
-Take a look at the help files for a more detailed description of these functions:
-\begin{Sinput}
-R> ?read.affy
-R> ?call.exprs
-\end{Sinput}
+Take a look at the help files for a more detailed description of these functions (i.e. ?read.affy or ?call.exprs).
 
 The function \Rfunction{justMAS} provides a faster implementation of
 the MAS 5.0 expression summary algorithm written in C. (described in:
@@ -151,7 +145,7 @@ doubt, use MAS5.0 or GCOS to generate your data.
 
 
 By default,
-this is used \Rfunction{justMAS} by \Rfunction{call.exprs}, to use the
+\Rfunction{justMAS} is used by the \Rfunction{call.exprs} to generate the MAS5 calls, to use the
 \Rfunction{expresso} version specify 'mas5-R' instead of 'mas5' when
 you invoke \Rfunction{call.exprs}.
 
@@ -201,7 +195,7 @@ called with just the raw data, in which case it calls
 \begin{Sinput}
 R> x <- read.affy("covdesc");
 R> x.mas5 <- call.exprs(x,"mas5");
-R> qc <- qc(x,x.mas5);
+R> qcs <- qc(x,x.mas5);
 \end{Sinput}
 
 Note that we have used \Rfunction{call.exprs(x,"mas5")} to normalise the
@@ -211,9 +205,6 @@ data using the mas 5.0 algorithm. This is important because
 \begin{Sinput}
 R> x.mas5@description@preprocessing
 \end{Sinput}
-
- \Rfunction{sfs} is a list of scale factors for each chip,
-\Rfunction{tgt}, the target intensity they were scaled to.
 
 \Rfunction{qc} returns an object containing scale-factors, \% present,
 average, mininimum, maximum and mean background intensities,and bioB,
@@ -227,36 +218,83 @@ a sensible choice as to which probeset to use. To find out which
 probesets are used for your arrays use the methods \Rfunction{qc.get.ratios},
 \Rfunction{qc.get.probes} and \Rfunction{qc.get.spikes}.
 
+
+The data file \Rfunction{qcs} contains an example QCStats object for a
+25 array project comparing different protocols for processing MCF7 and
+MCF10A data. This dataset is interesting because some of the arrays
+have poor qc.
+
+<<>>=
+data(qcs)
+@ 
+
+The QCStats object (returned by qc), or what we just loaded with
+\Rfunction{data}, has a number of accessor functions to get at its values:
+
+<<results=hide>>=
+ratios(qcs)
+avbg(qcs)
+maxbg(qcs)
+minbg(qcs)
+spikeInProbes(qcs)
+qcProbes(qcs)
+percent.present(qcs)
+plot(qcs)
+sfs(qcs)
+target(qcs)
+ratios(qcs)
+@ 
+
+Many of these also have 'set' methods - see section \ref{QCconfig} for more details.
+
 The qc functions and detection p value code have not been tested on every
 chip type available - the majority of development has been on HGU95A
 arrays and newer.  Again, for more details of what chips it has been tested
 on, how the testing was done, and the results of the comparisons, see
 the simpleaffy website.
 
-A plot of qc data can also be obtained by \Rfunction{plot(qc)}. The
-resultant image takes a bit of explaining. The three dotted circles
-represent 3-fold up-regulation, zero change and three-fold down
-regulation (labelled +3, 0 and -3) respectively. Each array is
-represented by a segment of the image, with circles and triangles
-representing beta-actin and gapdh 3'/5' ratios, respectively. High
-3'/5' ratios signal an issue with the labelled RNA -- any ratios
-greater than 3 are signalled by plotting these values in red.
+A plot of qc data can also be obtained by \Rfunction{plot(qc)}. 
 
-Affymetrix's QC procedures state that scale factors for array should
-be within 3-fold of each other if the chips are to be comparable.Scale
-factor for each array is plotted as a line from the zero-fold line to
-a point representing its scale factor. The blue ring represents the
-region where scale factors are within this 3-fold limit (centered
-around the mean scale factor for all chips). Any scale-factor lines
-that fall outside this ring represent arrays that have a scale factor
-that is more than 3-fold different from its peers. If this happens the
-lines are coloured red.
+<<fig=TRUE>>=
+ plot(qcs)
+@ 
 
-Around the outside of the figure percentage present and background
-levels are shown. These should in general be consistant with one
-another. If there is large variation these values are shown in red. In
-short if anything in the figure shows up red, it is worthy of further
-investigation!
+Each array is represented by a seperate line in the figure. The
+central vertical line corresponds to 0 fold change, the dotted lines
+on either side correspond to up and down regulation. The blue
+bar represents the region in which all arrays have scale factors
+within, by default, three-fold of each other. Its position is found by
+calculating the mean scale factor for all chips and placing the center
+of the region such that the borders are -1.5 fold up or down from the
+mean value.
+
+Each array is plotted as a line from the 0-fold line to the point
+that corresponds to its scale factor. If the ends of all of the lines
+are in the blue region, their scale-factors are compatible. The lines
+are coloured blue if OK, red if not.
+
+The figure also shows (for most arrays) GAPDH and beta-actin 3\'/5\'
+ratios. These are represented as a pair of points for each chip. Affy
+state that beta actin should be within 3, gapdh around 1. Any that
+fall outside these thresholds (1.25 for gapdh) are coloured red; the
+rest are blue.
+
+Written along the left hand side of the figure are the number of genes called
+present on each array and the average background. These will vary
+according to the samples being processed, and Affy's QC suggests
+simply that they should be similar. If any chips have significantly
+different values this is flagged in red, otherwise the numbers are
+displayed in blue. By default, 'significant' means that \%-present are
+within 10\% of each other; background intensity, 20 units. These last
+numbers are somewhat arbitrary and may need some tweaking to find
+values that suit the samples you're dealing with, and the overall
+nature of your setup.
+
+Finally, if BioB is not present on a chip, this will be flagged by
+printing 'BioB' in red.
+
+In short, everything in the figure should be blue - red highlights a problem!
+
 
 \section{Filtering by expression measures}
 
@@ -603,14 +641,14 @@ R> summary     <- results.summary(pw.filtered,"hgu133a")
 R> write.annotation(file="spreadsheet.xls",summary)
 \end{Sinput}
 
-\subsection{Specifying alternate QC configurations }
+\subsection{ Specifying alternate QC configurations } \label{QCconfig}
 
 If when running \Rfunction{qc}, one of the other qc functions, or
 \Rfunction{detection.p.val}, you get an error because simpleaffy
-doesn't recgnize the type of array in your project, you need to
+doesn't recgnize the type of array in your project, or because, for example, you are using custom arrays, you need to
 specify your own QC parameters. These include alpha1 and alpha2 values
 for the array, the name of the spike control probesets and the pairs
-of probesets used to calculate the 5'/3' ratios. These can be then specified in a config file. This for example is the configuration for the hgu133 plus2 array:
+of probesets used to calculate the 5'/3' ratios. These can be then specified in a config file. This, for example, is the configuration for the hgu133 plus2 array:
 
 \begin{Sinput}
 array hgu133plus2cdf
@@ -626,22 +664,35 @@ ratio gapdh3/gapdh5 AFFX-HUMGAPDH/M33197_3_at AFFX-HUMGAPDH/M33197_5_at
 ratio gapdh3/gapdhM AFFX-HUMGAPDH/M33197_3_at AFFX-HUMGAPDH/M33197_M_at 
 \end{Sinput}
 
-The file must be called <cdfname>.qcdef, where cdfname is the cdfname
-produced by calling \Rfunction{cdfName} on the appropriate AffyBatch
-object.
+The file must be called <cdfname>.qcdef, where cdfname is the 'clean' cdfname
+produced by calling \Rfunction{cleancdfname} on the \Rfunction{cdfName} of the appropriate AffyBatch
+object. For example:
 
-The first token on each line specfies whether the rest of the line
-provides an array name (array), an alpha value (alpha1,alpha2), the
-name of a spike probeset (spk -- which must be followed by one of
-bioB,bioC, bioD or creX), or a pair of probesets to use to calculate a
-3'/5' metric (ratio). ratio must be followed by the name of the ratio,
-and then two probeset ids.
+\begin{Sinput}
+R> n <- cdfName(eset)
+R> cleancdfname(n)
+\end{Sinput}
+
+<<echo=FALSE>>=
+cleancdfname("HGU_133_plus_2")
+@ 
+
+The first token on each line specfies what the rest of the line
+describes. Allowable tokens are: 'array' (array name), 'alpha1',
+'alpha2' (alpha values), 'spk' (the name of a spike probeset -- must be
+followed by one of 'bioB','bioC', 'bioD' or 'creX'), or 'ratio' (to
+specify pairs to comput 3'/5' or 3'/M metrics). 'ratio' must be
+followed by the name of the ratio, which must be of the form
+'name1/name2', where name1 and name2 are textual identifiers suitable
+for displaying in the qc plot, for example.  This must then be followed by two probeset
+ids.
 
 Once the file is created, the QC environment can be set up with a call
 to \Rfunction{setQCEnvironment(array,path)} specifying the appropriate
-cdfname (e.g., as from cdfName(eset)) and the path to the directory
+cdfname and the path to the directory
 containing the file.
 
+MORE on changes to follow...
 
 \bibliography{simpleaffy}
 
