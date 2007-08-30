@@ -1,8 +1,7 @@
 \name{plot.qc.stats}
 \alias{plot.qc.stats}
-\alias{plot.qc.stats2}
 \alias{plot,QCStats}
-\alias{plot,QCStats-method}
+\alias{plot,QCStats,missing-method}
 
 \title{ Plots a QCStats object }
 \description{
