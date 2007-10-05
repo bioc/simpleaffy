@@ -1,14 +1,19 @@
 detection.p.val <- function(x, tau = NULL,calls=TRUE,alpha1=NULL,alpha2=NULL,ignore.saturated=TRUE) {
-  if(is.null(tau)) { tau <- qc.get.tau() }
+  if(is.null(tau)) {
+    if(!qc.ok()) {
+      setQCEnvironment(cleancdfname(cdfName(x)))
+    }
+    tau <- qc.get.tau()
+  }
   if(is.null(alpha1)) {
-    if(!qc.have.params()) {
-      setQCEnvironment(cdfName(x))
+    if(!qc.ok()) {
+      setQCEnvironment(cleancdfname(cdfName(x)))
     }
     alpha1 <- qc.get.alpha1()
   }
   if(is.null(alpha2)) {
-    if(!qc.have.params()) {
-      setQCEnvironment(cdfName(x))
+    if(!qc.ok()) {
+      setQCEnvironment(cleancdfname(cdfName(x)))
     }
     alpha2 <- qc.get.alpha2()
   }
