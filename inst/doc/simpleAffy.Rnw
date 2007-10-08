@@ -692,7 +692,10 @@ to \Rfunction{setQCEnvironment(array,path)} specifying the appropriate
 cdfname and the path to the directory
 containing the file.
 
-MORE on changes to follow...
+People already familiar with simpleaffy will notice that the way QC is
+implemented has changed somewhat in this release. These changes were
+made to make it easier to provide QC descriptions for new or custom
+arrays.
 
 \bibliography{simpleaffy}
 
