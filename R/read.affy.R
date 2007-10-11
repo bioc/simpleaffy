@@ -1,5 +1,5 @@
 read.affy <- function(covdesc="covdesc",path=".",...) {
-  samples <- read.AnnotatedDataFrame( paste(path,covdesc,sep="/"));
+  samples <- read.AnnotatedDataFrame( paste(path,covdesc,sep="/"),sep="");
   files.to.read <- rownames(pData(samples));
   files.to.read <- paste(path,files.to.read,sep="/")
   eset <- ReadAffy(filenames=files.to.read,...);
