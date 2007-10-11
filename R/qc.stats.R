@@ -343,12 +343,20 @@ setMethod("ratios","QCStats",function(object) .getRatios(object))
 
 
 qc.affy <- function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=cdfName(unnormalised)) {
-   cdfn <- cleancdfname(cdfn)
    verbose <- getOption("verbose")
+   if(.qc.is.empty()) {
+     cdfn <- cleancdfname(cdfn)
 
-   if(verbose){cat(paste("Looking cdf file for:",cdfn,"\n"))}
-   setQCEnvironment(cdfn)
-     
+
+     if(verbose){cat(paste("Looking cdf file for:",cdfn,"\n"))}
+
+     setQCEnvironment(cdfn)
+  }
+  else {
+   if(qc.get.array() !=  cleancdfname(cdfn)) {
+	warning(paste("CDF Environment name '", qc.get.array(), "' does not match cdfname '", cleancdfname(cdfn),"'"))
+   }
+  }
   if(is.null(normalised)) {
     if(verbose){cat(paste("Preprocessing expression data using mas5\n"))}
     normalised <- call.exprs(unnormalised,"mas5");
