@@ -61,6 +61,16 @@
   array.
   Similarly, \code{\link[simpleaffy]{qc.get.spikes}} will return a table
   containing all spike probesets for the array.
+
+  One of the reasons for these changes is to make it easier to support
+  new/alternate definitions of the QC parameters for a given array.
+  The old functions do not know how to deal with alternate QC data
+  from outside the package. 
+
+  They have been left in, but deprecated - instead
+  the new qc.get.X() functions should be used to pick up the
+  additional functionality provided by, for example, the ability to use
+  setQCEnvironment() to specify alternate QC definition files.
 }
 
 \value{
