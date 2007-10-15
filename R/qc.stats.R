@@ -343,12 +343,20 @@ setMethod("ratios","QCStats",function(object) .getRatios(object))
 
 
 qc.affy <- function(unnormalised,normalised=NULL,tau=0.015,logged=TRUE,cdfn=cdfName(unnormalised)) {
-   cdfn <- cleancdfname(cdfn)
    verbose <- getOption("verbose")
+   if(.qc.is.empty()) {
+     cdfn <- cleancdfname(cdfn)
 
-   if(verbose){cat(paste("Looking cdf file for:",cdfn,"\n"))}
-   setQCEnvironment(cdfn)
-     
+
+     if(verbose){cat(paste("Looking cdf file for:",cdfn,"\n"))}
+
+     setQCEnvironment(cdfn)
+  }
+  else {
+   if(qc.get.array() !=  cleancdfname(cdfn)) {
+	warning(paste("CDF Environment name '", qc.get.array(), "' does not match cdfname '", cleancdfname(cdfn),"'"))
+   }
+  }
   if(is.null(normalised)) {
     if(verbose){cat(paste("Preprocessing expression data using mas5\n"))}
     normalised <- call.exprs(unnormalised,"mas5");
@@ -584,25 +592,25 @@ setMethod("plot",c("QCStats","missing"),function(x,y,...) plot.qc.stats(x,...))
 #old, DEPRECATED, WILL GO SOON!
 
 getTao <- function(name) {
-  .Deprecated("qc.get.tao","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.tao","simpleaffy","This function (getTao) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   qc.get.tau()
 }
 
 getAlpha1 <- function(name) {
-  .Deprecated("qc.get.alpha1","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.alpha1","simpleaffy","This function (getAlpha1) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   qc.get.alpha1()
 }
 
 getAlpha2 <- function(name) {
-  .Deprecated("qc.get.alpha2","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.alpha2","simpleaffy","This function (getAlpha2) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   qc.get.alpha2()
 }
 
 getActin3 <- function(name) {
-  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.ratios","simpleaffy","This function (getActin3) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   rats <- qc.get.ratios()
   toks <- unlist(strsplit(names(rats),"/"))
@@ -614,7 +622,7 @@ getActin3 <- function(name) {
 }
 
 getActinM <- function(name) {
-  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.ratios","simpleaffy","This function (getActinM) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   rats <- qc.get.ratios()
   toks <- unlist(strsplit(names(rats),"/"))
@@ -626,7 +634,7 @@ getActinM <- function(name) {
 }
 
 getActin5 <- function(name) {
-  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.ratios","simpleaffy","This function (getActin5) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   rats <- qc.get.ratios()
   toks <- unlist(strsplit(names(rats),"/"))
@@ -638,7 +646,7 @@ getActin5 <- function(name) {
 }
 
 getGapdh3 <- function(name) {
-  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.ratios","simpleaffy","This function (getGapdh3) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   rats <- qc.get.ratios()
   toks <- unlist(strsplit(names(rats),"/"))
@@ -650,7 +658,7 @@ getGapdh3 <- function(name) {
 }
 
 getGapdhM <- function(name) {
-  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.ratios","simpleaffy","This function (getGapdhM) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   rats <- qc.get.ratios()
   toks <- unlist(strsplit(names(rats),"/"))
@@ -662,7 +670,7 @@ getGapdhM <- function(name) {
 }
 
 getGapdh5 <- function(name) {
-  .Deprecated("qc.get.ratios","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.ratios","simpleaffy","This function (getGapdh5) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name);
   rats <- qc.get.ratios()
   toks <- unlist(strsplit(names(rats),"/"))
@@ -674,48 +682,48 @@ getGapdh5 <- function(name) {
 }
 
 getAllQCProbes <- function(name) {
-  .Deprecated("qc.get.probes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.probes","simpleaffy","This function (getAllQCProbes) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name)
   qc.get.probes()
 }
 
 getBioB <- function(name) {
-  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.spikes","simpleaffy","This function (getBioB) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name)
   qc.get.spikes()["bioB"]
 }
 
 
 getBioC <- function(name) {
-  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.spikes","simpleaffy","This function (getBioC) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name)
   qc.get.spikes()["bioC"]
 }
 
 
 getBioD <- function(name) {
-  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.spikes","simpleaffy","This function (getBioD) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name)
   qc.get.spikes()["bioD"]
 }
 
 
 getCreX <- function(name) {
-  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.spikes","simpleaffy","This function (getCreX) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name)
   qc.get.spikes()["creX"]
 }
 
 
 getAllSpikeProbes <- function(name) {
-  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.spikes","simpleaffy","This function (getAllSpikeProbes) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   setQCEnvironment(name)
   qc.get.spikes()
 }
 
 
 haveQCParams <- function(name) {
-  .Deprecated("qc.get.spikes","simpleaffy","This function is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
+  .Deprecated("qc.get.spikes","simpleaffy","This function (haveQCParams) is DEPRECATED and WILL disappear from future versions of simpleaffy. Please see help(\"simpleaffy-deprecated\") for more details.\n")
   qc.have.params(name)
 }
 
