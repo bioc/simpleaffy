@@ -3,9 +3,9 @@
 \alias{get.array.subset,AffyBatch-method}
 \alias{get.array.subset,ExpressionSet-method}
 
-\title{ Get a subset of arrays from an affybatch object, split by phnotypic data }
+\title{Get a subset of arrays from an affybatch object, split by phnotypic data}
 \description{
-  Looks at a factor in the phenotypic data for an \code{AffyBatch} or \code{exprSet} object and
+  Looks at a factor in the phenotypic data for an \code{AffyBatch} or \code{ExpressionSet} object and
   uses it to select a subset of arrays, as defined by 'members'.
 }
 
@@ -15,14 +15,14 @@ get.array.subset(x,group,members)
 }
 
 \arguments{
-  \item{x}{ An \code{ExpressionSet} or \code{AffyBatch} object }
-  \item{group}{ The name of the pData column to use. }
-  \item{members}{ The labels within the pData column to match against. }
+  \item{x}{An \code{ExpressionSet} or \code{AffyBatch} object.}
+  \item{group}{The name of the pData column to use.}
+  \item{members}{The labels within the pData column to match against.}
 }
 
-\author{ Crispin J Miller }
+\author{Crispin J Miller}
 
-\seealso{ \code{\link{get.array.subset.affybatch}}  \code{\link{get.array.subset.exprset}} }
+\seealso{\code{\link{get.array.subset.affybatch}}  \code{\link{get.array.subset.exprset}}}
 
 \examples{
   \dontrun{
@@ -32,4 +32,4 @@ get.array.subset(x,group,members)
   }
 }
 
-\keyword{ misc }
+\keyword{misc}

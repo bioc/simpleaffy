@@ -307,7 +307,7 @@ subest of arrays from the experiment. For example,
 R> get.array.subset(x.rma,"treatment",c("a","n"))
 \end{Sinput}
 
-will return an \Robject{exprSet} containing just the chips
+will return an \Robject{ExpressionSet} containing just the chips
 corresponding to treatment with drug 'a' or or with no drug at all.
 
 The function \Rfunction{pairwise.comparison} allows you to take a
