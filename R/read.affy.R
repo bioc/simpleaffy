@@ -105,7 +105,9 @@ function(covdesc="covdesc",path=".",...) {
   newPhenoData <- pData(samples)[rn,];
   tmp <- as.list(colnames(newPhenoData));
   names(tmp) <- colnames(newPhenoData);
-  newPhenoData <- new("phenoData",pData=newPhenoData,varLabels=tmp)
+  newPhenoData <- new("AnnotatedDataFrame")
+  pData(newPhenoData) <- newPhenoData
+  varLabels(newPhenoData) <- tmp
 
   result@phenoData <- newPhenoData;
   result@notes<-"This expression set was produced by merging different chip types. Be careful!"	
