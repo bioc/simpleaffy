@@ -291,8 +291,8 @@ plot.pairwise.comparison <- function(x,y=NULL,labels=colnames(means(x)),showPMA=
 }
 
 
-setMethod("plot","PairComp",function(x,y) plot.pairwise.comparison(x,y,...))
-
+setMethod("plot",signature(x="PairComp",y="missing"),function(x,y,...) plot.pairwise.comparison(x,y,...))
+setMethod("plot",signature(x="PairComp",y="PairComp"),function(x,y,...) plot.pairwise.comparison(x,y,...))
 
 
 .volcanoplot <- function(x,y,labels,...) {
