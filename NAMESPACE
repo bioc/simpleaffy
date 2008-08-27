@@ -3,6 +3,9 @@ useDynLib("simpleaffy")
 importFrom("utils", "data")
 import("methods")
 
+importFrom("Biobase", "pData")
+importFrom("graphics", "plot")
+
 exportPattern("^[^.]")
 
 exportClasses("PairComp",
