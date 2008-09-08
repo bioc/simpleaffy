@@ -12,6 +12,8 @@
 \alias{tt,PairComp-method}
 \alias{pData,PairComp-method}
 \alias{calculated.from,PairComp-method}
+\alias{plot,PairComp,missing-method}
+\alias{plot,PairComp,PairComp-method}
 \alias{calls}
 \alias{fc}
 \alias{group}
