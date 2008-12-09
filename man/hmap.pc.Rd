@@ -11,7 +11,7 @@ hmap.pc(x,eset,samples=rownames(pData(x)),scluster=standard.pearson,pcluster=sta
 \arguments{
   \item{x}{ The \code{PairComp} object to get the probeset list (and other data) from}
   \item{eset}{ The \code{AffyBatch} object containing expression data }
-  \item{samples} { Which samples to plot -- defaults to those used to calculate 'x', but can be any of the samples in eset }
+  \item{samples}{ Which samples to plot -- defaults to those used to calculate 'x', but can be any of the samples in eset }
   \item{scluster}{ The function to use to cluster the samples by. Can also be a dendrogram object. }
   \item{pcluster}{ The function to use to cluster the probesets by. Can also be a dendrogram object. }
   \item{slabs}{ Labels for the sample axis }
