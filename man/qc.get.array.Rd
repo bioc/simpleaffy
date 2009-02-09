@@ -1,9 +1,11 @@
-\name{  qc.get.array}
-\alias{  qc.get.array}
-\alias{  qc.set.array}
+\name{qc.get.array}
+\alias{qc.get.array}
+\alias{qc.set.array}
 
 \title{ Get or set the name of the array for which the current QC
-  environment is valid. Currently not used for anything important; is a free text identifier.  }
+  environment is valid. Currently not used for anything important; is a free
+  text identifier.} 
+
 \description{
   The array name is simply a free text name for the array of interest.
 }
@@ -14,14 +16,13 @@
 
 \arguments{
   \item{name}{ a free text name for the array of interest }
-  
 }
 
 \value{
-  \item{a string}
+  a string
 }
 
-\references{ http://bioinformatics.picr.man.ac.uk/ }
+\references{\url{http://bioinformatics.picr.man.ac.uk/}}
 \author{ Crispin J Miller }
 
 \note{
