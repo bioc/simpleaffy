@@ -27,7 +27,7 @@
 \details{
   The usual way to get the 'clean' cdfname is as follows:
   \code{cleancdfname(cdfName(eset))}, where \code{eset} is an
-  \code{\link[affy]{AffyBatch}} object.
+  \code{\link[affy:AffyBatch-class]{AffyBatch}} object.
 }
 
 \value{

@@ -28,7 +28,8 @@
 }
 \seealso{
   \code{\link[simpleaffy]{setQCEnvironment}} \code{\link[simpleaffy]{qc}}
-  \code{\link[simpleaffy]{qc.have.params}} \code{\link[affy]{cdfName}}
+  \code{\link[simpleaffy]{qc.have.params}}
+  \code{\link[affy:AffyBatch-class]{cdfName}} 
 }
 \examples{
   qc.ok()

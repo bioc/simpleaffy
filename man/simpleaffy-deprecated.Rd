@@ -47,7 +47,8 @@
 
 \arguments{
   \item{name}{The 'clean' CDF name of the array (i.e. the result of calling
-   \code{\link[affy]{cleancdfname}} on the \code{\link[affy]{cdfName}}
+   \code{\link[affy]{cleancdfname}} on the
+  \code{\link[affy:AffyBatch-class]{cdfName}} 
    of the AffyBatch object containing the
    array data of interest.}
 }
@@ -76,7 +77,7 @@
   \code{\link[simpleaffy]{setQCEnvironment}}
   \code{\link[simpleaffy]{qc}}
   \code{\link[simpleaffy]{qc.ok}}
-  \code{\link[affy]{cdfName}}
+  \code{\link[affy:AffyBatch-class]{cdfName}}
   \code{\link[affy]{cleancdfname}}
   \code{\link[simpleaffy]{qc.get.ratios}}
   \code{\link[simpleaffy]{qc.get.spikes}}

@@ -41,7 +41,8 @@
 \title{Class "QCStats" }
 \description{ Holds Quality Control data for a set of Affymetrix arrays }
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{qc(\link[affy]{AffyBatch})}.
+Objects can be created by calls of the form
+\code{qc(\link[affy:AffyBatch-class]{AffyBatch})}. 
 }
 \section{Slots}{
   \describe{
@@ -54,8 +55,10 @@ Objects can be created by calls of the form \code{qc(\link[affy]{AffyBatch})}.
     \item{\code{spikes}:}{Object of class \code{"list"} spiked in probes (e.g. biob, bioc...) }
     \item{\code{qc.probes}:}{Object of class \code{"list"} qc probes
       (e.g. gapdh 3,5,M,...) }
-    \item{\code{arrayType}:}{The \code{\link[affy]{cdfName}} of the
-      \code{\link[affy]{AffyBatch}} object used to create the object }
+    \item{\code{arrayType}:}{The
+      \code{\link[affy:AffyBatch-class]{cdfName}} of the 
+      \code{\link[affy:AffyBatch-class]{AffyBatch}} object used to
+      create the object } 
   }
 }
 \section{Methods}{

@@ -4,9 +4,10 @@
 \title{ Read a Set of .CEL Files and Phenotypic Data }
 \description{
  Reads the specified file, which defines phenotypic data for a
- set of .CEL files. Reads the specified files into an \code{\link[affy]{AffyBatch}} object and
- then creates a \code{\link[Biobase]{phenoData}} object, defining the experimental factors 
- for those chips.
+ set of .CEL files. Reads the specified files into an
+ \code{\link[affy:AffyBatch-class]{AffyBatch}} object and 
+ then creates a \code{\link[Biobase]{phenoData}} object, defining the
+ experimental factors for those chips.
 }
 \usage{
 read.affy(covdesc = "covdesc",path=".", ...)
@@ -28,7 +29,9 @@ read.affy(covdesc = "covdesc",path=".", ...)
 \references{\url{ http://bioinformatics.picr.man.ac.uk/}}
 \author{ Crispin J Miller }
 
-\seealso{ \code{\link[affy]{ReadAffy}}, \code{\link[affy]{AffyBatch}} \code{\link{data.frame}} \code{\link[Biobase]{phenoData}}}
+\seealso{ \code{\link[affy:read.affybatch]{ReadAffy}},
+  \code{\link[affy:AffyBatch-class]{AffyBatch}} \code{\link{data.frame}}
+  \code{\link[Biobase]{phenoData}}} 
 \keyword{ misc }
 \examples{ 
   \dontrun{
