@@ -20,8 +20,6 @@ get.array.indices(x,group,members)
 
 \author{Crispin J Miller}
 
-\seealso{ }
-
 \examples{
   \dontrun{
     indices3 <- get.array.indices(eset.rma,"group","A")

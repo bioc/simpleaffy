@@ -25,8 +25,6 @@
 \references{\url{http://bioinformatics.picr.man.ac.uk/}}
 \author{ Crispin J Miller }
 
-\note{
-}
 \seealso{
   \code{\link[simpleaffy]{setQCEnvironment}}
 }

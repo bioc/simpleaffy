@@ -27,8 +27,6 @@
 \references{ http://bioinformatics.picr.man.ac.uk/ }
 \author{ Crispin J Miller }
 
-\note{
-}
 \seealso{
   \code{\link[simpleaffy]{setQCEnvironment}}, \code{\link[simpleaffy]{qc}},
   \code{\link[simpleaffy]{qc.ok}}, \code{\link[affy:AffyBatch-class]{cdfName}},

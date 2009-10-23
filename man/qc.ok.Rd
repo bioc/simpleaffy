@@ -14,8 +14,6 @@
   qc.ok()
 }
 
-\arguments{
-}
 
 \value{
   True or False
@@ -24,8 +22,6 @@
 \references{ http://bioinformatics.picr.man.ac.uk/ }
 \author{ Crispin J Miller }
 
-\note{
-}
 \seealso{
   \code{\link[simpleaffy]{setQCEnvironment}} \code{\link[simpleaffy]{qc}}
   \code{\link[simpleaffy]{qc.have.params}}

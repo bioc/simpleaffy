@@ -22,7 +22,6 @@ read.affy(covdesc = "covdesc",path=".", ...)
   \item{\dots}{ extra functions to pass on to \code{ReadAffy} }
   \item{path}{ The path to prefix the filenames with before calling \code{ReadAffy} }
 }
-\details{ }
 \value{
   An AffyBatch object
 }

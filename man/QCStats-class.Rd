@@ -51,11 +51,15 @@ Objects can be created by calls of the form
     \item{\code{percent.present}:}{Object of class \code{"numeric"} Number of genes called present }
     \item{\code{average.background}:}{Object of class \code{"numeric"} The average background for the arrays }
     \item{\code{minimum.background}:}{Object of class \code{"numeric"} The minimum background for the arrays }
-    \item{\code{maximum.background}:}{Object of class \code{"numeric"} The maximum background for the arrays }
+    \item{\code{maximum.background}:}{Object of class \code{"numeric"}
+	  The maximum background for the arrays }
+	\item{\code{bioBCalls}:}{Object of class \code{"character"} The
+	  detection PMA (present / marginal / absent) calls of bioB spike-in
+	  probes }
     \item{\code{spikes}:}{Object of class \code{"list"} spiked in probes (e.g. biob, bioc...) }
     \item{\code{qc.probes}:}{Object of class \code{"list"} qc probes
       (e.g. gapdh 3,5,M,...) }
-    \item{\code{arrayType}:}{The
+    \item{\code{arraytype}:}{The
       \code{\link[affy:AffyBatch-class]{cdfName}} of the 
       \code{\link[affy:AffyBatch-class]{AffyBatch}} object used to
       create the object } 

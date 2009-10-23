@@ -35,7 +35,6 @@ read.affy.mixed(covdesc = "covdesc",path=".", ...)
   \item{path}{ The path to prefix the filenames with before calling
   \code{ReadAffy} } 
 }
-\details{ }
 \value{
   An AffyBatch object
 }

@@ -28,8 +28,6 @@ set up the QC Environment }
 \references{ http://bioinformatics.picr.man.ac.uk/ }
 \author{ Crispin J Miller }
 
-\note{
-}
 \seealso{
   \code{\link[simpleaffy]{setQCEnvironment}}
 }

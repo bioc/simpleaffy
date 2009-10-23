@@ -58,7 +58,4 @@
 
 \author{Crispin Miller}
 
-\seealso{
-}
-
 \keyword{classes}

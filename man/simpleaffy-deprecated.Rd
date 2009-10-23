@@ -65,14 +65,12 @@
 }
 
 \value{
-  
+  None.
 }
 
 \references{ http://bioinformatics.picr.man.ac.uk/ }
 \author{ Crispin J Miller }
 
-\note{
-}
 \seealso{
   \code{\link[simpleaffy]{setQCEnvironment}}
   \code{\link[simpleaffy]{qc}}

@@ -20,9 +20,6 @@ call.exprs(x, algorithm = "rma", do.log = TRUE, sc = 100, method = NA)
   for "rma", defaults to quantile normalisation for "rma" and no
   normalisation for "mas5" } 
 }
-\details{
-
-}
 \value{
   An AffyBatch object containing expression summaries.
 }
