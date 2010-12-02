@@ -584,6 +584,7 @@ plot.qc.stats<-function(x,fc.line.col="black",sf.ok.region="light blue",chip.lab
   options(warn=ow)
 }
 
+setGeneric("plot")
 
 setMethod("plot",c("QCStats","missing"),function(x,y,...) plot.qc.stats(x,...))
 
