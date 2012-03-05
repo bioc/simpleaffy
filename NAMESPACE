@@ -26,7 +26,7 @@ importFrom(gcrma, gcrma)
 
 importFrom(genefilter, fastT)
 
-importFrom(graphics, layout, lines, par, plot, points, polygon, text)
+importFrom(graphics, layout, lines, par, plot, points, polygon, text, image)
 
 importFrom(grDevices, bitmap)
 

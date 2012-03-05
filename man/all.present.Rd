@@ -6,7 +6,7 @@
  must be present in at least no arrays to be called present
 }
 \usage{
-  all.present(x,calls,no = "all")
+  \method{all}{present}(x,calls,no = "all")
 }
 
 \arguments{

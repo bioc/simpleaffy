@@ -8,7 +8,7 @@
    Draws a scatter plot between means from a pairwise comparison. Colours according to PMA calls and identifies 'signficant' genes yielded by a filtering
 }
 \usage{
-plot.pairwise.comparison(x,y=NULL,labels=colnames(means(x)),showPMA=TRUE,type="scatter",...)
+\method{plot}{pairwise.comparison}(x,y=NULL,labels=colnames(means(x)),showPMA=TRUE,type="scatter",...)
 }
 
 \arguments{

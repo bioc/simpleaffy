@@ -6,7 +6,7 @@
    Filters an object by PMA calls. Must be called present in at leset 'no' elements in at least one of the replicate sets in the factor 'group'
 }
 \usage{
-  all.present.in.group(x,group,members,calls,no = "all")
+  \method{all}{present.in.group}(x,group,members,calls,no = "all")
 }
 
 \arguments{
