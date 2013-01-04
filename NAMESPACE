@@ -9,7 +9,7 @@ importClassesFrom(Biobase, ExpressionSet)
 importClassesFrom(methods, character, data.frame, matrix, missing,
                   numeric)
 
-importFrom(methods, "@<-", as, new)
+importFrom(methods, as, new)
 
 importFrom(utils, write.table)
 
