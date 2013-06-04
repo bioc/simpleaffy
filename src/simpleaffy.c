@@ -436,8 +436,8 @@ void bgmas(int *idx, int *nidx,
     scratches[gn][ends[gn]] = val;
 
     ends[gn]++;  /* store the number of spots in each cell, and also use this to find out where the stuff is in scratch */
-    if(ends[gn] >= cellsize) fprintf(stderr,"ouch! %d %d %d %d\n",ncol * nrow/ngrid,gxn,gn,ends[gn]);
-    if(gn >= ngrid) fprintf(stderr,"Really ouch! %d %d\n",gn,ends[gn]);
+    if(ends[gn] >= cellsize) REprintf("ouch! %d %d %d %d\n",ncol * nrow/ngrid,gxn,gn,ends[gn]);
+    if(gn >= ngrid) REprintf(stderr,"Really ouch! %d %d\n",gn,ends[gn]);
   }
   for(i = 0; i < ngrid; i++) {
     pn = (2.0 * ends[i]) / 100;             /*  2% of the probes in each square */

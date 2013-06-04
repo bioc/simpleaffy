@@ -36,7 +36,7 @@ hmap.eset <- function(x,probesets,samples=1:length(sampleNames(x)),scluster=stan
   }
 
   if(missing(probesets)) {
-    probesets <- 1:length(geneNames(x))
+    probesets <- seq_along(featureNames(x))
     probesets.was.set <- T
   }
   else {
@@ -44,7 +44,7 @@ hmap.eset <- function(x,probesets,samples=1:length(sampleNames(x)),scluster=stan
   }
   if(missing(plabs)) {
     if(probesets.was.set | is.logical(probesets) | is.integer(probesets)) {
-      plabs <- geneNames(x)[probesets]
+      plabs <- featureNames(x)[probesets]
     }
     else {
       plabs <- probesets
