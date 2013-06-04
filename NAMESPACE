@@ -35,7 +35,7 @@ importMethodsFrom(affy, cdfName, image, indexProbes, intensity,
                   "intensity<-", mm, mmindex, pm, pmindex, probeNames)
 
 importMethodsFrom(Biobase, annotation, experimentData,
-                  "experimentData<-", exprs, "exprs<-", geneNames,
+                  "experimentData<-", exprs, "exprs<-", featureNames,
                   pData, "pData<-", phenoData, "phenoData<-", preproc,
                   "preproc<-", sampleNames, "varLabels<-")
 
